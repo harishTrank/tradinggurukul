@@ -1,17 +1,5 @@
-import * as Location from "expo-location";
 import { Alert, Share } from "react-native";
 
-export const findLatAndLong = async () => {
-  let { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== "granted") {
-    console.log("Permission to access location was denied");
-    return;
-  }
-
-  // Get the user's current location
-  let location = await Location.getCurrentPositionAsync({});
-  return location;
-};
 
 export const dropDownData = [
   { name: "This Week" },
