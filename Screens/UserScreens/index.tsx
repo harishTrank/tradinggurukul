@@ -2,7 +2,12 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "./HomeScreen";
 import DrawerNavigation from "../../navigation/DrawerNavigation";
-import AnimTab1 from "../../navigation/BottomTabNavigation/bottomTab/AnimTab2";
+import StartScreen from "./StartScreen";
+import LoginScreen from "./LoginScreen";
+import RegisterScreen from "./RegisterScreen";
+import ForgotPasswordScreen from "./ForgotPasswordScreen";
+import ResetPasswordScreen from "./ResetPasswordScreen";
+import OTPScreen from "./OTPScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -12,11 +17,21 @@ const UserScreens = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName={"AnimTab1"}
+      initialRouteName={"DrawerNavigation"}
     >
-      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="StartScreen" component={StartScreen} />
+      <Stack.Screen name="LoginScreen" component={LoginScreen} />
+      <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+      <Stack.Screen name="OTPScreen" component={OTPScreen} />
+      <Stack.Screen
+        name="ResetPasswordScreen"
+        component={ResetPasswordScreen}
+      />
+      <Stack.Screen
+        name="ForgotPasswordScreen"
+        component={ForgotPasswordScreen}
+      />
       <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
-      <Stack.Screen name="AnimTab1" component={AnimTab1} />
     </Stack.Navigator>
   );
 };

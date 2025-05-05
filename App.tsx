@@ -39,5 +39,3 @@ export default function App() {
     );
   }
 }
-// sdk.dir=C:\\Users\\haris\\AppData\\Local\\Android\\sdk
-// local.properties

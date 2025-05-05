@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { SafeAreaView, Image } from "react-native";
+import { View, Image } from "react-native";
 import ImageModule from "../../ImageModule";
 
 const SplashScreen = ({ navigation }: any) => {
@@ -10,23 +10,21 @@ const SplashScreen = ({ navigation }: any) => {
   }, []);
 
   return (
-    <SafeAreaView
+    <View
       style={{
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#FFF",
       }}
     >
       <Image
-        source={ImageModule.appIconCrop}
+        source={ImageModule.splash}
         style={{
-          height: 250,
-          width: 250,
-          resizeMode: "contain",
+          height: "100%",
+          width: "100%",
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
