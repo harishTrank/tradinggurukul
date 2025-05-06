@@ -47,7 +47,10 @@ const StartScreen = ({ navigation }: any) => {
         renderItem={({ item, index }) => {
           return (
             <View>
-              <Image source={item.name} style={{ height, width }} />
+              <Image
+                source={item.name}
+                style={{ height: "100%", width: "100%" }}
+              />
               <TouchableOpacity
                 onPress={() => changeSlideHandler(index)}
                 style={styles.touchBtn}
