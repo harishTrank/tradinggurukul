@@ -18,6 +18,7 @@ import theme from "../../../utils/theme";
 import CategoryCard from "./Component/CategoryCard";
 import SearchResultCard from "./Component/SearchResultCard";
 import FilterModal from "./Component/FilterModal";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const topSearchesData = [
   "Stock Analysis",
@@ -158,7 +159,12 @@ const SearchCourseScreen = ({ navigation }: any) => {
   }) => <SearchResultCard item={item} onPress={handleResultPress} />;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        Platform.OS !== "ios" && { paddingTop: useSafeAreaInsets().top },
+      ]}
+    >
       <StatusBar style="dark" />
       <HomeHeader
         onMenuPress={() => navigation.toggleDrawer()}
