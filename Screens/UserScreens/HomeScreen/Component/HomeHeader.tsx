@@ -7,7 +7,12 @@ import ImageModule from "../../../../ImageModule";
 
 const logoSource = ImageModule.appIcon;
 
-const HomeHeader = ({ onMenuPress, onNotificationPress, onCartPress }: any) => {
+const HomeHeader = ({
+  onMenuPress,
+  onSearchPress,
+  onCartPress,
+  search,
+}: any) => {
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity onPress={onMenuPress} style={styles.iconButton}>
@@ -15,14 +20,12 @@ const HomeHeader = ({ onMenuPress, onNotificationPress, onCartPress }: any) => {
       </TouchableOpacity>
       <Image source={logoSource} style={styles.logo} resizeMode="contain" />
       <View style={styles.rightIcons}>
-        <TouchableOpacity
-          onPress={onNotificationPress}
-          style={styles.iconButton}
-        >
-          <Feather name="bell" size={24} color={theme.colors.black} />
-        </TouchableOpacity>
+        {search && (
+          <TouchableOpacity onPress={onSearchPress} style={styles.iconButton}>
+            <Feather name="search" size={24} color={theme.colors.black} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
-          {/* Using Ionicons for a filled cart look, Feather's is outline */}
           <Ionicons name="cart-outline" size={26} color={theme.colors.black} />
         </TouchableOpacity>
       </View>

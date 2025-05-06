@@ -93,7 +93,7 @@ const HomeScreen = ({ navigation }: any) => {
       <StatusBar style="dark" />
       <HomeHeader
         onMenuPress={navigation.toggleDrawer}
-        onNotificationPress={() => console.log("Notifications pressed")}
+        onSearchPress={() => console.log("Notifications pressed")}
         onCartPress={() => console.log("Cart pressed")}
       />
       <ScrollView

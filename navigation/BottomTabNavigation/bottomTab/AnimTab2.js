@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from "react";
 import {
   SafeAreaView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   useColorScheme,
@@ -15,6 +14,7 @@ import * as Animatable from "react-native-animatable";
 import { useTheme } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HomeScreen from "../../../Screens/UserScreens/HomeScreen";
+import MyCoursesScreen from "../../../Screens/UserScreens/MyCoursesScreen";
 
 const TabArr = [
   {
@@ -25,24 +25,17 @@ const TabArr = [
     component: HomeScreen,
   },
   {
-    route: "Premium",
-    label: "Premium",
+    route: "Courses",
+    label: "Courses",
     type: Icons.Feather,
-    icon: "search",
-    component: HomeScreen,
-  },
-  {
-    route: "Free",
-    label: "Free",
-    type: Icons.Feather,
-    icon: "plus-square",
-    component: HomeScreen,
+    icon: "book-open",
+    component: MyCoursesScreen,
   },
   {
     route: "Community",
     label: "Community",
     type: Icons.Feather,
-    icon: "heart",
+    icon: "users",
     component: HomeScreen,
   },
 ];
