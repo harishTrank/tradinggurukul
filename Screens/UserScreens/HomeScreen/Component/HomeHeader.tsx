@@ -12,12 +12,17 @@ const HomeHeader = ({
   onSearchPress,
   onCartPress,
   search,
+  menu = true,
 }: any) => {
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={onMenuPress} style={styles.iconButton}>
-        <Feather name="menu" size={28} color={theme.colors.black} />
-      </TouchableOpacity>
+      {menu ? (
+        <TouchableOpacity onPress={onMenuPress} style={styles.iconButton}>
+          <Feather name="menu" size={28} color={theme.colors.black} />
+        </TouchableOpacity>
+      ) : (
+        <View />
+      )}
       <Image source={logoSource} style={styles.logo} resizeMode="contain" />
       <View style={styles.rightIcons}>
         {search && (
