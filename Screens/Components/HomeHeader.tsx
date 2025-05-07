@@ -13,6 +13,7 @@ const HomeHeader = ({
   onCartPress,
   search,
   menu = true,
+  navigation,
 }: any) => {
   return (
     <View style={styles.headerContainer}>
@@ -23,7 +24,9 @@ const HomeHeader = ({
       ) : (
         <View />
       )}
-      <Image source={logoSource} style={styles.logo} resizeMode="contain" />
+      <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+        <Image source={logoSource} style={styles.logo} resizeMode="contain" />
+      </TouchableOpacity>
       <View style={styles.rightIcons}>
         {search && (
           <TouchableOpacity onPress={onSearchPress} style={styles.iconButton}>

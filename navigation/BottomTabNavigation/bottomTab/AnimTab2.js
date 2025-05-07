@@ -1,4 +1,4 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs"; // Changed import
 import React, { useEffect, useRef } from "react";
 import {
   SafeAreaView,
@@ -15,6 +15,7 @@ import { useTheme } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HomeScreen from "../../../Screens/UserScreens/HomeScreen";
 import MyCoursesScreen from "../../../Screens/UserScreens/MyCoursesScreen";
+import CommunityScreen from "../../../Screens/UserScreens/CommunityScreen";
 
 const TabArr = [
   {
@@ -36,11 +37,11 @@ const TabArr = [
     label: "Community",
     type: Icons.Feather,
     icon: "users",
-    component: HomeScreen,
+    component: CommunityScreen,
   },
 ];
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 const animate1 = {
   0: { scale: 0.5, translateY: 7 },
@@ -70,7 +71,7 @@ const TabButton = (props) => {
   const isDarkMode = useColorScheme() === "dark";
 
   const { colors } = useTheme();
-  const color = isDarkMode ? Colors.white : Colors.black;
+  const themeColor = isDarkMode ? Colors.white : Colors.black;
   const bgColor = colors.background;
 
   useEffect(() => {
@@ -96,7 +97,6 @@ const TabButton = (props) => {
           style={[
             styles.btn,
             { borderColor: bgColor, backgroundColor: bgColor },
-            Platform.OS === "ios" && { marginTop: 30 },
           ]}
         >
           <Animatable.View ref={circleRef} style={styles.circle} />
@@ -106,7 +106,10 @@ const TabButton = (props) => {
             color={focused ? Colors.white : Colors.primary}
           />
         </View>
-        <Animatable.Text ref={textRef} style={[styles.text, { color }]}>
+        <Animatable.Text
+          ref={textRef}
+          style={[styles.text, { color: themeColor }]}
+        >
           {item.label}
         </Animatable.Text>
       </Animatable.View>
@@ -114,46 +117,78 @@ const TabButton = (props) => {
   );
 };
 
-export default function AnimTab1() {
+const MyCustomTabBar = ({ state, descriptors, navigation }) => {
+  const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+
   return (
     <View
+      style={[
+        styles.tabBar,
+        {
+          backgroundColor: colors.card,
+          height: Platform.OS === "ios" ? 70 : insets.bottom + 70,
+        },
+      ]}
+    >
+      {state.routes.map((route, index) => {
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: "tabPress",
+            target: route.key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name, route.params);
+          }
+        };
+
+        const tabArrItem = TabArr.find((item) => item.route === route.name);
+        if (!tabArrItem) return null;
+        return (
+          <TabButton
+            key={index}
+            item={tabArrItem}
+            onPress={onPress}
+            accessibilityState={{ selected: isFocused }}
+          />
+        );
+      })}
+    </View>
+  );
+};
+
+export default function AnimTab1() {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <SafeAreaView
       style={{
         flex: 1,
         backgroundColor: "#FFF",
+        paddingTop: Platform.OS === "android" ? insets.top : 0,
       }}
     >
-      <SafeAreaView
-        style={{
-          flex: 1,
-          paddingTop: useSafeAreaInsets().top,
-        }}
+      <Tab.Navigator
+        tabBarPosition="bottom"
+        swipeEnabled={true}
+        animationEnabled={true}
+        tabBar={(props) => <MyCustomTabBar {...props} />}
       >
-        <Tab.Navigator
-          screenOptions={{
-            headerShown: false,
-            tabBarStyle: {
-              ...styles.tabBar,
-              height:
-                Platform.OS === "ios" ? 70 : 70 + useSafeAreaInsets().bottom,
-            },
-          }}
-        >
-          {TabArr.map((item, index) => {
-            return (
-              <Tab.Screen
-                key={index}
-                name={item.route}
-                component={item.component}
-                options={{
-                  tabBarShowLabel: false,
-                  tabBarButton: (props) => <TabButton {...props} item={item} />,
-                }}
-              />
-            );
-          })}
-        </Tab.Navigator>
-      </SafeAreaView>
-    </View>
+        {TabArr.map((item, index) => {
+          return (
+            <Tab.Screen
+              key={index}
+              name={item.route}
+              component={item.component}
+            />
+          );
+        })}
+      </Tab.Navigator>
+    </SafeAreaView>
   );
 }
 
@@ -163,17 +198,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  tabBar: {
-    height: 70,
-    position: "absolute",
-  },
   btn: {
     width: 50,
     height: 50,
     borderRadius: 25,
     borderWidth: 4,
-    borderColor: Colors.white,
-    backgroundColor: Colors.white,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -187,7 +216,14 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 12,
     textAlign: "center",
-    color: Colors.primary,
     fontWeight: "500",
+    marginTop: 5,
+  },
+  tabBar: {
+    flexDirection: "row",
+    elevation: 2,
+    shadowOffset: { width: 0, height: -1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
 });

@@ -21,7 +21,7 @@ const initialCartData = [
   {
     id: "cart1",
     title: "Introduction to Digital Marketing",
-    imageUrl: "https://via.placeholder.com/150x100/E6E6FA/000000?text=Course+A",
+    imageUrl: require("../../../assets/Images/dummy1.png"),
     rating: 4.0,
     ratingCount: 351,
     price: 999,
@@ -29,7 +29,7 @@ const initialCartData = [
   {
     id: "cart2",
     title: "Advanced Stock Trading Strategies for Experts and Beginners",
-    imageUrl: "https://via.placeholder.com/150x100/D8BFD8/000000?text=Course+B",
+    imageUrl: require("../../../assets/Images/dummy1.png"),
     rating: 4.8,
     ratingCount: 655,
     price: 999,
@@ -102,6 +102,7 @@ const CartScreen = ({ navigation }: any) => {
         onMenuPress={() => navigation.toggleDrawer()}
         onNotificationPress={() => console.log("Notifications pressed")}
         onCartPress={() => navigation.navigate("CartScreen")}
+        navigation={navigation}
       />
 
       <View style={styles.contentContainer}>
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    color: theme.colors.grey,
+    color: theme.colors.greyText,
     ...theme.font.fontRegular,
   },
   infoValue: {

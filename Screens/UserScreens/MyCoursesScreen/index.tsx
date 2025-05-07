@@ -84,6 +84,7 @@ const MyCoursesScreen = ({ navigation }: any) => {
         onMenuPress={navigation.toggleDrawer}
         onSearchPress={() => navigation.navigate("SearchCourseScreen")}
         onCartPress={() => navigation.navigate("CartScreen")}
+        navigation={navigation}
         search
       />
       <Text style={styles.screenTitle}>My Courses</Text>
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContentContainer: {
-    paddingBottom: 80,
+    paddingBottom: 30,
   },
   separator: {
     height: 1,

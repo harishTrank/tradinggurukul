@@ -95,6 +95,7 @@ const HomeScreen = ({ navigation }: any) => {
         onMenuPress={navigation.toggleDrawer}
         onSearchPress={() => console.log("Notifications pressed")}
         onCartPress={() => navigation.navigate("CartScreen")}
+        navigation={navigation}
       />
       <ScrollView
         style={styles.scrollView}
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: width * 0.04,
-    paddingBottom: 100,
+    paddingBottom: 20,
   },
   greetingContainer: {
     flexDirection: "row",

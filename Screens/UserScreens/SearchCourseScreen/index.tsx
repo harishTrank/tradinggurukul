@@ -170,6 +170,7 @@ const SearchCourseScreen = ({ navigation }: any) => {
         onMenuPress={() => navigation.toggleDrawer()}
         onSearchPress={() => console.log("Notifications pressed")}
         onCartPress={() => navigation.navigate("CartScreen")}
+        navigation={navigation}
         menu={false}
       />
 

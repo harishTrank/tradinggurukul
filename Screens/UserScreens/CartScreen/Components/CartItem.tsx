@@ -90,7 +90,7 @@ const CartItem: React.FC<CartItemProps> = ({
         onPress={() => onRemove(item.id)}
         style={styles.removeButton}
       >
-        <Feather name="trash-2" size={20} color={theme.colors.grey} />
+        <Feather name="trash-2" size={20} color={theme.colors.greyText} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 13,
-    color: theme.colors.grey,
+    color: theme.colors.greyText,
     ...theme.font.fontRegular,
     marginRight: 4,
   },
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   ratingCount: {
     fontSize: 13,
-    color: theme.colors.grey,
+    color: theme.colors.greyText,
     ...theme.font.fontRegular,
     marginLeft: 4,
   },

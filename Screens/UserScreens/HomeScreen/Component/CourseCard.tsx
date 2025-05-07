@@ -22,7 +22,7 @@ const CourseCard = ({ title, imageUrl, rating, ratingCount, onPress }: any) => {
 
     for (let i = 0; i < fullStars; i++)
       stars.push(
-        <Feather
+        <FontAwesome
           key={`full_${i}`}
           name="star"
           size={16}
