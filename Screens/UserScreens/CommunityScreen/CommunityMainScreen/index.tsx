@@ -37,7 +37,7 @@ const communityPostsData = [
 const CommunityMainScreen = ({ navigation }: any) => {
   const handleReadMore = (postId: string) => {
     console.log("Read More for Post:", postId);
-    navigation.navigate("ReadMoreScreen", { postId });
+    navigation.navigate("CommunityReadScreen", { postId });
   };
 
   const handlePostPress = (postId: string) => {
