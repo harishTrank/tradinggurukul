@@ -19,7 +19,7 @@ const UserScreens = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName={"StartScreen"}
+      initialRouteName={"DrawerNavigation"}
     >
       <Stack.Screen name="StartScreen" component={StartScreen} />
       <Stack.Screen name="LoginScreen" component={LoginScreen} />

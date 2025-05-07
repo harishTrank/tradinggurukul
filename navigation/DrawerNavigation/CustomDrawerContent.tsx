@@ -10,6 +10,7 @@ import {
 import Feather from "@expo/vector-icons/Feather";
 import theme from "../../utils/theme"; // Adjust path
 import DrUserHead from "../../Screens/Components/DrUserHead";
+import DrLoginHead from "../../Screens/Components/DrLoginHead";
 
 const drawerItems = [
   { label: "Home", iconName: "home", navigateTo: "Home" },
@@ -44,7 +45,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
 
   return (
     <>
-      <DrUserHead />
+      {false ? <DrUserHead /> : <DrLoginHead navigation={navigation} />}
       <SafeAreaView style={styles.safeArea}>
         <DrawerContentScrollView
           {...props}

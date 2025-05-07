@@ -29,7 +29,7 @@ const StartScreen = ({ navigation }: any) => {
         animated: true,
       });
     } else {
-      navigation.navigate("LoginScreen");
+      navigation.replace("LoginScreen");
     }
   };
 
@@ -47,10 +47,7 @@ const StartScreen = ({ navigation }: any) => {
         renderItem={({ item, index }) => {
           return (
             <View>
-              <Image
-                source={item.name}
-                style={{ height: "100%", width: "100%" }}
-              />
+              <Image source={item.name} style={{ height: "100%", width }} />
               <TouchableOpacity
                 onPress={() => changeSlideHandler(index)}
                 style={styles.touchBtn}
@@ -94,7 +91,7 @@ const StartScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   flatList: {
     flex: 1,
-    backgroundColor: theme.colors.black,
+    backgroundColor: theme.colors.primary,
   },
   touchBtn: {
     position: "absolute",
