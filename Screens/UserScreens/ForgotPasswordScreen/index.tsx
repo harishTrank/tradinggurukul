@@ -17,6 +17,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import theme from "../../../utils/theme";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { height, width } = Dimensions.get("window");
 
@@ -47,7 +48,12 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        Platform.OS === "android" && { paddingTop: useSafeAreaInsets().top },
+      ]}
+    >
       <StatusBar style="dark" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}

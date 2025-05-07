@@ -8,13 +8,14 @@ const DrUserHead = ({ navigation }: any) => {
     <View style={styles.viewBox}>
       <TouchableOpacity
         onPress={() => navigation.navigate("EditProfileScreen")}
+        style={styles.touchableStyle}
       >
         <Image
           style={styles.profile}
           source={require("../../assets/Images/dummy1.png")}
         />
+        <Text style={styles.userName}>Sophia Grace Bennett</Text>
       </TouchableOpacity>
-      <Text style={styles.userName}>Sophia Grace Bennett</Text>
     </View>
   );
 };
@@ -24,6 +25,10 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "28%",
     backgroundColor: theme.colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  touchableStyle: {
     alignItems: "center",
     justifyContent: "center",
   },

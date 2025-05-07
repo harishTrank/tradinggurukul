@@ -19,7 +19,7 @@ const theme = {
     grey: "#bdbdbd",
     lightGrey: "#F3F3F3",
     violet: "#30336B",
-    orange: "#F4C724",
+    warning: "#F4C724",
     skyBlue: "#01CBC6",
     pink: "#E74292",
     border: "#D0D4CA",

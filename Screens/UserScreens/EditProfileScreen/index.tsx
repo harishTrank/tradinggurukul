@@ -20,6 +20,7 @@ import * as Yup from "yup";
 
 import Icon from "react-native-vector-icons/Feather";
 import theme from "../../../utils/theme"; // Adjusted path
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const initialUserData = {
   firstName: "Sophia",
@@ -78,7 +79,12 @@ const EditProfileScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        Platform.OS === "android" && { paddingTop: useSafeAreaInsets().top },
+      ]}
+    >
       <StatusBar style="dark" />
 
       <View style={styles.header}>

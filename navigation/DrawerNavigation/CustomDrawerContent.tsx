@@ -14,7 +14,7 @@ import DrLoginHead from "../../Screens/Components/DrLoginHead";
 
 const drawerItems = [
   { label: "Home", iconName: "home", navigateTo: "Home" },
-  { label: "Courses", iconName: "book-open", navigateTo: "Courses" },
+  { label: "All Courses", iconName: "book-open", navigateTo: "AllCourses" },
   { label: "Blog", iconName: "edit-3", navigateTo: "Blog" },
   { label: "About Us", iconName: "info", navigateTo: "AboutUs" },
   { label: "Privacy Policy", iconName: "shield", navigateTo: "PrivacyPolicy" },
