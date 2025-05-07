@@ -20,6 +20,7 @@ const theme = {
     lightGrey: "#F3F3F3",
     violet: "#30336B",
     warning: "#F4C724",
+    orange: "#F4C724",
     skyBlue: "#01CBC6",
     pink: "#E74292",
     border: "#D0D4CA",

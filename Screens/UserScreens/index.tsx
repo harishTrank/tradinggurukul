@@ -12,6 +12,7 @@ import MyCoursesScreen from "./MyCoursesScreen";
 import SearchCourseScreen from "./SearchCourseScreen";
 import CartScreen from "./CartScreen";
 import EditProfileScreen from "./EditProfileScreen";
+import ViewCourseScreen from "./ViewCourseScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -40,6 +41,7 @@ const UserScreens = () => {
       <Stack.Screen name="SearchCourseScreen" component={SearchCourseScreen} />
       <Stack.Screen name="CartScreen" component={CartScreen} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+      {/* <Stack.Screen name="ViewCourseScreen" component={ViewCourseScreen} /> */}
     </Stack.Navigator>
   );
 };
