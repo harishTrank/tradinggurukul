@@ -59,7 +59,7 @@ const myCoursesData = [
 const MyCoursesScreen = ({ navigation }: any) => {
   const handleCoursePress = (courseId: string) => {
     console.log("Navigate to Course Details:", courseId);
-    // navigation.navigate('CourseDetailScreen', { courseId });
+    navigation.navigate("ViewCourseScreen", { courseId: "courseCrypto101" });
   };
 
   const handlePlayPress = (courseId: string) => {
