@@ -2,8 +2,8 @@ import React from "react";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import theme from "../../../../utils/theme";
-import ImageModule from "../../../../ImageModule";
+import theme from "../../utils/theme";
+import ImageModule from "../../ImageModule";
 
 const logoSource = ImageModule.appIcon;
 

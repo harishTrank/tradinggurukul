@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Feather from "@expo/vector-icons/Feather";
-import HomeHeader from "../HomeScreen/Component/HomeHeader";
+import HomeHeader from "../../Components/HomeHeader";
 import theme from "../../../utils/theme";
 import CategoryCard from "./Component/CategoryCard";
 import SearchResultCard from "./Component/SearchResultCard";
@@ -169,7 +169,7 @@ const SearchCourseScreen = ({ navigation }: any) => {
       <HomeHeader
         onMenuPress={() => navigation.toggleDrawer()}
         onSearchPress={() => console.log("Notifications pressed")}
-        onCartPress={() => console.log("Cart pressed")}
+        onCartPress={() => navigation.navigate("CartScreen")}
         menu={false}
       />
 

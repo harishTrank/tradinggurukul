@@ -10,6 +10,7 @@ import ResetPasswordScreen from "./ResetPasswordScreen";
 import OTPScreen from "./OTPScreen";
 import MyCoursesScreen from "./MyCoursesScreen";
 import SearchCourseScreen from "./SearchCourseScreen";
+import CartScreen from "./CartScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -36,6 +37,7 @@ const UserScreens = () => {
       <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
       <Stack.Screen name="MyCoursesScreen" component={MyCoursesScreen} />
       <Stack.Screen name="SearchCourseScreen" component={SearchCourseScreen} />
+      <Stack.Screen name="CartScreen" component={CartScreen} />
     </Stack.Navigator>
   );
 };

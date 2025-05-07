@@ -10,7 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import HomeHeader from "./Component/HomeHeader";
+import HomeHeader from "../../Components/HomeHeader";
 import SearchBar from "./Component/SearchBar";
 import ImageSlider from "./Component/ImageSlider";
 import SectionHeader from "./Component/SectionHeader";
@@ -94,7 +94,7 @@ const HomeScreen = ({ navigation }: any) => {
       <HomeHeader
         onMenuPress={navigation.toggleDrawer}
         onSearchPress={() => console.log("Notifications pressed")}
-        onCartPress={() => console.log("Cart pressed")}
+        onCartPress={() => navigation.navigate("CartScreen")}
       />
       <ScrollView
         style={styles.scrollView}

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import theme from "../../../../utils/theme";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const { width } = Dimensions.get("window");
 
@@ -30,13 +31,18 @@ const CourseCard = ({ title, imageUrl, rating, ratingCount, onPress }: any) => {
       );
     if (halfStar)
       stars.push(
-        <Feather key="half" name="star" size={16} color={theme.colors.orange} />
+        <FontAwesome
+          key="half"
+          name="star-half-empty"
+          size={16}
+          color={theme.colors.orange}
+        />
       );
     for (let i = 0; i < emptyStars; i++)
       stars.push(
-        <Feather
+        <FontAwesome
           key={`empty_${i}`}
-          name="star"
+          name="star-o"
           size={16}
           color={theme.colors.lightGrey}
         />

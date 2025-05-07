@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   userIcon: {
     height: 40,
     width: 40,
-    marginRight: 20,
+    marginRight: 10,
   },
   btnBox: {
     backgroundColor: theme.colors.white,

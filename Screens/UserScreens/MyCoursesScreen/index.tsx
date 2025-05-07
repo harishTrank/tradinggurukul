@@ -1,7 +1,7 @@
 import React from "react";
 import { SafeAreaView, StyleSheet, FlatList, View, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import HomeHeader from "../HomeScreen/Component/HomeHeader";
+import HomeHeader from "../../Components/HomeHeader";
 import theme from "../../../utils/theme";
 import MyCourseListItem from "./Components/MyCourseListItem";
 
@@ -83,7 +83,7 @@ const MyCoursesScreen = ({ navigation }: any) => {
       <HomeHeader
         onMenuPress={navigation.toggleDrawer}
         onSearchPress={() => navigation.navigate("SearchCourseScreen")}
-        onCartPress={() => console.log("Cart pressed")}
+        onCartPress={() => navigation.navigate("CartScreen")}
         search
       />
       <Text style={styles.screenTitle}>My Courses</Text>
