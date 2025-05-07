@@ -91,7 +91,7 @@ const AllCoursesScreen = () => {
 
   const handleCoursePress = (courseId: string) => {
     console.log("Course pressed:", courseId);
-    // navigation.navigate('CourseDetailScreen', { courseId }); // Example navigation
+    navigation.navigate("ViewCourseScreen", { courseId: "courseMarketing202" }); // Example navigation
   };
 
   const renderCourseItem = ({ item }: { item: Course }) => (

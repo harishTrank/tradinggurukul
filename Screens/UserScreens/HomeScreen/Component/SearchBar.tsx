@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#E8F7EB",
     borderRadius: 10,
-    paddingHorizontal: 15,
-    paddingVertical: Platform.OS === "ios" ? 15 : 10,
+    paddingHorizontal: 10,
+    paddingVertical: Platform.OS === "ios" ? 15 : 5,
     marginVertical: 15,
   },
   searchInput: {

@@ -1,5 +1,5 @@
 // Screens/UserScreens/ViewCourseScreen.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react"; // Added useMemo
 import {
   SafeAreaView,
   StyleSheet,
@@ -15,10 +15,9 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // For meta icons
-import FeatherIcon from "react-native-vector-icons/Feather"; // For back arrow
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import FeatherIcon from "react-native-vector-icons/Feather";
 
-// Adjust paths as needed
 import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -28,9 +27,7 @@ import {
 } from "./Components/courseDetailsData";
 import LessonListItem from "./Components/LessonListItem";
 
-// Define your Stack Param List
 type RootStackParamList = {
-  // ... other screens
   ViewCourseScreen: { courseId: string };
 };
 
@@ -46,7 +43,7 @@ type ViewCourseScreenNavigationProp = StackNavigationProp<
 const ViewCourseScreen = () => {
   const route = useRoute<ViewCourseScreenRouteProp>();
   const navigation = useNavigation<ViewCourseScreenNavigationProp>();
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets(); // Call hook at the top level
   const { courseId } = route.params;
 
   const [course, setCourse] = useState<CourseDetail | null>(null);
@@ -56,7 +53,6 @@ const ViewCourseScreen = () => {
     const foundCourse = allCourseDetailsData.find((c) => c.id === courseId);
     if (foundCourse) {
       setCourse(foundCourse);
-      // Simulate checking if the course is purchased
       setIsPurchased(
         MOCK_PURCHASED_COURSE_IDS.includes(foundCourse.id) &&
           !!foundCourse.lessons
@@ -88,9 +84,17 @@ const ViewCourseScreen = () => {
     </View>
   );
 
+  // Dynamically create bottomBar style using insets
+  const bottomBarStyle = useMemo(
+    () => ({
+      ...styles.bottomBarBase, // Use a base style object
+      paddingBottom: Platform.OS === "ios" ? insets.bottom || 15 : 15,
+    }),
+    [insets.bottom]
+  );
+
   if (!course) {
     return (
-      // Loading state or handle error
       <SafeAreaView
         style={[
           styles.safeArea,
@@ -105,12 +109,18 @@ const ViewCourseScreen = () => {
     );
   }
 
-  // NOT PURCHASED VIEW
   const renderNotPurchasedView = () => (
     <>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContentContainer}
+        contentContainerStyle={[
+          styles.scrollContentContainer,
+          // Add padding to scroll content to avoid overlap with dynamic bottom bar
+          {
+            paddingBottom:
+              Platform.OS === "ios" ? (insets.bottom || 15) + 65 : 65,
+          },
+        ]}
       >
         <View style={styles.videoPreviewContainer}>
           <Image
@@ -166,7 +176,8 @@ const ViewCourseScreen = () => {
           <Text style={styles.aboutCourseText}>{course.aboutCourse}</Text>
         </View>
       </ScrollView>
-      <View style={styles.bottomBar}>
+      {/* Apply the dynamic style here */}
+      <View style={bottomBarStyle}>
         <Text style={styles.priceText}>{course.price}</Text>
         <TouchableOpacity
           style={styles.addToCartButton}
@@ -178,7 +189,6 @@ const ViewCourseScreen = () => {
     </>
   );
 
-  // PURCHASED VIEW (Lesson List)
   const renderPurchasedView = () => (
     <>
       <View style={styles.contentPaddingPurchased}>
@@ -195,6 +205,7 @@ const ViewCourseScreen = () => {
             No lessons available for this course.
           </Text>
         }
+        contentContainerStyle={{ paddingBottom: insets.bottom || 10 }}
       />
     </>
   );
@@ -229,7 +240,7 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: 5,
-    width: 30, // For consistent spacing
+    width: 30,
   },
   headerTitle: {
     fontSize: 18,
@@ -247,12 +258,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContentContainer: {
-    paddingBottom: 80, // Space for the fixed bottom bar
+    // paddingBottom is now dynamically added in renderNotPurchasedView if bottom bar is present
+    // Default paddingBottom if needed for general spacing
+    // paddingBottom: 20,
   },
   videoPreviewContainer: {
     width: "100%",
-    height: 220, // Adjust as needed
-    backgroundColor: theme.colors.black, // Fallback if image doesn't load
+    height: 220,
+    backgroundColor: theme.colors.black,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -289,7 +302,7 @@ const styles = StyleSheet.create({
   metaItem: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1, // Distribute space if needed, or set fixed width
+    flex: 1,
   },
   metaText: {
     ...theme.font.fontRegular,
@@ -317,7 +330,8 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     lineHeight: 22,
   },
-  bottomBar: {
+  // Renamed to bottomBarBase for the static parts
+  bottomBarBase: {
     position: "absolute",
     bottom: 0,
     left: 0,
@@ -327,12 +341,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    paddingBottom:
-      Platform.OS === "ios" ? useSafeAreaInsets().bottom || 15 : 15, // Handle iOS bottom notch
+    // paddingBottom is now dynamic via bottomBarStyle
     backgroundColor: theme.colors.white,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border || "#DDD",
-    elevation: 5, // Android shadow
+    elevation: 5,
   },
   priceText: {
     fontSize: 20,
