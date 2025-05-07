@@ -53,7 +53,7 @@ const LoginScreen = ({ navigation }: any) => {
   };
 
   const handleRegister = () => {
-    navigation.replace("RegisterScreen");
+    navigation.navigate("RegisterScreen");
   };
 
   return (
@@ -153,6 +153,13 @@ const LoginScreen = ({ navigation }: any) => {
                 disabled={isSubmitting}
               >
                 <Text style={styles.forgotPasswordText}>Forgot password</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.forgotPasswordButton}
+                onPress={() => navigation.navigate("DrawerNavigation")}
+                >
+                  <Text style={styles.forgotPasswordText}>{"Skip >"}</Text>
               </TouchableOpacity>
 
               <View style={styles.footer}>
