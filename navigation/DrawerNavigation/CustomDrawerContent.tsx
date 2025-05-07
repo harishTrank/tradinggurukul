@@ -45,7 +45,11 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
 
   return (
     <>
-      {false ? <DrUserHead /> : <DrLoginHead navigation={navigation} />}
+      {true ? (
+        <DrUserHead navigation={navigation} />
+      ) : (
+        <DrLoginHead navigation={navigation} />
+      )}
       <SafeAreaView style={styles.safeArea}>
         <DrawerContentScrollView
           {...props}

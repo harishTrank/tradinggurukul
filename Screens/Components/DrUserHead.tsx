@@ -1,14 +1,19 @@
 import React from "react";
 import { Image, View, StyleSheet, Text } from "react-native";
 import theme from "../../utils/theme";
+import { TouchableOpacity } from "react-native";
 
-const DrUserHead = () => {
+const DrUserHead = ({ navigation }: any) => {
   return (
     <View style={styles.viewBox}>
-      <Image
-        style={styles.profile}
-        source={require("../../assets/Images/dummy1.png")}
-      />
+      <TouchableOpacity
+        onPress={() => navigation.navigate("EditProfileScreen")}
+      >
+        <Image
+          style={styles.profile}
+          source={require("../../assets/Images/dummy1.png")}
+        />
+      </TouchableOpacity>
       <Text style={styles.userName}>Sophia Grace Bennett</Text>
     </View>
   );

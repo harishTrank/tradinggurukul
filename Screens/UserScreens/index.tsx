@@ -11,6 +11,7 @@ import OTPScreen from "./OTPScreen";
 import MyCoursesScreen from "./MyCoursesScreen";
 import SearchCourseScreen from "./SearchCourseScreen";
 import CartScreen from "./CartScreen";
+import EditProfileScreen from "./EditProfileScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -38,6 +39,7 @@ const UserScreens = () => {
       <Stack.Screen name="MyCoursesScreen" component={MyCoursesScreen} />
       <Stack.Screen name="SearchCourseScreen" component={SearchCourseScreen} />
       <Stack.Screen name="CartScreen" component={CartScreen} />
+      <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
     </Stack.Navigator>
   );
 };
