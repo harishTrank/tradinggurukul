@@ -2,12 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Axios from "axios";
 import queryString from "querystring";
 import { Alert } from "react-native";
+export const main_domain = "https://wordbackend.tranktechnologies.com";
 
 export const hostname = () => {
-  // let hostUrl = "http://192.168.0.16:8000/api";
-  let hostUrl = "https://thetradewing.com/api";
-  // let hostUrl = "http://13.234.111.203:8000/api";
-  // let hostUrl = "http://localhost:8000/api";
+  let hostUrl = `${main_domain}/wp-json/wc/v2`;
 
   return hostUrl;
 };
