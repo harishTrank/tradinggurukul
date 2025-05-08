@@ -1,7 +1,7 @@
 import React from "react";
 import {
   View,
-  TextInput,
+  Text,
   StyleSheet,
   TouchableOpacity,
   Platform,
@@ -9,20 +9,28 @@ import {
 import Feather from "@expo/vector-icons/Feather";
 import theme from "../../../../utils/theme";
 
-const SearchBar = ({ value, onChangeText, placeholder }: any) => {
+interface SearchBarLookalikeProps {
+  onPress: () => void;
+  placeholder?: string;
+}
+
+const SearchBarLookalike = ({
+  onPress,
+  placeholder,
+}: SearchBarLookalikeProps) => {
   return (
-    <View style={styles.searchContainer}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder={placeholder || "Search..."}
-        placeholderTextColor={theme.colors.greyText}
-        value={value}
-        onChangeText={onChangeText}
-      />
-      <TouchableOpacity style={styles.searchIcon}>
+    <TouchableOpacity
+      style={styles.searchContainer}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <Text style={[styles.placeholderText]} numberOfLines={1}>
+        {placeholder || "Search..."}
+      </Text>
+      <View style={styles.searchIconContainer}>
         <Feather name="search" size={22} color={theme.colors.greyText} />
-      </TouchableOpacity>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -32,18 +40,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#E8F7EB",
     borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: Platform.OS === "ios" ? 15 : 5,
+    paddingHorizontal: 15,
+    paddingVertical: Platform.OS === "ios" ? 12 : 10,
     marginVertical: 15,
+    elevation: 2,
+    shadowColor: theme.colors.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 1.5,
   },
-  searchInput: {
+  placeholderText: {
     flex: 1,
     fontSize: 16,
-    color: theme.colors.black,
+    color: theme.colors.greyText,
     ...theme.font.fontRegular,
     marginRight: 10,
   },
-  searchIcon: {},
+  searchIconContainer: {},
 });
 
-export default SearchBar;
+export default SearchBarLookalike;

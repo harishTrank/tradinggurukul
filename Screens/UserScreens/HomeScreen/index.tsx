@@ -20,43 +20,13 @@ import CourseCard from "./Component/CourseCard";
 import theme from "../../../utils/theme";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
-import { useBannersCall } from "../../../hooks/Others/query";
+import {
+  useBannersCall,
+  useGetCategoryCall,
+} from "../../../hooks/Others/query";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 
 const { width } = Dimensions.get("window");
-
-const sliderData = [
-  {
-    id: "1",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "2",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "3",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-];
-
-const popularCategories = [
-  {
-    id: "cat1",
-    title: "Stock Analysis",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "cat2",
-    title: "Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "cat3",
-    title: "Design",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-];
 
 const mostWatching = [
   {
@@ -83,12 +53,13 @@ const mostWatching = [
 ];
 
 const HomeScreen = ({ navigation }: any) => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const bannersApi: any = useBannersCall();
+  const categoriesApi: any = useGetCategoryCall();
 
   const handleSeeMore = (section: string) => {
     console.log(`See More pressed for: ${section}`);
+    navigation.navigate("SearchCourseScreen");
   };
 
   const handleCardPress = (item: any) => {
@@ -127,8 +98,7 @@ const HomeScreen = ({ navigation }: any) => {
         {/* --- Search Bar --- */}
         <SearchBar
           placeholder="Search..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
+          onPress={() => navigation.navigate("SearchCourseScreen")}
         />
 
         {/* --- Image Slider --- */}
@@ -140,11 +110,11 @@ const HomeScreen = ({ navigation }: any) => {
           onSeeMore={() => handleSeeMore("Popular")}
         />
         <FlatList
-          data={popularCategories}
+          data={categoriesApi?.data || []}
           renderItem={({ item }) => (
             <CategoryCard
-              title={item.title}
-              imageUrl={item.imageUrl}
+              title={item?.name}
+              imageUrl={item?.image?.src}
               onPress={() => handleCardPress(item)}
             />
           )}

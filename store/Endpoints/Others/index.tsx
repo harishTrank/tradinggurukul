@@ -8,4 +8,11 @@ export const othersEndpoints = {
       uri: "/layout",
     },
   },
+  getCategory: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/products/all-categories",
+    },
+  },
 };

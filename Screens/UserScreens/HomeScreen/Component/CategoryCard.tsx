@@ -4,20 +4,35 @@ import {
   TouchableOpacity,
   StyleSheet,
   ImageBackground,
-  View,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import theme from "../../../../utils/theme";
 
-const CategoryCard = ({ title, imageUrl, onPress }: any) => {
+interface CategoryCardProps {
+  title: string;
+  imageUrl: string;
+  onPress: () => void;
+}
+
+const CategoryCard = ({ title, imageUrl, onPress }: CategoryCardProps) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.card}>
+    <TouchableOpacity onPress={onPress} style={styles.card} activeOpacity={0.8}>
       <ImageBackground
-        source={imageUrl}
-        style={styles.imageBackground}
-        imageStyle={styles.imageStyle}
+        source={{ uri: imageUrl }}
+        style={styles.imageBackgroundWrapper}
+        imageStyle={styles.backgroundImageStyle}
+        resizeMode="cover"
       >
-        <View style={styles.overlay} />
-        <Text style={styles.title}>{title}</Text>
+        <LinearGradient
+          colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.6)", "rgba(0,0,0,0.8)"]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.gradientOverlay}
+        >
+          <Text style={styles.titleText} numberOfLines={2} ellipsizeMode="tail">
+            {title}
+          </Text>
+        </LinearGradient>
       </ImageBackground>
     </TouchableOpacity>
   );
@@ -25,31 +40,35 @@ const CategoryCard = ({ title, imageUrl, onPress }: any) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 150, // Adjust width
-    height: 130, // Adjust height
-    borderRadius: 10,
+    width: 150,
+    height: 130,
+    borderRadius: 12,
     overflow: "hidden",
-    marginRight: 15, // Space between cards
+    marginRight: 15,
+    backgroundColor: theme.colors.lightGrey || "#E0E0E0",
+    elevation: 3,
+    shadowColor: theme.colors.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 2.5,
   },
-  imageBackground: {
+  imageBackgroundWrapper: {
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
   },
-  imageStyle: {
-    borderRadius: 10,
+  backgroundImageStyle: {},
+  gradientOverlay: {
+    width: "100%",
+    paddingHorizontal: 8,
+    paddingTop: 15,
+    paddingBottom: 8,
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    borderRadius: 10,
-  },
-  title: {
-    fontSize: 18,
+  titleText: {
+    fontSize: 15,
     color: theme.colors.white,
-    ...theme.font.fontMedium,
+    ...theme.font.fontSemiBold,
     textAlign: "center",
-    marginBottom: 10,
   },
 });
 
