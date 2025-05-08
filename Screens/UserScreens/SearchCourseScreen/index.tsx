@@ -19,6 +19,7 @@ import CategoryCard from "./Component/CategoryCard";
 import SearchResultCard from "./Component/SearchResultCard";
 import FilterModal from "./Component/FilterModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useGetCategoryCall } from "../../../hooks/Others/query";
 
 const topSearchesData = [
   "Stock Analysis",
@@ -101,6 +102,7 @@ const SearchCourseScreen = ({ navigation }: any) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchState, setSearchState] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const categoriesApi: any = useGetCategoryCall();
   const [currentFilters, setCurrentFilters] = useState({
     sortBy: "free",
     level: null,
@@ -128,15 +130,11 @@ const SearchCourseScreen = ({ navigation }: any) => {
     console.log("Category Pressed:", categoryTitle);
   };
 
-  const renderCategoryItem = ({
-    item,
-  }: {
-    item: (typeof categoriesData)[0];
-  }) => (
+  const renderCategoryItem = ({ item }: any) => (
     <View style={styles.categoryItemContainer}>
       <CategoryCard
-        title={item.title}
-        imageUrl={item.imageUrl}
+        title={item.name}
+        imageUrl={item?.image?.src}
         onPress={() => handleCategoryPress(item.id, item.title)}
       />
     </View>
@@ -220,9 +218,9 @@ const SearchCourseScreen = ({ navigation }: any) => {
 
           <Text style={styles.sectionTitle}>Categories</Text>
           <FlatList
-            data={categoriesData}
+            data={categoriesApi?.data || []}
             renderItem={renderCategoryItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item: any, index: any) => index}
             numColumns={2}
             scrollEnabled={false}
             columnWrapperStyle={styles.categoryRow}

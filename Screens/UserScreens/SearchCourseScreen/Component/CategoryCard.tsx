@@ -10,6 +10,7 @@ import {
   Dimensions,
 } from "react-native";
 import theme from "../../../../utils/theme";
+import { LinearGradient } from "expo-linear-gradient";
 
 const { width } = Dimensions.get("window");
 
@@ -43,13 +44,19 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
       activeOpacity={0.8}
     >
       <ImageBackground
-        source={imageUrl}
+        source={{ uri: imageUrl }}
         style={styles.imageBackground}
         imageStyle={styles.imageStyle}
         resizeMode="cover"
       >
-        <View style={styles.overlay} />
-        <Text style={styles.title}>{title}</Text>
+        <LinearGradient
+          colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.6)", "rgba(0,0,0,0.8)"]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.gradientOverlay}
+        >
+          <Text style={styles.title}>{title}</Text>
+        </LinearGradient>
       </ImageBackground>
     </TouchableOpacity>
   );
@@ -61,18 +68,19 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: theme.colors.lightGrey,
   },
+  gradientOverlay: {
+    width: "100%",
+    paddingHorizontal: 8,
+    paddingTop: 15,
+    paddingBottom: 8,
+  },
   imageBackground: {
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
-    paddingBottom: 10,
   },
   imageStyle: {},
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
-    borderRadius: 10,
-  },
+
   title: {
     fontSize: 16,
     color: theme.colors.white,
