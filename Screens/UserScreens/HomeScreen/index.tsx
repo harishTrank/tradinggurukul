@@ -20,6 +20,8 @@ import CourseCard from "./Component/CourseCard";
 import theme from "../../../utils/theme";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
+import { useBannersCall } from "../../../hooks/Others/query";
+import FullScreenLoader from "../../Components/FullScreenLoader";
 
 const { width } = Dimensions.get("window");
 
@@ -83,6 +85,7 @@ const mostWatching = [
 const HomeScreen = ({ navigation }: any) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [userDetails]: any = useAtom(userDetailsGlobal);
+  const bannersApi: any = useBannersCall();
 
   const handleSeeMore = (section: string) => {
     console.log(`See More pressed for: ${section}`);
@@ -95,6 +98,7 @@ const HomeScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
+      {bannersApi?.isLoading && <FullScreenLoader />}
       <HomeHeader
         onMenuPress={navigation.toggleDrawer}
         onSearchPress={() => console.log("Notifications pressed")}
@@ -128,7 +132,7 @@ const HomeScreen = ({ navigation }: any) => {
         />
 
         {/* --- Image Slider --- */}
-        <ImageSlider data={sliderData} />
+        <ImageSlider data={bannersApi?.data?.banner} />
 
         {/* --- Popular Categories --- */}
         <SectionHeader

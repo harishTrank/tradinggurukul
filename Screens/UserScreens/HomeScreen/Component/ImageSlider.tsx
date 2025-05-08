@@ -5,7 +5,7 @@ import theme from "../../../../utils/theme";
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = width * 0.92;
 
-const ImageSlider = ({ data }: { data: any[] }) => {
+const ImageSlider = ({ data }: any) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
@@ -21,7 +21,11 @@ const ImageSlider = ({ data }: { data: any[] }) => {
 
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.slide}>
-      <Image source={item.imageUrl} style={styles.image} resizeMode="cover" />
+      <Image
+        source={{ uri: item?.banner_url }}
+        style={styles.image}
+        resizeMode="cover"
+      />
     </View>
   );
 
@@ -31,7 +35,7 @@ const ImageSlider = ({ data }: { data: any[] }) => {
         ref={flatListRef}
         data={data}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(_: any, index: any) => index}
         horizontal
         showsHorizontalScrollIndicator={false}
         pagingEnabled
@@ -44,7 +48,7 @@ const ImageSlider = ({ data }: { data: any[] }) => {
         style={styles.flatList}
       />
       <View style={styles.pagination}>
-        {data.map((_, index) => (
+        {data?.map((_: any, index: any) => (
           <View
             key={index}
             style={[
