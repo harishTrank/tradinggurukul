@@ -126,7 +126,7 @@ const HomeScreen = ({ navigation }: any) => {
 
         {/* --- Search Bar --- */}
         <SearchBar
-          placeholder="Digital Marketing"
+          placeholder="Search..."
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
@@ -136,7 +136,7 @@ const HomeScreen = ({ navigation }: any) => {
 
         {/* --- Popular Categories --- */}
         <SectionHeader
-          title="Popular category our in platform"
+          title={`Popular category`}
           onSeeMore={() => handleSeeMore("Popular")}
         />
         <FlatList
@@ -155,11 +155,11 @@ const HomeScreen = ({ navigation }: any) => {
         />
 
         {/* --- Trial Banner --- */}
-        <TrialBanner onPress={() => console.log("Get free trial pressed")} />
+        {/* <TrialBanner onPress={() => console.log("Get free trial pressed")} /> */}
 
         {/* --- Most Watching --- */}
         <SectionHeader
-          title="Most watching category in month"
+          title="Top Searches"
           onSeeMore={() => handleSeeMore("Most Watching")}
         />
         <FlatList
