@@ -1,11 +1,17 @@
 import React, { useEffect } from "react";
 import { View, Image } from "react-native";
 import ImageModule from "../../ImageModule";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SplashScreen = ({ navigation }: any) => {
   useEffect(() => {
     setTimeout(async () => {
-      navigation?.replace("UserScreens");
+      const loginFlag: any = await AsyncStorage.getItem("loginFlag");
+      if (loginFlag && loginFlag === "true") {
+        navigation?.replace("DrawerNavigation");
+      } else {
+        navigation?.replace("StartScreen");
+      }
     }, 500);
   }, []);
 

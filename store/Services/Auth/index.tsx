@@ -7,8 +7,9 @@ export const loginApiCall = ({ body }: any) =>
     body,
   });
 
-export const changePassword = ({ body }: any) =>
+export const registerUser = ({ body }: any) =>
   callApi({
-    uriEndPoint: authEndpoints.changePassword.v1,
+    uriEndPoint: authEndpoints.registerUser.v1,
     body,
+    multipart: true,
   });

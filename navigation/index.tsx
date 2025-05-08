@@ -27,11 +27,11 @@ export default function Navigation() {
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={navigationComponents.cardStyle}>
-      <Stack.Screen
+      {/* <Stack.Screen
         name="SplashScreen"
         component={SplashScreen}
         options={{ headerShown: false }}
-      />
+      /> */}
 
       <Stack.Screen
         name="UserScreens"

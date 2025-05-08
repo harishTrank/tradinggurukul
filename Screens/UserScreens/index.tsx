@@ -13,6 +13,7 @@ import SearchCourseScreen from "./SearchCourseScreen";
 import CartScreen from "./CartScreen";
 import EditProfileScreen from "./EditProfileScreen";
 import ViewCourseScreen from "./ViewCourseScreen";
+import SplashScreen from "../SplashScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -22,9 +23,10 @@ const UserScreens = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName={"StartScreen"}
+      initialRouteName={"SplashScreen"}
     >
       <Stack.Screen name="StartScreen" component={StartScreen} />
+      <Stack.Screen name="SplashScreen" component={SplashScreen} />
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
       <Stack.Screen name="OTPScreen" component={OTPScreen} />

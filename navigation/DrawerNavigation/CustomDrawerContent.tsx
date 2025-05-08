@@ -1,6 +1,6 @@
 // components/CustomDrawerContent.tsx (or your chosen path)
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, SafeAreaView, Alert } from "react-native";
 import {
   DrawerContentComponentProps,
@@ -11,6 +11,7 @@ import Feather from "@expo/vector-icons/Feather";
 import theme from "../../utils/theme"; // Adjust path
 import DrUserHead from "../../Screens/Components/DrUserHead";
 import DrLoginHead from "../../Screens/Components/DrLoginHead";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const drawerItems = [
   { label: "Home", iconName: "home", navigateTo: "Home" },
@@ -23,17 +24,31 @@ const drawerItems = [
 ];
 
 export function CustomDrawerContent(props: DrawerContentComponentProps) {
-  const { navigation, state } = props;
+  const { navigation, state }: any = props;
   const focusedRouteKey = state.routes[state.index]?.key;
-  const isLoginFlag = true;
+  const [isLoginFlag, setIsLoginFlag]: any = useState(false);
+
+  const loginFlagManager = async () => {
+    const loginFlagChecker = await AsyncStorage.getItem("loginFlag");
+    if (loginFlagChecker === "true") {
+      setIsLoginFlag(true);
+    } else {
+      setIsLoginFlag(false);
+    }
+  };
+  useEffect(() => {
+    return navigation.addListener("focus", () => {
+      loginFlagManager();
+    });
+  }, [navigation]);
 
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
       { text: "Cancel", style: "cancel" },
       {
         text: "OK",
-        onPress: () => {
-          console.log("Logging out...");
+        onPress: async () => {
+          await AsyncStorage.clear();
           navigation.closeDrawer();
           navigation.reset({
             index: 0,
@@ -59,8 +74,9 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
           <View style={styles.itemListContainer}>
             {drawerItems.map((item, index) => {
               const isFocused =
-                state.routes.find((route) => route.name === item.navigateTo)
-                  ?.key === focusedRouteKey;
+                state.routes.find(
+                  (route: any) => route.name === item.navigateTo
+                )?.key === focusedRouteKey;
 
               return (
                 <>

@@ -18,6 +18,9 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRegisterUser } from "../../../hooks/Auth/mutation";
+import Toast from "react-native-toast-message";
+import FullScreenLoader from "../../Components/FullScreenLoader";
 
 const { height, width } = Dimensions.get("window");
 
@@ -45,6 +48,8 @@ const RegisterScreen = ({ navigation }: any) => {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
 
+  const registerUserApiCall: any = useRegisterUser();
+
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
@@ -57,17 +62,41 @@ const RegisterScreen = ({ navigation }: any) => {
     { setSubmitting, setErrors }: any
   ) => {
     const { firstName, lastName, phoneNumber, email, password } = values;
-    console.log("Register Form Values:", {
-      firstName,
-      lastName,
-      phoneNumber,
-      email,
-      password,
-    });
-    setTimeout(() => {
-      console.log("Registration attempt completed");
-      setSubmitting(false);
-    }, 1500);
+    const body: any = new FormData();
+    body.append("fname", firstName);
+    body.append("lname", lastName);
+    body.append("email", email);
+    body.append("password", password);
+    body.append("mobile", phoneNumber);
+    body.append("confirmpass", password);
+    body.append("enableOffer", false);
+
+    registerUserApiCall
+      ?.mutateAsync({
+        body,
+      })
+      .then((res: any) => {
+        setSubmitting(false);
+        if (res?.status === "0") {
+          return Toast.show({
+            type: "error",
+            text1: res?.message,
+          });
+        } else {
+          navigation.replace("LoginScreen");
+          return Toast.show({
+            type: "success",
+            text1: "Register user successfully.",
+          });
+        }
+      })
+      .catch((err: any) => {
+        setSubmitting(false);
+        Toast.show({
+          type: "error",
+          text1: "Email already exit or something went wrong.",
+        });
+      });
   };
 
   const handleGoToLogin = () => {
@@ -81,6 +110,7 @@ const RegisterScreen = ({ navigation }: any) => {
         Platform.OS === "android" && { paddingTop: useSafeAreaInsets().top },
       ]}
     >
+      {registerUserApiCall?.isLoading && <FullScreenLoader />}
       <StatusBar style="dark" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -135,6 +165,7 @@ const RegisterScreen = ({ navigation }: any) => {
                       onChangeText={handleChange("firstName")}
                       onBlur={handleBlur("firstName")}
                       autoCapitalize="words"
+                      autoCorrect={false}
                     />
                     <View style={styles.inputUnderline} />
                     {touched.firstName && errors.firstName && (
@@ -178,7 +209,7 @@ const RegisterScreen = ({ navigation }: any) => {
                   <View style={styles.inputGroup}>
                     <TextInput
                       style={styles.input}
-                      placeholder="Email Number"
+                      placeholder="Email Id"
                       placeholderTextColor={theme.colors.grey}
                       value={values.email}
                       onChangeText={handleChange("email")}

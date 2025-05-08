@@ -2,7 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Axios from "axios";
 import queryString from "querystring";
 import { Alert } from "react-native";
-export const main_domain = "https://wordbackend.tranktechnologies.com";
+
+export const main_domain = "https://tradinggurukul.com/trading_backend";
 
 export const hostname = () => {
   let hostUrl = `${main_domain}/wp-json/wc/v2`;
