@@ -49,7 +49,6 @@ const LoginScreen = ({ navigation }: any) => {
         body: values,
       })
       ?.then(async (res: any) => {
-        console.log("res", res?.details);
         if (res?.code === "0") {
           return Toast.show({
             type: "error",

@@ -12,6 +12,8 @@ import theme from "../../utils/theme"; // Adjust path
 import DrUserHead from "../../Screens/Components/DrUserHead";
 import DrLoginHead from "../../Screens/Components/DrLoginHead";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../JotaiStore";
 
 const drawerItems = [
   { label: "Home", iconName: "home", navigateTo: "Home" },
@@ -27,6 +29,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { navigation, state }: any = props;
   const focusedRouteKey = state.routes[state.index]?.key;
   const [isLoginFlag, setIsLoginFlag]: any = useState(false);
+  const [, setUserDetails]: any = useAtom(userDetailsGlobal);
 
   const loginFlagManager = async () => {
     const loginFlagChecker = await AsyncStorage.getItem("loginFlag");
@@ -49,6 +52,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
         text: "OK",
         onPress: async () => {
           await AsyncStorage.clear();
+          setUserDetails({});
           navigation.closeDrawer();
           navigation.reset({
             index: 0,

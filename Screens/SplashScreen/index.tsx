@@ -1,13 +1,19 @@
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import { View, Image } from "react-native";
 import ImageModule from "../../ImageModule";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../JotaiStore";
 
 const SplashScreen = ({ navigation }: any) => {
+  const [userDetailsState, setUserDetailsState]: any =
+    useAtom(userDetailsGlobal);
   useEffect(() => {
     setTimeout(async () => {
       const loginFlag: any = await AsyncStorage.getItem("loginFlag");
       if (loginFlag && loginFlag === "true") {
+        const userData: any = await AsyncStorage.getItem("userDetail");
+        setUserDetailsState(JSON.parse(userData));
         navigation?.replace("DrawerNavigation");
       } else {
         navigation?.replace("StartScreen");

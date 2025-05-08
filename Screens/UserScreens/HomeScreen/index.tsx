@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,9 @@ import CategoryCard from "./Component/CategoryCard";
 import TrialBanner from "./Component/TrialBanner";
 import CourseCard from "./Component/CourseCard";
 import theme from "../../../utils/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../../JotaiStore";
 
 const { width } = Dimensions.get("window");
 
@@ -80,6 +83,8 @@ const mostWatching = [
 
 const HomeScreen = ({ navigation }: any) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [userDetails]: any = useAtom(userDetailsGlobal);
+
   const handleSeeMore = (section: string) => {
     console.log(`See More pressed for: ${section}`);
   };
@@ -105,7 +110,9 @@ const HomeScreen = ({ navigation }: any) => {
         {/* --- Greeting Area --- */}
         <View style={styles.greetingContainer}>
           <View>
-            <Text style={styles.greeting}>Hola, Sophia!</Text>
+            <Text style={styles.greeting}>
+              Hola, {userDetails?.first_name}!
+            </Text>
             <Text style={styles.subtitle}>What do you wanna learn today?</Text>
           </View>
           <Image
