@@ -11,6 +11,7 @@ import theme from "../../../utils/theme";
 import { StatusBar } from "expo-status-bar";
 import ImageModule from "../../../ImageModule";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const { height, width } = Dimensions.get("window");
 
 const spashImage = [
@@ -22,7 +23,7 @@ const spashImage = [
 const StartScreen = ({ navigation }: any) => {
   const scrollRef: any = useRef(undefined);
 
-  const changeSlideHandler = (index: any) => {
+  const changeSlideHandler = async (index: any) => {
     if (index !== 2) {
       scrollRef?.current?.scrollToOffset({
         offset: (index + 1) * width,

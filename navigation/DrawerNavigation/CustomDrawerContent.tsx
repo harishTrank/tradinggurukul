@@ -25,6 +25,7 @@ const drawerItems = [
 export function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { navigation, state } = props;
   const focusedRouteKey = state.routes[state.index]?.key;
+  const isLoginFlag = true;
 
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -45,7 +46,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
 
   return (
     <>
-      {true ? (
+      {isLoginFlag ? (
         <DrUserHead navigation={navigation} />
       ) : (
         <DrLoginHead navigation={navigation} />
@@ -62,34 +63,69 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
                   ?.key === focusedRouteKey;
 
               return (
-                <DrawerItem
-                  key={index}
-                  label={item.label}
-                  labelStyle={styles.labelStyle}
-                  style={[
-                    styles.drawerItemStyle,
-                    item.isLogout ? styles.logoutItem : {},
-                  ]}
-                  icon={({ color, size }) => (
-                    <Feather
-                      name={item.iconName as any}
-                      size={20}
-                      color={color}
+                <>
+                  {!item.isLogout && !isLoginFlag ? (
+                    <DrawerItem
+                      key={index}
+                      label={item.label}
+                      labelStyle={styles.labelStyle}
+                      style={[
+                        styles.drawerItemStyle,
+                        item.isLogout ? styles.logoutItem : {},
+                      ]}
+                      icon={({ color, size }) => (
+                        <Feather
+                          name={item.iconName as any}
+                          size={20}
+                          color={color}
+                        />
+                      )}
+                      focused={isFocused && !item.isLogout}
+                      activeTintColor={theme.colors.primary}
+                      inactiveTintColor={theme.colors.black}
+                      activeBackgroundColor={"rgba(111, 207, 151, 0.1)"}
+                      onPress={() => {
+                        if (item.isLogout) {
+                          handleLogout();
+                        } else if (item.navigateTo) {
+                          navigation.navigate(item.navigateTo);
+                          navigation.closeDrawer();
+                        }
+                      }}
                     />
+                  ) : (
+                    isLoginFlag && (
+                      <DrawerItem
+                        key={index}
+                        label={item.label}
+                        labelStyle={styles.labelStyle}
+                        style={[
+                          styles.drawerItemStyle,
+                          item.isLogout ? styles.logoutItem : {},
+                        ]}
+                        icon={({ color, size }) => (
+                          <Feather
+                            name={item.iconName as any}
+                            size={20}
+                            color={color}
+                          />
+                        )}
+                        focused={isFocused && !item.isLogout}
+                        activeTintColor={theme.colors.primary}
+                        inactiveTintColor={theme.colors.black}
+                        activeBackgroundColor={"rgba(111, 207, 151, 0.1)"}
+                        onPress={() => {
+                          if (item.isLogout) {
+                            handleLogout();
+                          } else if (item.navigateTo) {
+                            navigation.navigate(item.navigateTo);
+                            navigation.closeDrawer();
+                          }
+                        }}
+                      />
+                    )
                   )}
-                  focused={isFocused && !item.isLogout}
-                  activeTintColor={theme.colors.primary}
-                  inactiveTintColor={theme.colors.black}
-                  activeBackgroundColor={"rgba(111, 207, 151, 0.1)"}
-                  onPress={() => {
-                    if (item.isLogout) {
-                      handleLogout();
-                    } else if (item.navigateTo) {
-                      navigation.navigate(item.navigateTo);
-                      navigation.closeDrawer();
-                    }
-                  }}
-                />
+                </>
               );
             })}
           </View>
