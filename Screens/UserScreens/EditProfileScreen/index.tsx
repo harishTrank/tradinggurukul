@@ -1,5 +1,5 @@
 // Screens/UserScreens/EditProfileScreen.tsx
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,21 +11,24 @@ import {
   ScrollView,
   Platform,
   Alert,
+  KeyboardAvoidingView,
+  Animated,
+  Keyboard,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Formik } from "formik";
+import { Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 
 import Icon from "react-native-vector-icons/Feather";
-import theme from "../../../utils/theme"; // Adjusted path
+import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const initialUserData = {
   firstName: "Sophia",
   lastName: "Bennett",
-  email: "Sophia@Example.com", // This will be part of initialValues but not actively validated if not editable
+  email: "Sophia@Example.com",
   displayName: "Sophia Grace Bennett",
   profileImageUrl: require("../../../assets/Images/dummy1.png"),
 };
@@ -50,21 +53,81 @@ type EditProfileScreenNavigationProp = StackNavigationProp<any>;
 interface FormValues {
   firstName: string;
   lastName: string;
-  email: string; // Include for initial values, even if not editable
+  email: string;
   displayName: string;
 }
 
+const IOS_HEADER_HEIGHT_ESTIMATE = 10 * 2 + 24 + 1;
+
 const EditProfileScreen = () => {
   const navigation = useNavigation<EditProfileScreenNavigationProp>();
+  const insets = useSafeAreaInsets();
   const [profileImage, setProfileImage] = useState(
     initialUserData.profileImageUrl
   );
 
-  const handleFormSubmit = (values: FormValues) => {
-    console.log("Updated Profile Data:", {
-      ...values,
-      profileImage, // Include the current profile image URI/require
+  const lastNameInputRef = useRef<TextInput>(null);
+  const displayNameInputRef = useRef<TextInput>(null);
+  const formikRef = useRef<FormikProps<FormValues>>(null);
+
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+
+    const keyboardWillShowListener = Keyboard.addListener(showEvent, () => {
+      setIsKeyboardVisible(true);
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 0,
+        duration: Platform.OS === "ios" ? 250 : 200,
+        useNativeDriver: true,
+      }).start();
     });
+
+    const keyboardWillHideListener = Keyboard.addListener(hideEvent, () => {
+      setIsKeyboardVisible(false);
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 1,
+        duration: Platform.OS === "ios" ? 250 : 200,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => {
+      keyboardWillShowListener.remove();
+      keyboardWillHideListener.remove();
+    };
+  }, [buttonAnimatedValue]);
+  const getButtonContainerHeight = () => {
+    const containerPadding =
+      (styles.buttonContainer?.paddingVertical ?? 20) * 2;
+    const buttonPadding = (styles.updateButton?.paddingVertical ?? 15) * 2;
+    const buttonTextSize = styles.updateButtonText?.fontSize ?? 16;
+    const containerBorder = styles.buttonContainer?.borderTopWidth ?? 1;
+    return (
+      containerPadding + buttonPadding + buttonTextSize + containerBorder + 10
+    );
+  };
+
+  const buttonAnimatedStyle = {
+    opacity: buttonAnimatedValue,
+    transform: [
+      {
+        translateY: buttonAnimatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [getButtonContainerHeight(), 0],
+        }),
+      },
+    ],
+  };
+
+  const handleFormSubmit = (values: FormValues) => {
+    Keyboard.dismiss();
+    console.log("Updated Profile Data:", { ...values, profileImage });
     Alert.alert(
       "Profile Updated",
       "Your profile has been successfully updated."
@@ -82,7 +145,7 @@ const EditProfileScreen = () => {
     <SafeAreaView
       style={[
         styles.safeArea,
-        Platform.OS === "android" && { paddingTop: useSafeAreaInsets().top },
+        Platform.OS === "android" && { paddingTop: insets.top },
       ]}
     >
       <StatusBar style="dark" />
@@ -99,6 +162,7 @@ const EditProfileScreen = () => {
       </View>
 
       <Formik
+        innerRef={formikRef}
         initialValues={{
           firstName: initialUserData.firstName,
           lastName: initialUserData.lastName,
@@ -116,96 +180,121 @@ const EditProfileScreen = () => {
           errors,
           touched,
         }) => (
-          <>
-            <ScrollView
-              style={styles.scrollView}
-              contentContainerStyle={styles.scrollContentContainer}
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-            >
-              <View style={styles.profileImageContainer}>
-                <TouchableOpacity onPress={handleChangeProfileImage}>
-                  <Image source={profileImage} style={styles.profileImage} />
-                  <View style={styles.editIconOverlay}>
-                    <Icon name="camera" size={18} color={theme.colors.white} />
-                  </View>
-                </TouchableOpacity>
-                <Text style={styles.profileName}>
-                  {values.displayName ||
-                    `${values.firstName} ${values.lastName}`}
-                </Text>
-              </View>
-
-              <View style={styles.formContainer}>
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>First Name</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={handleChange("firstName")}
-                    onBlur={handleBlur("firstName")}
-                    value={values.firstName}
-                    placeholder="Enter your first name"
-                    placeholderTextColor={theme.colors.greyText || "#888"}
-                  />
-                  {touched.firstName && errors.firstName && (
-                    <Text style={styles.errorText}>{errors.firstName}</Text>
-                  )}
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Last Name</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={handleChange("lastName")}
-                    onBlur={handleBlur("lastName")}
-                    value={values.lastName}
-                    placeholder="Enter your last name"
-                    placeholderTextColor={theme.colors.greyText || "#888"}
-                  />
-                  {touched.lastName && errors.lastName && (
-                    <Text style={styles.errorText}>{errors.lastName}</Text>
-                  )}
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Email Address</Text>
-                  <TextInput
-                    style={[styles.input, styles.disabledInput]}
-                    value={values.email} // Display from Formik's initial values
-                    placeholder="Enter your email address"
-                    placeholderTextColor={theme.colors.greyText || "#888"}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    editable={false}
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Display Name</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={handleChange("displayName")}
-                    onBlur={handleBlur("displayName")}
-                    value={values.displayName}
-                    placeholder="Enter your display name"
-                    placeholderTextColor={theme.colors.greyText || "#888"}
-                  />
-                  {touched.displayName && errors.displayName && (
-                    <Text style={styles.errorText}>{errors.displayName}</Text>
-                  )}
-                </View>
-              </View>
-            </ScrollView>
-
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.updateButton}
-                onPress={() => handleSubmit()}
+          <KeyboardAvoidingView
+            style={styles.keyboardAvoidingContainer}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            keyboardVerticalOffset={
+              Platform.OS === "ios" ? IOS_HEADER_HEIGHT_ESTIMATE : 0
+            }
+          >
+            <>
+              <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContentContainer}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
               >
-                <Text style={styles.updateButtonText}>Update Profile</Text>
-              </TouchableOpacity>
-            </View>
-          </>
+                <View style={styles.profileImageContainer}>
+                  <TouchableOpacity onPress={handleChangeProfileImage}>
+                    <Image source={profileImage} style={styles.profileImage} />
+                    <View style={styles.editIconOverlay}>
+                      <Icon
+                        name="camera"
+                        size={18}
+                        color={theme.colors.white}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                  <Text style={styles.profileName}>
+                    {values.displayName ||
+                      `${values.firstName} ${values.lastName}`}
+                  </Text>
+                </View>
+                <View style={styles.formContainer}>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>First Name</Text>
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={handleChange("firstName")}
+                      onBlur={handleBlur("firstName")}
+                      value={values.firstName}
+                      placeholder="Enter your first name"
+                      placeholderTextColor={theme.colors.greyText || "#888"}
+                      returnKeyType="next"
+                      onSubmitEditing={() => lastNameInputRef.current?.focus()}
+                    />
+                    {touched.firstName && errors.firstName && (
+                      <Text style={styles.errorText}>{errors.firstName}</Text>
+                    )}
+                  </View>
+
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Last Name</Text>
+                    <TextInput
+                      ref={lastNameInputRef}
+                      style={styles.input}
+                      onChangeText={handleChange("lastName")}
+                      onBlur={handleBlur("lastName")}
+                      value={values.lastName}
+                      placeholder="Enter your last name"
+                      placeholderTextColor={theme.colors.greyText || "#888"}
+                      returnKeyType="next"
+                      onSubmitEditing={() =>
+                        displayNameInputRef.current?.focus()
+                      }
+                    />
+                    {touched.lastName && errors.lastName && (
+                      <Text style={styles.errorText}>{errors.lastName}</Text>
+                    )}
+                  </View>
+
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Email Address</Text>
+                    <TextInput
+                      style={[styles.input, styles.disabledInput]}
+                      value={values.email}
+                      placeholder="Enter your email address"
+                      placeholderTextColor={theme.colors.greyText || "#888"}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      editable={false}
+                    />
+                  </View>
+
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Display Name</Text>
+                    <TextInput
+                      ref={displayNameInputRef}
+                      style={styles.input}
+                      onChangeText={handleChange("displayName")}
+                      onBlur={handleBlur("displayName")}
+                      value={values.displayName}
+                      placeholder="Enter your display name"
+                      placeholderTextColor={theme.colors.greyText || "#888"}
+                      returnKeyType="done"
+                      onSubmitEditing={() => handleSubmit()}
+                    />
+                    {touched.displayName && errors.displayName && (
+                      <Text style={styles.errorText}>{errors.displayName}</Text>
+                    )}
+                  </View>
+                </View>
+              </ScrollView>
+
+              {!isKeyboardVisible && (
+                <Animated.View
+                  style={[styles.buttonContainer, buttonAnimatedStyle]}
+                >
+                  <TouchableOpacity
+                    style={styles.updateButton}
+                    onPress={() => handleSubmit()}
+                  >
+                    <Text style={styles.updateButtonText}>Update Profile</Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              )}
+            </>
+          </KeyboardAvoidingView>
         )}
       </Formik>
     </SafeAreaView>
@@ -216,6 +305,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: theme.colors.white,
+  },
+  keyboardAvoidingContainer: {
+    flex: 1,
   },
   header: {
     flexDirection: "row",
@@ -242,6 +334,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContentContainer: {
+    flexGrow: 1,
     paddingBottom: 20,
   },
   profileImageContainer: {
@@ -276,7 +369,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
   },
   inputGroup: {
-    marginBottom: 20, // Reduced margin slightly for error text
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
@@ -293,12 +386,12 @@ const styles = StyleSheet.create({
     ...theme.font.fontRegular,
   },
   disabledInput: {
-    backgroundColor: theme.colors.border,
+    backgroundColor: theme.colors.border || "#E0E0E0",
     color: theme.colors.greyText || "#888",
   },
   errorText: {
     fontSize: 12,
-    color: theme.colors.red,
+    color: theme.colors.red || "red",
     marginTop: 4,
   },
   buttonContainer: {
