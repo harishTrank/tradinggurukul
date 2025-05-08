@@ -56,7 +56,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
           navigation.closeDrawer();
           navigation.reset({
             index: 0,
-            routes: [{ name: "LoginScreen" }], // Navigate to Login after logout
+            routes: [{ name: "LoginScreen" }],
           });
         },
       },

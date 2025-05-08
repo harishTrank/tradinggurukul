@@ -21,6 +21,8 @@ import { useloginApiCall } from "../../../hooks/Auth/mutation";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../../JotaiStore";
 
 const { height, width } = Dimensions.get("window");
 
@@ -36,6 +38,7 @@ const loginValidationSchema = Yup.object().shape({
 const LoginScreen = ({ navigation }: any) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const loginApiCaller: any = useloginApiCall();
+  const [, setUserDetails]: any = useAtom(userDetailsGlobal);
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
@@ -59,6 +62,7 @@ const LoginScreen = ({ navigation }: any) => {
             "userDetail",
             JSON.stringify(res?.details)
           );
+          setUserDetails(res?.details);
           await AsyncStorage.setItem("loginFlag", "true");
           navigation.replace("DrawerNavigation");
         }

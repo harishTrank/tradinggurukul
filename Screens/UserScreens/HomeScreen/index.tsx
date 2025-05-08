@@ -18,7 +18,6 @@ import CategoryCard from "./Component/CategoryCard";
 import TrialBanner from "./Component/TrialBanner";
 import CourseCard from "./Component/CourseCard";
 import theme from "../../../utils/theme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 
@@ -111,7 +110,7 @@ const HomeScreen = ({ navigation }: any) => {
         <View style={styles.greetingContainer}>
           <View>
             <Text style={styles.greeting}>
-              Hola, {userDetails?.first_name}!
+              Hola, {userDetails?.first_name || "User"}!
             </Text>
             <Text style={styles.subtitle}>What do you wanna learn today?</Text>
           </View>
