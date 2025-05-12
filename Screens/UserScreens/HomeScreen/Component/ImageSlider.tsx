@@ -29,7 +29,7 @@ const ImageSlider = ({ data, navigation }: any) => {
   const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.slide}
-      onPress={() => navigation.navigate("AllCourses", { script: item })}
+      onPress={() => navigation.navigate("AllCoursesSearch", { script: item })}
     >
       <Image
         source={{ uri: item?.banner_url }}

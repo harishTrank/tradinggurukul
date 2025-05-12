@@ -26,10 +26,13 @@ import {
 } from "../../../hooks/Others/query";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 import { useNavigation } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import AllCoursesScreen from "../AllCoursesScreen";
 
 const { width } = Dimensions.get("window");
+const Stack = createStackNavigator<any>();
 
-const HomeScreen = () => {
+const HomeScreenComponent = () => {
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const navigation: any = useNavigation();
   const bannersApi: any = useBannersCall();
@@ -139,6 +142,23 @@ const HomeScreen = () => {
         />
       </ScrollView>
     </SafeAreaView>
+  );
+};
+
+const HomeScreen = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+      initialRouteName={"HomeScreenComponent"}
+    >
+      <Stack.Screen
+        name="HomeScreenComponent"
+        component={HomeScreenComponent}
+      />
+      <Stack.Screen name="AllCoursesSearch" component={AllCoursesScreen} />
+    </Stack.Navigator>
   );
 };
 
