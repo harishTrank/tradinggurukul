@@ -8,6 +8,7 @@ import {
   Platform,
   ActivityIndicator,
   Button,
+  Dimensions,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
@@ -17,21 +18,37 @@ import HomeHeader from "../../Components/HomeHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CourseCard, { Course } from "./Components/CourseCard";
 import { customProductsCall } from "../../../store/Services/Others";
+import DropDownComponent from "../../Components/DropDownComponent";
+import { useGetCategoryCall } from "../../../hooks/Others/query";
 
 type MyCoursesScreenNavigationProp = StackNavigationProp<any>;
 
 const PER_PAGE = 10;
 
+const { width } = Dimensions.get("screen");
+
 const AllCoursesScreen = () => {
   const navigation = useNavigation<MyCoursesScreenNavigationProp>();
   const insets = useSafeAreaInsets();
-
+  const categoriesApi: any = useGetCategoryCall();
   const [courses, setCourses] = useState<Course[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectScript, setSelectScript]: any = useState({});
+  const [categoryId, setCategoryId]: any = useState(undefined);
+
+  const setCategoriesId = (select: any) => {
+    setCategoryId(select?.id);
+  };
+
+  useEffect(() => {
+    if (selectScript) {
+      setCategoriesId(selectScript);
+    }
+  }, [selectScript]);
 
   const fetchCourses = useCallback(
     async (pageToFetch: number, isRefreshing: boolean = false) => {
@@ -48,6 +65,7 @@ const AllCoursesScreen = () => {
             page: pageToFetch,
             per_page: PER_PAGE,
             sort: "default",
+            category: categoryId,
           },
         });
 
@@ -79,12 +97,12 @@ const AllCoursesScreen = () => {
         setIsLoadingMore(false);
       }
     },
-    []
+    [categoryId]
   );
 
   useEffect(() => {
     fetchCourses(1);
-  }, [fetchCourses]);
+  }, [fetchCourses, categoryId]);
 
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMoreData && !isLoading) {
@@ -113,8 +131,7 @@ const AllCoursesScreen = () => {
     else console.log("Menu pressed - Implement drawer toggle");
   };
 
-  const handleCartPress = () => console.log("Cart pressed");
-  const handleSearchPress = () => console.log("Search pressed");
+  const handleCartPress = () => navigation.navigate("CartScreen");
 
   const renderFooter = () => {
     if (!isLoadingMore) return null;
@@ -160,14 +177,20 @@ const AllCoursesScreen = () => {
       ]}
     >
       <StatusBar style="dark" />
-      <HomeHeader
-        onMenuPress={handleMenuPress}
-        onSearchPress={handleSearchPress}
-        onCartPress={handleCartPress}
-      />
+      <HomeHeader onMenuPress={handleMenuPress} onCartPress={handleCartPress} />
 
       <View style={styles.mainContainer}>
         <Text style={styles.screenTitle}>All Courses</Text>
+        <DropDownComponent
+          data={categoriesApi?.data || []}
+          value={selectScript?.name}
+          setValue={setSelectScript}
+          placeholder={"Search..."}
+          search={true}
+          style={styles.dropDownStyle}
+          fieldKey={"name"}
+          objectSave={true}
+        />
 
         {isLoading && courses.length === 0 && currentPage === 1 && !error && (
           <View style={styles.fullScreenLoaderContainer}>
@@ -245,6 +268,10 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
     marginVertical: 10,
+  },
+  dropDownStyle: {
+    width: width - 40,
+    marginLeft: 10,
   },
 });
 
