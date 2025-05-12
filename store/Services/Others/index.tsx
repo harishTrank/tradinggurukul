@@ -10,3 +10,9 @@ export const getCategoryCall = () =>
   callApi({
     uriEndPoint: othersEndpoints.getCategory.v1,
   });
+
+export const customProductsCall = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.customProducts.v1,
+    query,
+  });

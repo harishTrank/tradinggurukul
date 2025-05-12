@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -15,47 +15,30 @@ import SearchBar from "./Component/SearchBar";
 import ImageSlider from "./Component/ImageSlider";
 import SectionHeader from "./Component/SectionHeader";
 import CategoryCard from "./Component/CategoryCard";
-import TrialBanner from "./Component/TrialBanner";
 import CourseCard from "./Component/CourseCard";
 import theme from "../../../utils/theme";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import {
   useBannersCall,
+  useCustomProductsCall,
   useGetCategoryCall,
 } from "../../../hooks/Others/query";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 
 const { width } = Dimensions.get("window");
 
-const mostWatching = [
-  {
-    id: "crs1",
-    title: "Introduction to Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.0,
-    ratingCount: 351,
-  },
-  {
-    id: "crs2",
-    title: "Advanced Stock Trading Strategies",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.8,
-    ratingCount: 655,
-  },
-  {
-    id: "crs3",
-    title: "UI/UX Design Fundamentals",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.5,
-    ratingCount: 420,
-  },
-];
-
 const HomeScreen = ({ navigation }: any) => {
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const bannersApi: any = useBannersCall();
   const categoriesApi: any = useGetCategoryCall();
+  const topSearchApi: any = useCustomProductsCall({
+    query: {
+      page: 1,
+      per_page: 10,
+      sort: "popularity",
+    },
+  });
 
   const handleSeeMore = (section: string) => {
     console.log(`See More pressed for: ${section}`);
@@ -133,13 +116,14 @@ const HomeScreen = ({ navigation }: any) => {
           onSeeMore={() => handleSeeMore("Most Watching")}
         />
         <FlatList
-          data={mostWatching}
+          data={topSearchApi?.data?.product || []}
           renderItem={({ item }) => (
             <CourseCard
-              title={item.title}
-              imageUrl={item.imageUrl}
-              rating={item.rating}
-              ratingCount={item.ratingCount}
+              title={item?.name}
+              imageUrl={item?.images?.[0]?.src}
+              price={item?.price}
+              regular_price={item?.regular_price}
+              tag={item?.categories?.[0]?.name}
               onPress={() => handleCardPress(item)}
             />
           )}

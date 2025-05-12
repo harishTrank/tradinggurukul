@@ -13,54 +13,26 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const { width } = Dimensions.get("window");
 
-const CourseCard = ({ title, imageUrl, rating, ratingCount, onPress }: any) => {
-  const renderStars = () => {
-    let stars = [];
-    let fullStars = Math.floor(rating);
-    let halfStar = rating % 1 >= 0.5;
-    let emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-
-    for (let i = 0; i < fullStars; i++)
-      stars.push(
-        <FontAwesome
-          key={`full_${i}`}
-          name="star"
-          size={16}
-          color={theme.colors.orange}
-        />
-      );
-    if (halfStar)
-      stars.push(
-        <FontAwesome
-          key="half"
-          name="star-half-empty"
-          size={16}
-          color={theme.colors.orange}
-        />
-      );
-    for (let i = 0; i < emptyStars; i++)
-      stars.push(
-        <FontAwesome
-          key={`empty_${i}`}
-          name="star-o"
-          size={16}
-          color={theme.colors.lightGrey}
-        />
-      ); // Use a lighter grey for empty
-
-    return stars;
-  };
-
+const CourseCard = ({
+  title,
+  imageUrl,
+  tag,
+  price,
+  regular_price,
+  onPress,
+}: any) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.card}>
-      <Image source={imageUrl} style={styles.image} />
+      <Image source={{ uri: imageUrl }} style={styles.image} />
       <Text style={styles.title} numberOfLines={2}>
         {title}
       </Text>
+      <View style={styles.priceBox}>
+        <Text style={styles.price}>₹{price}</Text>
+        <Text style={styles.regularPrice}>₹{regular_price}</Text>
+      </View>
       <View style={styles.ratingContainer}>
-        <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
-        {renderStars()}
-        <Text style={styles.ratingCount}>({ratingCount})</Text>
+        <Text style={styles.tag}>{tag}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -84,24 +56,33 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.black,
     ...theme.font.fontMedium,
-    marginBottom: 5,
-    minHeight: 35, // Ensure space for two lines
   },
   ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  ratingText: {
-    fontSize: 13,
-    color: theme.colors.grey,
-    ...theme.font.fontRegular,
-    marginRight: 5,
+  tag: {
+    backgroundColor: theme.colors.black,
+    color: theme.colors.white,
+    fontSize: 10,
+    ...theme.font.fontSemiBold,
+    padding: 2,
   },
-  ratingCount: {
-    fontSize: 13,
-    color: theme.colors.grey,
+  priceBox: {
+    flexDirection: "row",
+    marginVertical: 3,
+  },
+  price: {
+    color: theme.colors.black,
+    fontSize: 15,
+    ...theme.font.fontSemiBold,
+  },
+  regularPrice: {
+    color: theme.colors.black,
+    fontSize: 14,
     ...theme.font.fontRegular,
-    marginLeft: 5,
+    paddingLeft: 5,
+    textDecorationLine: "line-through",
   },
 });
 

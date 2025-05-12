@@ -17,6 +17,8 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import theme from "../../../utils/theme";
+import { useSendOTPCall, useVerifyOTPCall } from "../../../hooks/Auth/mutation";
+import Toast from "react-native-toast-message";
 
 const { height, width } = Dimensions.get("window");
 const OTP_LENGTH = 6;
@@ -29,6 +31,35 @@ const OTPScreen = ({ navigation, route }: any) => {
   const [resendDisabled, setResendDisabled] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const otpVerifyApiCaller: any = useVerifyOTPCall();
+  const resendPasswordApiCall: any = useSendOTPCall();
+
+  const handleResendCode = () => {
+    setResendDisabled(true);
+    resendPasswordApiCall
+      ?.mutateAsync({
+        body: {
+          email: emailFromPreviousScreen,
+        },
+      })
+      ?.then((res: any) => {
+        setResendDisabled(false);
+        if (res?.code == "0") {
+          return Toast.show({
+            type: "error",
+            text1: res.message,
+          });
+        } else {
+          return Toast.show({
+            type: "success",
+            text1: res.message,
+          });
+        }
+      })
+      ?.catch((err: any) => {
+        setResendDisabled(false);
+      });
+  };
 
   const inputRef = useRef<TextInput>(null);
 
@@ -61,34 +92,34 @@ const OTPScreen = ({ navigation, route }: any) => {
 
     Keyboard.dismiss();
     setIsSubmitting(true);
-    console.log("Verifying OTP:", otpCode);
 
-    setTimeout(() => {
-      if (otpCode === "123456") {
-        console.log("OTP Verified Successfully!");
-        navigation.navigate("ResetPasswordScreen", {
+    otpVerifyApiCaller
+      ?.mutateAsync({
+        body: {
           email: emailFromPreviousScreen,
           otp: otpCode,
-        });
-      } else {
-        console.log("Invalid OTP");
-        Alert.alert(
-          "Invalid OTP",
-          "The OTP entered is incorrect. Please try again."
-        );
-      }
-      setIsSubmitting(false);
-    }, 1500);
-  };
-
-  const handleResendCode = () => {
-    if (resendDisabled) return;
-    console.log("Resending OTP to:", emailFromPreviousScreen);
-    setResendDisabled(true);
-    setCountdown(60);
-    setTimeout(() => {
-      console.log("Resend OTP request sent (simulated)");
-    }, 1000);
+        },
+      })
+      ?.then((res: any) => {
+        setIsSubmitting(false);
+        if (res?.code == "0") {
+          return Toast.show({
+            type: "error",
+            text1: res.message,
+          });
+        } else {
+          navigation.navigate("ResetPasswordScreen", {
+            email: emailFromPreviousScreen,
+          });
+          return Toast.show({
+            type: "success",
+            text1: res.message,
+          });
+        }
+      })
+      ?.catch((err: any) => {
+        setIsSubmitting(false);
+      });
   };
 
   const renderOtpBoxes = () => {

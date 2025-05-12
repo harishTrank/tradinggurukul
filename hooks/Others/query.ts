@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { bannersCall, getCategoryCall } from "../../store/Services/Others";
+import { bannersCall, customProductsCall, getCategoryCall } from "../../store/Services/Others";
 
-// export const useViewCollectionPost = (payload: any) =>
-//   useQuery(["viewCollectionPost", payload], () => viewCollectionPost(payload));
+export const useCustomProductsCall = (payload: any) =>
+  useQuery(["customProductsCall", payload], () => customProductsCall(payload));
 
 export const useBannersCall = () =>
   useQuery(["useBannersCall"], () => bannersCall());

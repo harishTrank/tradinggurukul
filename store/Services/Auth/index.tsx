@@ -13,3 +13,21 @@ export const registerUser = ({ body }: any) =>
     body,
     multipart: true,
   });
+
+export const sendOTPCall = ({ body }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.sendOTP.v1,
+    body,
+  });
+
+export const verifyOTPCall = ({ body }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.verifyOTP.v1,
+    body,
+  });
+
+export const resetPasswordCall = ({ body }: any) =>
+  callApi({
+    uriEndPoint: authEndpoints.resetPassword.v1,
+    body,
+  });

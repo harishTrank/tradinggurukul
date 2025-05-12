@@ -18,6 +18,8 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSendOTPCall } from "../../../hooks/Auth/mutation";
+import Toast from "react-native-toast-message";
 
 const { height, width } = Dimensions.get("window");
 
@@ -28,23 +30,36 @@ const forgotPasswordSchema = Yup.object().shape({
 });
 
 const ForgotPasswordScreen = ({ navigation }: any) => {
+  const sendOTPAPICall: any = useSendOTPCall();
+
   const handleSendEmailSubmit = (
-    values: { email: string },
+    values: any,
     { setSubmitting, setErrors }: any
   ) => {
-    setTimeout(() => {
-      if (values.email.toLowerCase() === "harish@gmail.com") {
-        console.log("Password reset email sent successfully (simulated)");
-        navigation.navigate("OTPScreen");
-      } else {
-        console.log("Email not found (simulated)");
-        setErrors({
-          email:
-            "The email address you provided is not associated with your account",
-        });
-      }
-      setSubmitting(false);
-    }, 1500);
+    sendOTPAPICall
+      ?.mutateAsync({
+        body: {
+          email: values?.email,
+        },
+      })
+      ?.then((res: any) => {
+        setSubmitting(false);
+        if (res?.code == "0") {
+          return Toast.show({
+            type: "error",
+            text1: res.message,
+          });
+        } else {
+          navigation.navigate("OTPScreen", { email: values?.email });
+          return Toast.show({
+            type: "success",
+            text1: res.message,
+          });
+        }
+      })
+      ?.catch((err: any) => {
+        setSubmitting(false);
+      });
   };
 
   return (

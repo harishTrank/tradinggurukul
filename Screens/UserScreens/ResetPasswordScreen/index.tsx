@@ -18,6 +18,8 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useResetPasswordCall } from "../../../hooks/Auth/mutation";
+import Toast from "react-native-toast-message";
 
 const { height, width } = Dimensions.get("window");
 
@@ -30,10 +32,11 @@ const resetPasswordSchema = Yup.object().shape({
     .required("Confirm password is required"),
 });
 
-const ResetPasswordScreen = ({ navigation }: any) => {
+const ResetPasswordScreen = ({ navigation, route }: any) => {
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
+  const resetPasswordApiCall: any = useResetPasswordCall();
 
   const toggleNewPasswordVisibility = () => {
     setIsNewPasswordVisible(!isNewPasswordVisible);
@@ -46,11 +49,31 @@ const ResetPasswordScreen = ({ navigation }: any) => {
     values: any,
     { setSubmitting, setErrors }: any
   ) => {
-    console.log("Reset Password Values:", values.newPassword);
-    setTimeout(() => {
-      console.log("Password reset attempt completed");
-      setSubmitting(false);
-    }, 1500);
+    resetPasswordApiCall
+      ?.mutateAsync({
+        body: {
+          email: route?.params?.email,
+          new_password: values?.newPassword,
+        },
+      })
+      ?.then((res: any) => {
+        setSubmitting(false);
+        if (res?.code == "0") {
+          return Toast.show({
+            type: "error",
+            text1: res?.message,
+          });
+        } else {
+          navigation.navigate("LoginScreen");
+          return Toast.show({
+            type: "success",
+            text1: res?.message,
+          });
+        }
+      })
+      ?.catch((err: any) => {
+        setSubmitting(false);
+      });
   };
 
   return (

@@ -50,7 +50,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         resizeMode="cover"
       >
         <LinearGradient
-          colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.6)", "rgba(0,0,0,0.8)"]}
+          colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.4)", "rgba(0,0,0,0.6)"]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
           style={styles.gradientOverlay}
@@ -78,9 +78,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
+    objectFit: "contain",
   },
-  imageStyle: {},
-
+  imageStyle: {
+    objectFit: "contain",
+  },
   title: {
     fontSize: 16,
     color: theme.colors.white,

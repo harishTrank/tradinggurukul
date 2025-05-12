@@ -15,4 +15,25 @@ export const authEndpoints = {
       uri: "/register",
     },
   },
+  sendOTP: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/send-otp",
+    },
+  },
+  verifyOTP: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/verify-otp",
+    },
+  },
+  resetPassword: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/reset-password",
+    },
+  },
 };

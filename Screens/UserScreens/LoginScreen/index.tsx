@@ -39,6 +39,7 @@ const LoginScreen = ({ navigation }: any) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const loginApiCaller: any = useloginApiCall();
   const [, setUserDetails]: any = useAtom(userDetailsGlobal);
+
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };

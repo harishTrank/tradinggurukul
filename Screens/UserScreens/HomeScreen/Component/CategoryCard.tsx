@@ -24,7 +24,7 @@ const CategoryCard = ({ title, imageUrl, onPress }: CategoryCardProps) => {
         resizeMode="cover"
       >
         <LinearGradient
-          colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.6)", "rgba(0,0,0,0.8)"]}
+          colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.4)", "rgba(0,0,0,0.6)"]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
           style={styles.gradientOverlay}
@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     marginRight: 15,
-    backgroundColor: theme.colors.lightGrey || "#E0E0E0",
     elevation: 3,
     shadowColor: theme.colors.black,
     shadowOffset: { width: 0, height: 1 },
@@ -57,7 +56,9 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
   },
-  backgroundImageStyle: {},
+  backgroundImageStyle: {
+    objectFit: "contain",
+  },
   gradientOverlay: {
     width: "100%",
     paddingHorizontal: 8,
