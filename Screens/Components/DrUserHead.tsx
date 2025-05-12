@@ -15,7 +15,11 @@ const DrUserHead = ({ navigation }: any) => {
       >
         <Image
           style={styles.profile}
-          source={{ uri: userDetails?.avatar_url }}
+          source={{
+            uri:
+              userDetails?.avatar_url ||
+              "https://imgs.search.brave.com/6mHxYf-0_iKSMzgOo-MtP40kdw8ehAhV39Ci6xD2-Ac/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS12ZWN0/b3IvcHJvZmlsZS1p/Y29uLXZlY3Rvci1p/bWFnZS1jYW4tYmUt/dXNlZC11aV8xMjA4/MTYtMjYwOTMyLmpw/Zz9zZW10PWFpc19o/eWJyaWQmdz03NDA",
+          }}
         />
         <Text
           style={styles.userName}

@@ -29,6 +29,8 @@ import { userDetailsGlobal } from "../../../JotaiStore";
 import { useEditProfileCall } from "../../../hooks/Others/mutation";
 import Toast from "react-native-toast-message";
 import { getImage, takePicture } from "../../../utils/extra/ImagePicker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import FullScreenLoader from "../../Components/FullScreenLoader";
 
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -59,15 +61,17 @@ const IOS_HEADER_HEIGHT_ESTIMATE = 10 * 2 + 24 + 1;
 const EditProfileScreen = () => {
   const navigation = useNavigation<EditProfileScreenNavigationProp>();
   const insets = useSafeAreaInsets();
-  const [userDetailsGl]: any = useAtom(userDetailsGlobal);
+  const [userDetailsGl, setUserDetails]: any = useAtom(userDetailsGlobal);
   const updateProfileAPiCall: any = useEditProfileCall();
 
   const initialUserData = {
     firstName: userDetailsGl?.first_name || "",
     lastName: userDetailsGl?.last_name || "",
     email: userDetailsGl?.email || "",
-    displayName: userDetailsGl?.username || "",
-    profileImageUrl: userDetailsGl?.avatar_url || "",
+    displayName: userDetailsGl?.display_name || "",
+    profileImageUrl:
+      userDetailsGl?.avatar_url ||
+      "https://imgs.search.brave.com/6mHxYf-0_iKSMzgOo-MtP40kdw8ehAhV39Ci6xD2-Ac/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS12ZWN0/b3IvcHJvZmlsZS1p/Y29uLXZlY3Rvci1p/bWFnZS1jYW4tYmUt/dXNlZC11aV8xMjA4/MTYtMjYwOTMyLmpw/Zz9zZW10PWFpc19o/eWJyaWQmdz03NDA",
   };
   const [profileImage, setProfileImage] = useState(
     initialUserData.profileImageUrl
@@ -136,7 +140,7 @@ const EditProfileScreen = () => {
     Keyboard.dismiss();
     const body: any = new FormData();
     body.append("user_id", userDetailsGl?.id);
-    body.append("image", profileImage);
+    body.append("file", profileImage);
     body.append("first_name", values?.firstName);
     body.append("last_name", values?.lastName);
     body.append("display_name", values?.displayName);
@@ -144,17 +148,23 @@ const EditProfileScreen = () => {
       ?.mutateAsync({
         body,
       })
-      ?.then((res: any) => {
-        console.log("res", res);
+      ?.then(async (res: any) => {
+        console.log("res", JSON.stringify(res));
         if (res?.status == "0") {
           return Toast.show({
             type: "error",
             text1: res?.msg,
           });
         } else {
+          await AsyncStorage.setItem(
+            "userDetail",
+            JSON.stringify(res?.details)
+          );
+          setUserDetails(res?.details);
+          navigation?.goBack();
           return Toast.show({
             type: "success",
-            text1: res?.msg,
+            text1: "User Update successfully.",
           });
         }
       })
@@ -190,7 +200,7 @@ const EditProfileScreen = () => {
       ]}
     >
       <StatusBar style="dark" />
-
+      {updateProfileAPiCall?.isLoading && <FullScreenLoader />}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
