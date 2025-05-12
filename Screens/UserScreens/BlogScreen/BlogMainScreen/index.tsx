@@ -1,6 +1,6 @@
 // screens/CommunityScreen.tsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CommunityPostCard from "../../CommunityScreen/Components/CommunityPostCard";
 import HomeHeader from "../../../Components/HomeHeader";
 import theme from "../../../../utils/theme";
+import { postsBlogAndCommunityCall } from "../../../../store/Services/Others";
 
 const communityPostsData = [
   {
@@ -43,6 +44,7 @@ const communityPostsData = [
 ];
 
 const BlogMainScreen = ({ navigation }: any) => {
+  const [apiResult, setApiResult]: any = useState([]);
   const handleReadMore = (postId: string) => {
     console.log("Read More for Post:", postId);
     navigation.navigate("BlogReadScreen", { postId });
@@ -52,6 +54,19 @@ const BlogMainScreen = ({ navigation }: any) => {
     console.log("Post Card Pressed:", postId);
     // handleReadMore(postId);
   };
+
+  useEffect(() => {
+    postsBlogAndCommunityCall({
+      query: {
+        page: 1,
+        per_page: 4,
+      },
+    })
+      ?.then((res: any) => {
+        console.log("res", res);
+      })
+      ?.catch((err: any) => console.log("err", JSON.stringify(err)));
+  }, []);
 
   const renderCommunityPost = ({
     item,

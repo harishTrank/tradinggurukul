@@ -31,6 +31,16 @@ const CommunityPostCard: React.FC<CommunityPostCardProps> = ({
     >
       <Image source={post.imageUrl} style={styles.postImage} />
       <View style={styles.contentContainer}>
+        <Text
+          style={[
+            styles.description,
+            {
+              marginBottom: 0,
+            },
+          ]}
+        >
+          Education
+        </Text>
         <Text style={styles.title}>{post.title}</Text>
         <Text style={styles.description} numberOfLines={3}>
           {post.description}

@@ -1,4 +1,3 @@
-// src/components/CourseCard.tsx
 import React from "react";
 import {
   View,
@@ -8,7 +7,6 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // For stars
 import theme from "../../../../utils/theme";
 export interface Course {
   id: string;
@@ -25,64 +23,30 @@ interface CourseCardProps {
 }
 
 const { width } = Dimensions.get("window");
-const cardWidth = width / 2 - 22.5; // (Screen width / 2 columns) - (horizontal padding + margin)
+const cardWidth = width / 2 - 22.5;
 
-const CourseCard: React.FC<CourseCardProps> = ({ item, onPress }) => {
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < 5; i++) {
-      if (i < fullStars) {
-        stars.push(
-          <Icon
-            key={`star-${i}`}
-            name="star"
-            size={16}
-            color={theme.colors.warning}
-          />
-        );
-      } else if (i === fullStars && hasHalfStar) {
-        stars.push(
-          <Icon
-            key={`star-${i}`}
-            name="star-half-full"
-            size={16}
-            color={theme.colors.warning}
-          />
-        );
-      } else {
-        stars.push(
-          <Icon
-            key={`star-${i}`}
-            name="star-outline"
-            size={16}
-            color={theme.colors.warning}
-          />
-        );
-      }
-    }
-    return stars;
-  };
-
+const CourseCard: React.FC<CourseCardProps> = ({ item, onPress }: any) => {
   return (
     <TouchableOpacity
       style={styles.cardContainer}
       onPress={() => onPress(item.id)}
       activeOpacity={0.8}
     >
-      <Image source={item.imageUrl} style={styles.courseImage} />
+      <Image
+        source={{ uri: item?.images?.[0]?.src }}
+        style={styles.courseImage}
+      />
       <View style={styles.contentContainer}>
         <Text style={styles.title} numberOfLines={2}>
-          {item.title}
+          {item.name}
         </Text>
         <View style={styles.ratingContainer}>
-          <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
-          {renderStars(item.rating)}
-          <Text style={styles.reviewsText}>{item.reviews}</Text>
+          <Text style={styles.tag}>{item?.categories?.[0]?.name}</Text>
         </View>
-        <Text style={styles.priceText}>{item.price}</Text>
+        <View style={styles.priceBox}>
+          <Text style={styles.price}>₹{item?.price}</Text>
+          <Text style={styles.regularPrice}>₹{item?.regular_price}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -107,14 +71,13 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   contentContainer: {
-    padding: 10,
+    paddingVertical: 10,
   },
   title: {
     ...theme.font.fontMedium,
     fontSize: 14,
     color: theme.colors.black,
     marginBottom: 5,
-    minHeight: 36, // Approx 2 lines height
   },
   ratingContainer: {
     flexDirection: "row",
@@ -137,6 +100,29 @@ const styles = StyleSheet.create({
     ...theme.font.fontSemiBold,
     fontSize: 16,
     color: theme.colors.primary, // Or your theme's price color
+  },
+  priceBox: {
+    flexDirection: "row",
+    marginVertical: 3,
+  },
+  price: {
+    color: theme.colors.primary,
+    fontSize: 15,
+    ...theme.font.fontSemiBold,
+  },
+  regularPrice: {
+    color: theme.colors.black,
+    fontSize: 14,
+    ...theme.font.fontRegular,
+    paddingLeft: 5,
+    textDecorationLine: "line-through",
+  },
+  tag: {
+    backgroundColor: theme.colors.black,
+    color: theme.colors.white,
+    fontSize: 10,
+    ...theme.font.fontSemiBold,
+    padding: 2,
   },
 });
 

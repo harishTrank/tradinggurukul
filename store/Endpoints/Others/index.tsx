@@ -22,4 +22,11 @@ export const othersEndpoints = {
       uri: "/custom-products",
     },
   },
+  postsBlogAndCommunity: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/posts",
+    },
+  },
 };

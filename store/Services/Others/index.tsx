@@ -16,3 +16,9 @@ export const customProductsCall = ({ query }: any) =>
     uriEndPoint: othersEndpoints.customProducts.v1,
     query,
   });
+
+export const postsBlogAndCommunityCall = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.postsBlogAndCommunity.v1,
+    query,
+  });
