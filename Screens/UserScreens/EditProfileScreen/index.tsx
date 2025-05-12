@@ -27,6 +27,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import { useEditProfileCall } from "../../../hooks/Others/mutation";
+import Toast from "react-native-toast-message";
 
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -144,6 +145,17 @@ const EditProfileScreen = () => {
       })
       ?.then((res: any) => {
         console.log("res", res);
+        if (res?.status == "0") {
+          return Toast.show({
+            type: "error",
+            text1: res?.msg,
+          });
+        } else {
+          return Toast.show({
+            type: "success",
+            text1: res?.msg,
+          });
+        }
       })
       ?.catch((err: any) => {
         console.log("err", err);
