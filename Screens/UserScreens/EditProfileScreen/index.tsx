@@ -28,6 +28,7 @@ import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import { useEditProfileCall } from "../../../hooks/Others/mutation";
 import Toast from "react-native-toast-message";
+import { getImage, takePicture } from "../../../utils/extra/ImagePicker";
 
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -163,10 +164,22 @@ const EditProfileScreen = () => {
   };
 
   const handleChangeProfileImage = () => {
-    Alert.alert(
-      "Change Image",
-      "Image picker functionality to be implemented."
-    );
+    Alert.alert("Pick Post", "Choose from camera or gallery", [
+      {
+        text: "Gallery",
+        onPress: () => getImage(setProfileImage),
+        style: "default",
+      },
+      {
+        text: "Camera",
+        onPress: async () => await takePicture(setProfileImage),
+        style: "default",
+      },
+      {
+        text: "Cancel",
+        style: "default",
+      },
+    ]);
   };
 
   return (

@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 10,
     overflow: "hidden",
-    backgroundColor: theme.colors.lightGrey,
+    backgroundColor: theme.colors.white,
   },
   gradientOverlay: {
     width: "100%",
