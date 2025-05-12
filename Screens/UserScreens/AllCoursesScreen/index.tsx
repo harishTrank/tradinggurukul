@@ -27,7 +27,7 @@ const PER_PAGE = 10;
 
 const { width } = Dimensions.get("screen");
 
-const AllCoursesScreen = () => {
+const AllCoursesScreen = ({ route }: any) => {
   const navigation = useNavigation<MyCoursesScreenNavigationProp>();
   const insets = useSafeAreaInsets();
   const categoriesApi: any = useGetCategoryCall();
@@ -37,7 +37,9 @@ const AllCoursesScreen = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectScript, setSelectScript]: any = useState({});
+  const [selectScript, setSelectScript]: any = useState(
+    route?.params?.script || {}
+  );
   const [categoryId, setCategoryId]: any = useState(undefined);
 
   const setCategoriesId = (select: any) => {

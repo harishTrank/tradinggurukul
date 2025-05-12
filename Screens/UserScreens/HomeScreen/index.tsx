@@ -90,7 +90,7 @@ const HomeScreen = () => {
         />
 
         {/* --- Image Slider --- */}
-        <ImageSlider data={bannersApi?.data?.banner} />
+        <ImageSlider navigation={navigation} data={bannersApi?.data?.banner} />
 
         {/* --- Popular Categories --- */}
         <SectionHeader

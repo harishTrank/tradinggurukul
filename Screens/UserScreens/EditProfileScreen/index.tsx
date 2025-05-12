@@ -26,6 +26,7 @@ import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
+import { useEditProfileCall } from "../../../hooks/Others/mutation";
 
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -57,6 +58,7 @@ const EditProfileScreen = () => {
   const navigation = useNavigation<EditProfileScreenNavigationProp>();
   const insets = useSafeAreaInsets();
   const [userDetailsGl]: any = useAtom(userDetailsGlobal);
+  const updateProfileAPiCall: any = useEditProfileCall();
 
   const initialUserData = {
     firstName: userDetailsGl?.first_name || "",
@@ -130,11 +132,22 @@ const EditProfileScreen = () => {
 
   const handleFormSubmit = (values: FormValues) => {
     Keyboard.dismiss();
-    console.log("Updated Profile Data:", { ...values, profileImage });
-    Alert.alert(
-      "Profile Updated",
-      "Your profile has been successfully updated."
-    );
+    const body: any = new FormData();
+    body.append("user_id", userDetailsGl?.id);
+    body.append("image", profileImage);
+    body.append("first_name", values?.firstName);
+    body.append("last_name", values?.lastName);
+    body.append("display_name", values?.displayName);
+    updateProfileAPiCall
+      ?.mutateAsync({
+        body,
+      })
+      ?.then((res: any) => {
+        console.log("res", res);
+      })
+      ?.catch((err: any) => {
+        console.log("err", err);
+      });
   };
 
   const handleChangeProfileImage = () => {

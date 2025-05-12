@@ -1,11 +1,18 @@
 import React, { useState, useRef } from "react";
-import { View, Image, FlatList, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  Image,
+  FlatList,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import theme from "../../../../utils/theme";
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = width * 0.92;
 
-const ImageSlider = ({ data }: any) => {
+const ImageSlider = ({ data, navigation }: any) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
@@ -20,13 +27,16 @@ const ImageSlider = ({ data }: any) => {
   }).current;
 
   const renderItem = ({ item }: { item: any }) => (
-    <View style={styles.slide}>
+    <TouchableOpacity
+      style={styles.slide}
+      onPress={() => navigation.navigate("AllCourses", { script: item })}
+    >
       <Image
         source={{ uri: item?.banner_url }}
         style={styles.image}
         resizeMode="cover"
       />
-    </View>
+    </TouchableOpacity>
   );
 
   return (
