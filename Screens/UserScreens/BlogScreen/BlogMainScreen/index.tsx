@@ -1,5 +1,3 @@
-// screens/CommunityScreen.tsx
-
 import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
@@ -8,6 +6,7 @@ import {
   Text,
   FlatList,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,63 +15,66 @@ import HomeHeader from "../../../Components/HomeHeader";
 import theme from "../../../../utils/theme";
 import { postsBlogAndCommunityCall } from "../../../../store/Services/Others";
 
-const communityPostsData = [
-  {
-    id: "post1",
-    title: "Group Student Study",
-    imageUrl: require("../../../../assets/Images/dummy1.png"),
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text eve.",
-    date: "Jan 25, 2025",
-  },
-  {
-    id: "post2",
-    title: "Group Student Study",
-    imageUrl: require("../../../../assets/Images/dummy1.png"),
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text eve.",
-    date: "Jan 26, 2025",
-  },
-  {
-    id: "post3",
-    title: "New Course Announcement",
-    imageUrl: require("../../../../assets/Images/dummy1.png"),
-    description:
-      "Exciting news! A new course on Advanced AI is launching next month. Stay tuned for more details and early bird discounts.",
-    date: "Jan 27, 2025",
-  },
-];
-
 const BlogMainScreen = ({ navigation }: any) => {
-  const [apiResult, setApiResult]: any = useState([]);
+  const insets = useSafeAreaInsets();
+  const [posts, setPosts] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const perPage = 10;
+
+  const fetchPosts = async (isInitialLoad = false) => {
+    try {
+      if (isInitialLoad) setLoading(true);
+      else setLoadingMore(true);
+
+      const res: any = await postsBlogAndCommunityCall({
+        query: {
+          page,
+          per_page: perPage,
+        },
+      });
+
+      const newPosts = res?.posts || [];
+
+      setPosts((prev) => (page === 1 ? newPosts : [...prev, ...newPosts]));
+      setHasMore(newPosts.length === perPage);
+    } catch (err) {
+      console.log("Fetch error:", err);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts(true);
+  }, [page]);
+
   const handleReadMore = (postId: string) => {
-    console.log("Read More for Post:", postId);
     navigation.navigate("BlogReadScreen", { postId });
   };
 
   const handlePostPress = (postId: string) => {
-    console.log("Post Card Pressed:", postId);
-    // handleReadMore(postId);
+    navigation.navigate("BlogReadScreen", { postId });
   };
 
-  useEffect(() => {
-    postsBlogAndCommunityCall({
-      query: {
-        page: 1,
-        per_page: 4,
-      },
-    })
-      ?.then((res: any) => {
-        console.log("res", res);
-      })
-      ?.catch((err: any) => console.log("err", JSON.stringify(err)));
-  }, []);
+  const loadMorePosts = () => {
+    if (!loadingMore && hasMore) {
+      setPage((prev) => prev + 1);
+    }
+  };
 
-  const renderCommunityPost = ({
-    item,
-  }: {
-    item: (typeof communityPostsData)[0];
-  }) => (
+  const renderFooter = () =>
+    loadingMore ? (
+      <View style={{ paddingVertical: 20 }}>
+        <ActivityIndicator color={theme.colors.primary} />
+      </View>
+    ) : null;
+
+  const renderCommunityPost = ({ item }: any) => (
     <CommunityPostCard
       post={item}
       onReadMore={handleReadMore}
@@ -84,7 +86,7 @@ const BlogMainScreen = ({ navigation }: any) => {
     <SafeAreaView
       style={[
         styles.safeArea,
-        Platform.OS === "android" && { paddingTop: useSafeAreaInsets().top },
+        Platform.OS === "android" && { paddingTop: insets.top },
       ]}
     >
       <StatusBar style="dark" />
@@ -98,14 +100,23 @@ const BlogMainScreen = ({ navigation }: any) => {
       <View style={styles.contentContainer}>
         <Text style={styles.screenTitle}>Blog</Text>
 
-        <FlatList
-          data={communityPostsData}
-          renderItem={renderCommunityPost}
-          keyExtractor={(item) => item.id}
-          style={styles.list}
-          contentContainerStyle={styles.listContentContainer}
-          showsVerticalScrollIndicator={false}
-        />
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+          </View>
+        ) : (
+          <FlatList
+            data={posts}
+            renderItem={renderCommunityPost}
+            keyExtractor={(item) => item.id}
+            style={styles.list}
+            contentContainerStyle={styles.listContentContainer}
+            showsVerticalScrollIndicator={false}
+            onEndReached={loadMorePosts}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={renderFooter}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -131,6 +142,12 @@ const styles = StyleSheet.create({
   },
   listContentContainer: {
     paddingTop: 10,
+    paddingBottom: 20,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

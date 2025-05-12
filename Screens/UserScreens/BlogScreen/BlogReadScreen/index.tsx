@@ -1,5 +1,5 @@
 // Screens/UserScreens/ReadMoreScreen.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,45 +11,19 @@ import {
   Platform,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 import Icon from "react-native-vector-icons/Feather";
 import theme from "../../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { usePostsBlogAndCommunityCall } from "../../../../hooks/Others/query";
+import RenderHTML from "react-native-render-html";
+import FullScreenLoader from "../../../Components/FullScreenLoader";
 
-const staticPostData = {
-  title: "Group Student Study",
-  imageUrl: require("../../../../assets/Images/dummy1.png"),
-  date: "Jan 25, 2025",
-  fullDescription: `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-
-Why do we use it?
-It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-
-Where does it come from?
-Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.35 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
-
-Where can I get some?
-There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
-
-Paragraphs very dull texts to start with 'Lorem ipsum dolor sit amet...'`,
-};
-type RootStackParamList = {
-  PreviousScreen: undefined;
-  ReadMoreScreen: undefined;
-};
-
-type ReadMoreScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  "ReadMoreScreen"
->;
-
-const BlogReadScreen = () => {
-  const navigation = useNavigation<ReadMoreScreenNavigationProp>();
-  const post = staticPostData;
-
+const BlogReadScreen = ({ navigation, route }: any) => {
+  const fetchParticularPost: any = usePostsBlogAndCommunityCall({
+    query: {
+      id: route?.params?.postId,
+    },
+  });
   return (
     <SafeAreaView
       style={[
@@ -57,6 +31,7 @@ const BlogReadScreen = () => {
         Platform.OS === "android" && { paddingTop: useSafeAreaInsets().top },
       ]}
     >
+      {fetchParticularPost?.isLoading && <FullScreenLoader />}
       <StatusBar style="dark" />
       <View style={styles.header}>
         <TouchableOpacity
@@ -76,11 +51,24 @@ const BlogReadScreen = () => {
         contentContainerStyle={styles.scrollContentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Image source={post.imageUrl} style={styles.postImage} />
+        <Image
+          source={{ uri: fetchParticularPost?.data?.posts?.[0]?.image }}
+          style={styles.postImage}
+        />
         <View style={styles.contentPadding}>
-          <Text style={styles.postTitle}>{post.title}</Text>
-          <Text style={styles.postDate}>{post.date}</Text>
-          <Text style={styles.postDescription}>{post.fullDescription}</Text>
+          <Text style={styles.postTitle}>
+            {fetchParticularPost?.data?.posts?.[0]?.title}
+          </Text>
+          <Text style={styles.postDate}>
+            {fetchParticularPost?.data?.posts?.[0]?.date}
+          </Text>
+          <RenderHTML
+            contentWidth={300}
+            source={{
+              html: `<div>${fetchParticularPost?.data?.posts?.[0]?.content}</div>`,
+            }}
+            baseStyle={styles.htmlContent}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -119,6 +107,13 @@ const styles = StyleSheet.create({
   },
   scrollContentContainer: {
     paddingBottom: 30,
+  },
+  htmlContent: {
+    fontSize: 14,
+    color: theme.colors.black,
+    ...theme.font.fontRegular,
+    lineHeight: 20,
+    marginBottom: 10,
   },
   postImage: {
     width: "100%",

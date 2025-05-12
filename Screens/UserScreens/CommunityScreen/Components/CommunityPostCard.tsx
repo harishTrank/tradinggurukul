@@ -3,6 +3,7 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import theme from "../../../../utils/theme";
+import RenderHTML from "react-native-render-html";
 
 interface PostData {
   id: string;
@@ -29,7 +30,7 @@ const CommunityPostCard: React.FC<CommunityPostCardProps> = ({
       onPress={onPress ? () => onPress(post.id) : undefined}
       activeOpacity={onPress ? 0.8 : 1}
     >
-      <Image source={post.imageUrl} style={styles.postImage} />
+      <Image source={{ uri: post?.image }} style={styles.postImage} />
       <View style={styles.contentContainer}>
         <Text
           style={[
@@ -39,13 +40,17 @@ const CommunityPostCard: React.FC<CommunityPostCardProps> = ({
             },
           ]}
         >
-          Education
+          {post?.category?.[0]?.name}
         </Text>
         <Text style={styles.title}>{post.title}</Text>
-        <Text style={styles.description} numberOfLines={3}>
-          {post.description}
-        </Text>
-        <Text style={styles.dateText}>{post.date}</Text>
+        <View style={styles.clampedHtmlContainer}>
+          <RenderHTML
+            contentWidth={300}
+            source={{ html: `<div>${post.content}</div>` }}
+            baseStyle={styles.htmlContent}
+          />
+        </View>
+        <Text style={styles.dateText}>{post?.date}</Text>
         <TouchableOpacity
           style={styles.readMoreButton}
           onPress={() => onReadMore(post.id)}
@@ -75,6 +80,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     backgroundColor: theme.colors.lightGrey,
+  },
+  htmlContent: {
+    fontSize: 14,
+    color: theme.colors.greyText,
+    ...theme.font.fontRegular,
+    lineHeight: 20,
+    marginBottom: 10,
   },
   contentContainer: {
     padding: 15,
@@ -109,6 +121,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: theme.colors.white,
     ...theme.font.fontMedium,
+  },
+  clampedHtmlContainer: {
+    maxHeight: 70,
+    overflow: "hidden",
   },
 });
 

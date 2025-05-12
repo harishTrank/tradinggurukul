@@ -1,55 +1,81 @@
-// screens/CommunityScreen.tsx
-
-import React from "react";
-import { SafeAreaView, StyleSheet, View, Text, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
-import CommunityPostCard from "../Components/CommunityPostCard";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import CommunityPostCard from "../../CommunityScreen/Components/CommunityPostCard";
 import HomeHeader from "../../../Components/HomeHeader";
 import theme from "../../../../utils/theme";
-
-const communityPostsData = [
-  {
-    id: "post1",
-    title: "Group Student Study",
-    imageUrl: require("../../../../assets/Images/dummy1.png"),
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text eve.",
-    date: "Jan 25, 2025",
-  },
-  {
-    id: "post2",
-    title: "Group Student Study",
-    imageUrl: require("../../../../assets/Images/dummy1.png"),
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text eve.",
-    date: "Jan 26, 2025",
-  },
-  {
-    id: "post3",
-    title: "New Course Announcement",
-    imageUrl: require("../../../../assets/Images/dummy1.png"),
-    description:
-      "Exciting news! A new course on Advanced AI is launching next month. Stay tuned for more details and early bird discounts.",
-    date: "Jan 27, 2025",
-  },
-];
+import { postsBlogAndCommunityCall } from "../../../../store/Services/Others";
 
 const CommunityMainScreen = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
+  const [posts, setPosts] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const perPage = 10;
+
+  const fetchPosts = async (isInitialLoad = false) => {
+    try {
+      if (isInitialLoad) setLoading(true);
+      else setLoadingMore(true);
+
+      const res: any = await postsBlogAndCommunityCall({
+        query: {
+          page,
+          per_page: perPage,
+          category: "community",
+        },
+      });
+
+      const newPosts = res?.posts || [];
+
+      setPosts((prev) => (page === 1 ? newPosts : [...prev, ...newPosts]));
+      setHasMore(newPosts.length === perPage);
+    } catch (err) {
+      console.log("Fetch error:", err);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts(true);
+  }, [page]);
+
   const handleReadMore = (postId: string) => {
-    console.log("Read More for Post:", postId);
     navigation.navigate("CommunityReadScreen", { postId });
   };
 
   const handlePostPress = (postId: string) => {
-    console.log("Post Card Pressed:", postId);
-    // handleReadMore(postId);
+    navigation.navigate("CommunityReadScreen", { postId });
   };
 
-  const renderCommunityPost = ({
-    item,
-  }: {
-    item: (typeof communityPostsData)[0];
-  }) => (
+  const loadMorePosts = () => {
+    if (!loadingMore && hasMore) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  const renderFooter = () =>
+    loadingMore ? (
+      <View style={{ paddingVertical: 20 }}>
+        <ActivityIndicator color={theme.colors.primary} />
+      </View>
+    ) : null;
+
+  const renderCommunityPost = ({ item }: any) => (
     <CommunityPostCard
       post={item}
       onReadMore={handleReadMore}
@@ -58,7 +84,12 @@ const CommunityMainScreen = ({ navigation }: any) => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        Platform.OS === "android" && { paddingTop: insets.top },
+      ]}
+    >
       <StatusBar style="dark" />
       <HomeHeader
         onMenuPress={() => navigation.toggleDrawer()}
@@ -70,14 +101,23 @@ const CommunityMainScreen = ({ navigation }: any) => {
       <View style={styles.contentContainer}>
         <Text style={styles.screenTitle}>Community</Text>
 
-        <FlatList
-          data={communityPostsData}
-          renderItem={renderCommunityPost}
-          keyExtractor={(item) => item.id}
-          style={styles.list}
-          contentContainerStyle={styles.listContentContainer}
-          showsVerticalScrollIndicator={false}
-        />
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+          </View>
+        ) : (
+          <FlatList
+            data={posts}
+            renderItem={renderCommunityPost}
+            keyExtractor={(item) => item.id}
+            style={styles.list}
+            contentContainerStyle={styles.listContentContainer}
+            showsVerticalScrollIndicator={false}
+            onEndReached={loadMorePosts}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={renderFooter}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -97,13 +137,18 @@ const styles = StyleSheet.create({
     ...theme.font.fontSemiBold,
     paddingHorizontal: 15,
     paddingTop: 15,
-    paddingBottom: 10,
   },
   list: {
     flex: 1,
   },
   listContentContainer: {
     paddingTop: 10,
+    paddingBottom: 20,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
