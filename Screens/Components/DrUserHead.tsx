@@ -2,8 +2,11 @@ import React from "react";
 import { Image, View, StyleSheet, Text } from "react-native";
 import theme from "../../utils/theme";
 import { TouchableOpacity } from "react-native";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../JotaiStore";
 
 const DrUserHead = ({ navigation }: any) => {
+  const [userDetails]: any = useAtom(userDetailsGlobal);
   return (
     <View style={styles.viewBox}>
       <TouchableOpacity
@@ -12,9 +15,11 @@ const DrUserHead = ({ navigation }: any) => {
       >
         <Image
           style={styles.profile}
-          source={require("../../assets/Images/dummy1.png")}
+          source={{ uri: userDetails?.avatar_url }}
         />
-        <Text style={styles.userName}>Sophia Grace Bennett</Text>
+        <Text
+          style={styles.userName}
+        >{`${userDetails?.first_name} ${userDetails?.last_name}`}</Text>
       </TouchableOpacity>
     </View>
   );

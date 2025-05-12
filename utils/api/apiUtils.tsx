@@ -3,6 +3,7 @@ import Axios from "axios";
 import queryString from "querystring";
 import { Alert } from "react-native";
 
+export const frontend_url = "https://app.tradinggurukul.com";
 export const main_domain = "https://tradinggurukul.com/trading_backend";
 
 export const hostname = () => {

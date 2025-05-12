@@ -61,7 +61,6 @@ const HomeScreen = () => {
       {bannersApi?.isLoading && <FullScreenLoader />}
       <HomeHeader
         onMenuPress={navigation.toggleDrawer}
-        onSearchPress={() => console.log("Notifications pressed")}
         onCartPress={() => navigation.navigate("CartScreen")}
         navigation={navigation}
       />
