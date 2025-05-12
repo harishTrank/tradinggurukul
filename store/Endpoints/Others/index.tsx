@@ -29,4 +29,11 @@ export const othersEndpoints = {
       uri: "/getposts",
     },
   },
+  editProfile: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/profile",
+    },
+  },
 };

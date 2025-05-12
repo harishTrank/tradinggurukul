@@ -57,15 +57,17 @@ const BlogReadScreen = ({ navigation, route }: any) => {
         />
         <View style={styles.contentPadding}>
           <Text style={styles.postTitle}>
-            {fetchParticularPost?.data?.posts?.[0]?.title}
+            {fetchParticularPost?.data?.posts?.[0]?.title || ""}
           </Text>
           <Text style={styles.postDate}>
-            {fetchParticularPost?.data?.posts?.[0]?.date}
+            {fetchParticularPost?.data?.posts?.[0]?.date || ""}
           </Text>
           <RenderHTML
             contentWidth={300}
             source={{
-              html: `<div>${fetchParticularPost?.data?.posts?.[0]?.content}</div>`,
+              html: `<div>${
+                fetchParticularPost?.data?.posts?.[0]?.content || ""
+              }</div>`,
             }}
             baseStyle={styles.htmlContent}
           />

@@ -24,14 +24,8 @@ import * as Yup from "yup";
 import Icon from "react-native-vector-icons/Feather";
 import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const initialUserData = {
-  firstName: "Sophia",
-  lastName: "Bennett",
-  email: "Sophia@Example.com",
-  displayName: "Sophia Grace Bennett",
-  profileImageUrl: require("../../../assets/Images/dummy1.png"),
-};
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../../JotaiStore";
 
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -62,6 +56,15 @@ const IOS_HEADER_HEIGHT_ESTIMATE = 10 * 2 + 24 + 1;
 const EditProfileScreen = () => {
   const navigation = useNavigation<EditProfileScreenNavigationProp>();
   const insets = useSafeAreaInsets();
+  const [userDetailsGl]: any = useAtom(userDetailsGlobal);
+
+  const initialUserData = {
+    firstName: userDetailsGl?.first_name || "",
+    lastName: userDetailsGl?.last_name || "",
+    email: userDetailsGl?.email || "",
+    displayName: userDetailsGl?.username || "",
+    profileImageUrl: userDetailsGl?.avatar_url || "",
+  };
   const [profileImage, setProfileImage] = useState(
     initialUserData.profileImageUrl
   );
@@ -196,7 +199,10 @@ const EditProfileScreen = () => {
               >
                 <View style={styles.profileImageContainer}>
                   <TouchableOpacity onPress={handleChangeProfileImage}>
-                    <Image source={profileImage} style={styles.profileImage} />
+                    <Image
+                      source={{ uri: profileImage }}
+                      style={styles.profileImage}
+                    />
                     <View style={styles.editIconOverlay}>
                       <Icon
                         name="camera"
@@ -262,14 +268,14 @@ const EditProfileScreen = () => {
                   </View>
 
                   <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Display Name</Text>
+                    <Text style={styles.label}>User Name</Text>
                     <TextInput
                       ref={displayNameInputRef}
                       style={styles.input}
                       onChangeText={handleChange("displayName")}
                       onBlur={handleBlur("displayName")}
                       value={values.displayName}
-                      placeholder="Enter your display name"
+                      placeholder="Enter your user name"
                       placeholderTextColor={theme.colors.greyText || "#888"}
                       returnKeyType="done"
                       onSubmitEditing={() => handleSubmit()}

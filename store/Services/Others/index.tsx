@@ -22,3 +22,10 @@ export const postsBlogAndCommunityCall = ({ query }: any) =>
     uriEndPoint: othersEndpoints.postsBlogAndCommunity.v1,
     query,
   });
+
+export const editProfileCall = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.editProfile.v1,
+    body,
+    multipart: true,
+  });
