@@ -4,6 +4,7 @@ import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import theme from "../../utils/theme";
 import ImageModule from "../../ImageModule";
+import { useNavigation } from "@react-navigation/native";
 
 const logoSource = ImageModule.appIcon;
 
@@ -13,8 +14,8 @@ const HomeHeader = ({
   onCartPress,
   search,
   menu = true,
-  navigation,
 }: any) => {
+  const navigation: any = useNavigation();
   return (
     <View style={styles.headerContainer}>
       {menu ? (

@@ -25,11 +25,13 @@ import {
   useGetCategoryCall,
 } from "../../../hooks/Others/query";
 import FullScreenLoader from "../../Components/FullScreenLoader";
+import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
-const HomeScreen = ({ navigation }: any) => {
+const HomeScreen = () => {
   const [userDetails]: any = useAtom(userDetailsGlobal);
+  const navigation: any = useNavigation();
   const bannersApi: any = useBannersCall();
   const categoriesApi: any = useGetCategoryCall();
   const topSearchApi: any = useCustomProductsCall({
@@ -42,7 +44,11 @@ const HomeScreen = ({ navigation }: any) => {
 
   const handleSeeMore = (section: string) => {
     console.log(`See More pressed for: ${section}`);
-    navigation.navigate("SearchCourseScreen");
+    if (section === "Top Search") {
+      navigation.navigate("AllCourses");
+    } else {
+      navigation.navigate("SearchCourseScreen");
+    }
   };
 
   const handleCardPress = (item: any) => {
@@ -113,7 +119,7 @@ const HomeScreen = ({ navigation }: any) => {
         {/* --- Most Watching --- */}
         <SectionHeader
           title="Top Searches"
-          onSeeMore={() => handleSeeMore("Most Watching")}
+          onSeeMore={() => handleSeeMore("Top Search")}
         />
         <FlatList
           data={topSearchApi?.data?.product || []}

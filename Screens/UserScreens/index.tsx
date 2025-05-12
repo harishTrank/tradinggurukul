@@ -14,6 +14,7 @@ import CartScreen from "./CartScreen";
 import EditProfileScreen from "./EditProfileScreen";
 import ViewCourseScreen from "./ViewCourseScreen";
 import SplashScreen from "../SplashScreen";
+import AllCoursesScreen from "./AllCoursesScreen";
 
 const Stack = createStackNavigator<any>();
 
