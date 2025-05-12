@@ -36,4 +36,11 @@ export const othersEndpoints = {
       uri: "/profile",
     },
   },
+  getUserProfile: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/myprofile",
+    },
+  },
 };

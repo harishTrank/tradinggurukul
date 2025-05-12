@@ -31,6 +31,7 @@ import Toast from "react-native-toast-message";
 import { getImage, takePicture } from "../../../utils/extra/ImagePicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FullScreenLoader from "../../Components/FullScreenLoader";
+import { getfileobj } from "../../../utils/extra/UserUtils";
 
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -68,7 +69,7 @@ const EditProfileScreen = () => {
     firstName: userDetailsGl?.first_name || "",
     lastName: userDetailsGl?.last_name || "",
     email: userDetailsGl?.email || "",
-    displayName: userDetailsGl?.display_name || "",
+    displayName: userDetailsGl?.display_name || userDetailsGl?.username || "",
     profileImageUrl:
       userDetailsGl?.avatar_url ||
       "https://imgs.search.brave.com/6mHxYf-0_iKSMzgOo-MtP40kdw8ehAhV39Ci6xD2-Ac/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS12ZWN0/b3IvcHJvZmlsZS1p/Y29uLXZlY3Rvci1p/bWFnZS1jYW4tYmUt/dXNlZC11aV8xMjA4/MTYtMjYwOTMyLmpw/Zz9zZW10PWFpc19o/eWJyaWQmdz03NDA",
@@ -140,7 +141,7 @@ const EditProfileScreen = () => {
     Keyboard.dismiss();
     const body: any = new FormData();
     body.append("user_id", userDetailsGl?.id);
-    body.append("file", profileImage);
+    body.append("image", getfileobj(profileImage));
     body.append("first_name", values?.firstName);
     body.append("last_name", values?.lastName);
     body.append("display_name", values?.displayName);

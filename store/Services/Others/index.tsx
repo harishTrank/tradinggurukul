@@ -29,3 +29,10 @@ export const editProfileCall = ({ body }: any) =>
     body,
     multipart: true,
   });
+
+export const getUserProfileCall = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.getUserProfile.v1,
+    body,
+    multipart: true,
+  });
