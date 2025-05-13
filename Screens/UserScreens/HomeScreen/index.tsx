@@ -54,8 +54,11 @@ const HomeScreenComponent = () => {
     }
   };
 
-  const handleCardPress = (item: any) => {
-    console.log(`Card pressed: ${item.title}`);
+  const handleCardPress = (val: any, type: any) => {
+    if (type === "Top Search") {
+      navigation.navigate("ViewCourseScreen", { courseId: val });
+    } else {
+    }
   };
 
   return (
@@ -106,7 +109,7 @@ const HomeScreenComponent = () => {
             <CategoryCard
               title={item?.name}
               imageUrl={item?.image?.src}
-              onPress={() => handleCardPress(item)}
+              onPress={() => handleCardPress(item?.name, "Popular")}
             />
           )}
           keyExtractor={(item) => item.id}
@@ -132,7 +135,7 @@ const HomeScreenComponent = () => {
               price={item?.price}
               regular_price={item?.regular_price}
               tag={item?.categories?.[0]?.name}
-              onPress={() => handleCardPress(item)}
+              onPress={() => handleCardPress(item?.id, "Top Search")}
             />
           )}
           keyExtractor={(item) => item.id}

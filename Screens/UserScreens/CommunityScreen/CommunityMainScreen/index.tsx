@@ -84,12 +84,7 @@ const CommunityMainScreen = ({ navigation }: any) => {
   );
 
   return (
-    <SafeAreaView
-      style={[
-        styles.safeArea,
-        Platform.OS === "android" && { paddingTop: insets.top },
-      ]}
-    >
+    <SafeAreaView style={[styles.safeArea]}>
       <StatusBar style="dark" />
       <HomeHeader
         onMenuPress={() => navigation.toggleDrawer()}
