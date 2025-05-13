@@ -176,7 +176,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
             tagsStyles={tagsStyles}
           />
         </View>
-        <View>
+        <View style={[Platform.OS === "android" && { paddingBottom: 50 }]}>
           {topicsData.length > 0 ? (
             <TopicList
               topicList={topicsData}
