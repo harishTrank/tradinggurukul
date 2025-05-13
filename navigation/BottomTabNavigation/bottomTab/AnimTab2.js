@@ -174,8 +174,6 @@ export default function AnimTab1() {
     >
       <Tab.Navigator
         tabBarPosition="bottom"
-        swipeEnabled={true}
-        animationEnabled={true}
         tabBar={(props) => <MyCustomTabBar {...props} />}
       >
         {TabArr.map((item, index) => {

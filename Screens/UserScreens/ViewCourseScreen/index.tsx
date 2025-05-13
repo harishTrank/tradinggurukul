@@ -18,11 +18,15 @@ import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
-import { getCourseDetailsCall } from "../../../store/Services/Others";
+import {
+  getCourseDetailsCall,
+  getCourseTopicsCall,
+} from "../../../store/Services/Others";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import dayjs from "dayjs";
 import RenderHTML from "react-native-render-html";
 import { getProcessedHtml } from "../../../utils/extra/UserUtils";
+import TopicList from "./Components/TopicList";
 
 const { width } = Dimensions.get("window");
 
@@ -50,6 +54,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
   const [course, setCourse]: any = useState(null);
   const [isPurchased, setIsPurchased] = useState(false);
   const [userDetails]: any = useAtom(userDetailsGlobal);
+  const [topicsData, setTopicsData]: any = useState([]);
 
   const viewCourseApiCallManager = () => {
     getCourseDetailsCall({
@@ -65,10 +70,20 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
           res?.courseData?.find((item: any) => item?.id === res?.id)
             ?.subscriptionId || undefined;
         if (res?.purchased && res?.id && subId) {
-          navigation.replace("MyCourseViewScreen", {
+          return navigation.replace("MyCourseViewScreen", {
             prodId: res?.id,
             subId,
           });
+        } else {
+          getCourseTopicsCall({
+            query: {
+              course_id: res?.id,
+            },
+          })
+            ?.then((topics: any) => {
+              setTopicsData(topics);
+            })
+            ?.catch((err: any) => console.log("err", err));
         }
       })
       ?.catch((err: any) => console.log("err", JSON.stringify(err)));
@@ -160,6 +175,19 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
             }}
             tagsStyles={tagsStyles}
           />
+        </View>
+        <View>
+          {topicsData.length > 0 ? (
+            <TopicList
+              topicList={topicsData}
+              isPreview={true}
+              navigation={navigation}
+            />
+          ) : (
+            <Text style={styles.noContentTxt}>
+              No course content available.
+            </Text>
+          )}
         </View>
       </ScrollView>
       <View style={bottomBarStyle}>
@@ -329,6 +357,13 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontSize: 16,
     color: theme.colors.greyText,
+  },
+  noContentTxt: {
+    color: theme.colors.grey,
+    fontSize: 14,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+    paddingTop: 8,
   },
 });
 

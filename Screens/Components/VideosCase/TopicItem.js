@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontSize: 14,
     paddingBottom: 4,
+    ...theme.font.fontSemiBold,
   },
   topicContentWrap: {
     paddingStart: 8,
@@ -79,6 +80,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     textTransform: "capitalize",
     fontSize: 12,
+    ...theme.font.fontRegular,
   },
   playVideoWrap: {
     paddingHorizontal: 16,

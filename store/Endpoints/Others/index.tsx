@@ -57,4 +57,11 @@ export const othersEndpoints = {
       uri: "/courseDetail",
     },
   },
+  getCourseTopics: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/sectionTopic",
+    },
+  },
 };
