@@ -15,6 +15,7 @@ import ViewCourseScreen from "./ViewCourseScreen";
 import SplashScreen from "../SplashScreen";
 import AllCoursesScreen from "./AllCoursesScreen";
 import MyCourseViewScreen from "./MyCourseViewScreen/index.jsx";
+import PreviewTopicScreen from "./PreviewTopicScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -46,6 +47,7 @@ const UserScreens = () => {
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="ViewCourseScreen" component={ViewCourseScreen} />
       <Stack.Screen name="MyCourseViewScreen" component={MyCourseViewScreen} />
+      <Stack.Screen name="PreviewTopicScreen" component={PreviewTopicScreen} />
     </Stack.Navigator>
   );
 };
