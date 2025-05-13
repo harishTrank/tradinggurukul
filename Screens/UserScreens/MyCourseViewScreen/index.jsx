@@ -6,15 +6,16 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
-  Dimensions,
 } from "react-native";
 import { useSelector } from "react-redux";
 import theme from "../../../utils/theme";
 import TopicSection from "../../Components/VideosCase/TopicSection";
 import { isEmptyObj } from "../../../utils/extra/UserUtils";
 import WebVideoPlayer from "../../Components/VideosCase/WebVideoPlayer";
-
-const height = Dimensions.get("window").height;
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../../JotaiStore";
+import { getCourseMyDetailsCall } from "../../../store/Services/Others";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ListItem = (props) => {
   return (
@@ -25,7 +26,7 @@ const ListItem = (props) => {
 };
 
 const CourseDetailScreen = ({ route, navigation }) => {
-  const currentUser = useSelector((state) => state.user.userInfo);
+  const [currentUser] = useAtom(userDetailsGlobal);
   const topic = useSelector((state) => state.topic);
 
   const [coursesData, setCoursesData] = React.useState({
@@ -34,8 +35,6 @@ const CourseDetailScreen = ({ route, navigation }) => {
   });
 
   React.useEffect(() => {
-    console.log("Topc change", topic);
-
     setCoursesData({
       ...coursesData,
       activeTopic: topic.activeTopic,
@@ -43,8 +42,6 @@ const CourseDetailScreen = ({ route, navigation }) => {
   }, [topic]);
 
   const { prodId, subId } = route.params;
-
-  console.log("route.params", route.params);
 
   React.useEffect(() => {
     fetchCourse();
@@ -55,23 +52,23 @@ const CourseDetailScreen = ({ route, navigation }) => {
       if (currentUser === null || !subId) {
         navigation.goBack();
       }
+      let res = await getCourseMyDetailsCall({
+        query: {
+          sub_id: subId,
+          user_id: currentUser.id,
+        },
+      });
 
-      let res = await axios.get(
-        `${api_url}/courseDetail?sub_id=${subId}&user_id=${currentUser.id}`
-      );
-      console.log("User Course Detail res", res.data);
-
-      if (!isEmptyObj(res.data) && res.data.sectionTopic.length > 0) {
+      if (!isEmptyObj(res) && res.sectionTopic.length > 0) {
         setCoursesData({
           ...coursesData,
-          data: res.data.sectionTopic,
+          data: res.sectionTopic,
           activeTopic: {
-            title: res.data.sectionTopic[0].sectionTopics[0].topicTitle,
-            data: res.data.sectionTopic[0].sectionTopics[0].topicPreview
-              .previewData,
-            type: res.data.sectionTopic[0].sectionTopics[0].topicType,
-            id: res.data.sectionTopic[0].sectionTopics[0].id,
-            sectionId: res.data.sectionTopic[0].sectionId,
+            title: res.sectionTopic[0].sectionTopics[0].topicTitle,
+            data: res.sectionTopic[0].sectionTopics[0].topicPreview.previewData,
+            type: res.sectionTopic[0].sectionTopics[0].topicType,
+            id: res.sectionTopic[0].sectionTopics[0].id,
+            sectionId: res.sectionTopic[0].sectionId,
           },
         });
       } else {
@@ -100,7 +97,9 @@ const CourseDetailScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.parentContainer}>
+    <View
+      style={[styles.parentContainer, { paddingTop: useSafeAreaInsets().top }]}
+    >
       {coursesData.data !== null ? (
         coursesData.data.length > 0 ? (
           <>
@@ -155,6 +154,7 @@ const CourseDetailScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   parentContainer: {
     flex: 1,
+    backgroundColor: theme.colors.white,
   },
   playerWrap: {
     height: 350,

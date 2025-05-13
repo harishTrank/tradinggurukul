@@ -61,10 +61,15 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
       ?.then((res: any) => {
         setIsPurchased(res?.purchased);
         setCourse(res);
-        navigation.replace("MyCourseViewScreen", {
-          prodId: "",
-          subId: "",
-        });
+        const subId =
+          res?.courseData?.find((item: any) => item?.id === res?.id)
+            ?.subscriptionId || undefined;
+        if (res?.purchased && res?.id && subId) {
+          navigation.replace("MyCourseViewScreen", {
+            prodId: res?.id,
+            subId,
+          });
+        }
       })
       ?.catch((err: any) => console.log("err", JSON.stringify(err)));
   };

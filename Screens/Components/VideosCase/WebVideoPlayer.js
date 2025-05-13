@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { WebView } from "react-native-webview";
 import { frontend_url } from "../../../utils/api/apiUtils";
+import theme from "../../../utils/theme";
 
 const WebVideoPlayer = ({ videoUrl }) => {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -83,7 +84,7 @@ const WebVideoPlayer = ({ videoUrl }) => {
 
       {isLoading ? (
         <View style={styles.loadWrap}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       ) : null}
     </View>
