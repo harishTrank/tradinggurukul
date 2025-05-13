@@ -11,57 +11,81 @@ import {
   Platform,
   FlatList,
   Alert,
+  Dimensions,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FeatherIcon from "react-native-vector-icons/Feather";
-
 import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-  CourseDetail,
-  MOCK_PURCHASED_COURSE_IDS,
-  allCourseDetailsData,
-} from "./Components/courseDetailsData";
 import LessonListItem from "./Components/LessonListItem";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../../JotaiStore";
+import { getCourseDetailsCall } from "../../../store/Services/Others";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import dayjs from "dayjs";
+import RenderHTML from "react-native-render-html";
 
-type RootStackParamList = {
-  ViewCourseScreen: { courseId: string };
+const { width } = Dimensions.get("window");
+
+const tagsStyles: any = {
+  body: {
+    whiteSpace: "normal",
+    color: theme.colors.text,
+  },
+  a: {
+    color: theme.colors.primary,
+  },
+  strong: {
+    fontWeight: "bold",
+    fontSize: "16px",
+  },
+  h2: {
+    fontWeight: "bold",
+    fontSize: "20px",
+  },
 };
 
-type ViewCourseScreenRouteProp = RouteProp<
-  RootStackParamList,
-  "ViewCourseScreen"
->;
-type ViewCourseScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  "ViewCourseScreen"
->;
+const getProcessedHtml = (descriptionString: any) => {
+  if (!descriptionString) {
+    return "<p>No description available.</p>";
+  }
 
-const ViewCourseScreen = () => {
-  const route = useRoute<ViewCourseScreenRouteProp>();
-  const navigation = useNavigation<ViewCourseScreenNavigationProp>();
-  const insets = useSafeAreaInsets(); // Call hook at the top level
+  let html = descriptionString;
+  html = html.replace(/\\n/g, "<br />");
+  html = html.replace(/\n/g, "<br />");
+  html = html.replace(/(<(ul|ol)(?: [^>]*)?>)\s*<br\s*\/?>/gi, "$1");
+  html = html.replace(/<\/li>\s*<br\s*\/?>\s*(<li(?: [^>]*)?>)/gi, "</li>$1");
+  html = html.replace(/<br\s*\/?>\s*(<\/(ul|ol)>)/gi, "$1");
+  return html;
+};
+
+const ViewCourseScreen = ({ navigation, route }: any) => {
+  const insets = useSafeAreaInsets();
   const { courseId } = route.params;
-
-  const [course, setCourse] = useState<CourseDetail | null>(null);
+  const [course, setCourse]: any = useState(null);
   const [isPurchased, setIsPurchased] = useState(false);
+  const [userDetails]: any = useAtom(userDetailsGlobal);
+
+  const viewCourseApiCallManager = () => {
+    getCourseDetailsCall({
+      query: {
+        id: courseId,
+        user_id: userDetails?.id,
+      },
+    })
+      ?.then((res: any) => {
+        setIsPurchased(res?.purchased);
+        setCourse(res);
+      })
+      ?.catch((err: any) => console.log("err", JSON.stringify(err)));
+  };
 
   useEffect(() => {
-    const foundCourse = allCourseDetailsData.find((c) => c.id === courseId);
-    if (foundCourse) {
-      setCourse(foundCourse);
-      setIsPurchased(
-        MOCK_PURCHASED_COURSE_IDS.includes(foundCourse.id) &&
-          !!foundCourse.lessons
-      );
-    } else {
-      Alert.alert("Error", "Course not found.");
-      navigation.goBack();
+    if (courseId) {
+      viewCourseApiCallManager();
     }
-  }, [courseId, navigation]);
+  }, [courseId]);
 
   const handleAddToCart = () => {
     Alert.alert("Add to Cart", `"${course?.title}" added to cart (simulated).`);
@@ -84,10 +108,9 @@ const ViewCourseScreen = () => {
     </View>
   );
 
-  // Dynamically create bottomBar style using insets
   const bottomBarStyle = useMemo(
     () => ({
-      ...styles.bottomBarBase, // Use a base style object
+      ...styles.bottomBarBase,
       paddingBottom: Platform.OS === "ios" ? insets.bottom || 15 : 15,
     }),
     [insets.bottom]
@@ -115,68 +138,44 @@ const ViewCourseScreen = () => {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContentContainer,
-          // Add padding to scroll content to avoid overlap with dynamic bottom bar
           {
             paddingBottom:
               Platform.OS === "ios" ? (insets.bottom || 15) + 65 : 65,
           },
         ]}
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.videoPreviewContainer}>
           <Image
-            source={course.videoPreviewUrl || course.imageUrl}
+            source={{ uri: course?.images?.[0]?.src }}
             style={styles.videoPreviewImage}
           />
-          <TouchableOpacity style={styles.playButtonOverlay}>
+          {/* <TouchableOpacity style={styles.playButtonOverlay}>
             <Icon name="play-circle" size={60} color={theme.colors.white} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View style={styles.contentPadding}>
-          <Text style={styles.courseTitleMain}>{course.title}</Text>
-
-          <View style={styles.metaInfoRow}>
-            <View style={styles.metaItem}>
-              <Icon
-                name="clock-time-four-outline"
-                size={16}
-                color={theme.colors.greyText}
-              />
-              <Text style={styles.metaText}>{course.duration}</Text>
-            </View>
-            <View style={styles.metaItem}>
-              <Icon
-                name="video-library"
-                size={16}
-                color={theme.colors.greyText}
-              />
-              <Text style={styles.metaText}>{course.lessonCount} Lessons</Text>
-            </View>
+          <Text style={styles.courseTitleMain}>{course?.name}</Text>
+          <View style={styles.priceTagBox}>
+            <Text style={styles.priceTag}>₹{course?.price}</Text>
+            <Text style={styles.regularPrice}>₹{course?.regular_price}</Text>
           </View>
-          <View style={styles.metaInfoRow}>
-            <View style={styles.metaItem}>
-              <Icon name="star" size={16} color={theme.colors.warning} />
-              <Text style={styles.metaText}>
-                {course.rating.toFixed(1)} {course.ratingCount}
-              </Text>
-            </View>
-            <View style={styles.metaItem}>
-              <Icon
-                name="account-group-outline"
-                size={16}
-                color={theme.colors.greyText}
-              />
-              <Text style={styles.metaText}>{course.studentCount}</Text>
-            </View>
+          <View style={styles.priceTagBox}>
+            <AntDesign name="earth" size={20} color={theme.colors.black} />
+            <Text style={styles.updatedDateText}>{`Updated on ${dayjs(
+              course?.date_modified
+            ).format("DD-MM-YYYY")}`}</Text>
           </View>
-
-          <Text style={styles.shortDescription}>{course.shortDescription}</Text>
-
-          <Text style={styles.sectionTitle}>About Course</Text>
-          <Text style={styles.aboutCourseText}>{course.aboutCourse}</Text>
+          <RenderHTML
+            contentWidth={width}
+            source={{
+              html: getProcessedHtml(course.description),
+            }}
+            tagsStyles={tagsStyles}
+          />
         </View>
       </ScrollView>
-      {/* Apply the dynamic style here */}
       <View style={bottomBarStyle}>
         <Text style={styles.priceText}>{course.price}</Text>
         <TouchableOpacity
@@ -257,11 +256,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  scrollContentContainer: {
-    // paddingBottom is now dynamically added in renderNotPurchasedView if bottom bar is present
-    // Default paddingBottom if needed for general spacing
-    // paddingBottom: 20,
-  },
+  scrollContentContainer: {},
   videoPreviewContainer: {
     width: "100%",
     height: 220,
@@ -274,8 +269,31 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "cover",
   },
+  priceTag: {
+    color: theme.colors.black,
+    ...theme.font.fontSemiBold,
+    fontSize: 16,
+  },
   playButtonOverlay: {
     position: "absolute",
+  },
+  regularPrice: {
+    color: theme.colors.black,
+    ...theme.font.fontMedium,
+    fontSize: 13,
+    textDecorationLine: "line-through",
+    marginLeft: 10,
+  },
+  updatedDateText: {
+    color: theme.colors.black,
+    ...theme.font.fontMedium,
+    fontSize: 13,
+    marginLeft: 10,
+  },
+  priceTagBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 3,
   },
   contentPadding: {
     paddingHorizontal: 20,
@@ -289,10 +307,9 @@ const styles = StyleSheet.create({
     borderBottomColor: theme.colors.border || "#EEE",
   },
   courseTitleMain: {
-    fontSize: 22,
+    fontSize: 20,
     ...theme.font.fontBold,
     color: theme.colors.black,
-    marginBottom: 15,
   },
   metaInfoRow: {
     flexDirection: "row",
@@ -310,27 +327,6 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     marginLeft: 6,
   },
-  shortDescription: {
-    ...theme.font.fontRegular,
-    fontSize: 14,
-    color: theme.colors.greyText,
-    lineHeight: 20,
-    marginVertical: 15,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    ...theme.font.fontSemiBold,
-    color: theme.colors.black,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  aboutCourseText: {
-    ...theme.font.fontRegular,
-    fontSize: 14,
-    color: theme.colors.text,
-    lineHeight: 22,
-  },
-  // Renamed to bottomBarBase for the static parts
   bottomBarBase: {
     position: "absolute",
     bottom: 0,

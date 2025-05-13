@@ -36,3 +36,9 @@ export const getUserProfileCall = ({ body }: any) =>
     body,
     multipart: true,
   });
+
+export const getCourseDetailsCall = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.getCourseDetails.v1,
+    query,
+  });

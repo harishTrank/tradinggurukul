@@ -43,4 +43,11 @@ export const othersEndpoints = {
       uri: "/myprofile",
     },
   },
+  getCourseDetails: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/get-products-by-id",
+    },
+  },
 };

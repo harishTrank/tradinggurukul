@@ -64,7 +64,6 @@ const EditProfileScreen = () => {
   const insets = useSafeAreaInsets();
   const [userDetailsGl, setUserDetails]: any = useAtom(userDetailsGlobal);
   const updateProfileAPiCall: any = useEditProfileCall();
-
   const initialUserData = {
     firstName: userDetailsGl?.first_name || "",
     lastName: userDetailsGl?.last_name || "",
