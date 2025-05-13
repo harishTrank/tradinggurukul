@@ -150,7 +150,6 @@ const EditProfileScreen = () => {
         body,
       })
       ?.then(async (res: any) => {
-        console.log("res", JSON.stringify(res));
         if (res?.status == "0") {
           return Toast.show({
             type: "error",
