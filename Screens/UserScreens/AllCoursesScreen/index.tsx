@@ -181,8 +181,8 @@ const AllCoursesScreen = ({ route }: any) => {
       <StatusBar style="dark" />
       <HomeHeader onMenuPress={handleMenuPress} onCartPress={handleCartPress} />
 
+      <Text style={styles.screenTitle}>All Courses</Text>
       <View style={styles.mainContainer}>
-        <Text style={styles.screenTitle}>All Courses</Text>
         <DropDownComponent
           data={categoriesApi?.data || []}
           value={selectScript?.name}
@@ -239,8 +239,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     ...theme.font.fontBold,
     color: theme.colors.black,
-    marginTop: 15,
-    marginBottom: 10,
+    marginLeft: 15,
+    marginVertical: 5,
   },
   list: {
     flex: 1,

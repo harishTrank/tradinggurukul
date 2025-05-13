@@ -11,10 +11,10 @@ import theme from "../../../../utils/theme";
 export interface Course {
   id: string;
   title: string;
-  imageUrl: any; // Can be require() or { uri: string }
+  imageUrl: any;
   rating: number;
-  reviews: string; // e.g., "(551)"
-  price: string; // e.g., "₹999"
+  reviews: string;
+  price: string;
 }
 
 interface CourseCardProps {
@@ -57,13 +57,13 @@ const styles = StyleSheet.create({
     width: cardWidth,
     backgroundColor: theme.colors.white,
     borderRadius: 8,
-    margin: 7.5, // This creates 15px between cards
+    margin: 7.5,
     overflow: "hidden",
     ...theme.elevationLight,
   },
   courseImage: {
     width: "100%",
-    height: 120, // Adjust as needed
+    height: 120,
     resizeMode: "cover",
   },
   contentContainer: {
