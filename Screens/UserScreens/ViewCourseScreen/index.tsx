@@ -9,16 +9,13 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
-  FlatList,
   Alert,
   Dimensions,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import LessonListItem from "./Components/LessonListItem";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import { getCourseDetailsCall } from "../../../store/Services/Others";
@@ -78,10 +75,6 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
     Alert.alert("Add to Cart", `"${course?.title}" added to cart (simulated).`);
   };
 
-  const handleLessonPress = (lessonId: string) => {
-    Alert.alert("Play Lesson", `Playing lesson ${lessonId} (simulated).`);
-  };
-
   const renderHeader = () => (
     <View style={styles.header}>
       <TouchableOpacity
@@ -137,9 +130,6 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
             source={{ uri: course?.images?.[0]?.src }}
             style={styles.videoPreviewImage}
           />
-          {/* <TouchableOpacity style={styles.playButtonOverlay}>
-            <Icon name="play-circle" size={60} color={theme.colors.white} />
-          </TouchableOpacity> */}
         </View>
 
         <View style={styles.contentPadding}>
@@ -175,27 +165,6 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
     </>
   );
 
-  const renderPurchasedView = () => (
-    <>
-      <View style={styles.contentPaddingPurchased}>
-        <Text style={styles.courseTitleMain}>{course.title}</Text>
-      </View>
-      <FlatList
-        data={course.lessons || []}
-        renderItem={({ item }) => (
-          <LessonListItem item={item} onPress={handleLessonPress} />
-        )}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={
-          <Text style={styles.emptyListText}>
-            No lessons available for this course.
-          </Text>
-        }
-        contentContainerStyle={{ paddingBottom: insets.bottom || 10 }}
-      />
-    </>
-  );
-
   return (
     <SafeAreaView
       style={[
@@ -205,7 +174,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
     >
       <StatusBar style="dark" />
       {renderHeader()}
-      {isPurchased ? renderPurchasedView() : renderNotPurchasedView()}
+      {!isPurchased && renderNotPurchasedView()}
     </SafeAreaView>
   );
 };
