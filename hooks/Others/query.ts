@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { bannersCall, customProductsCall, getCategoryCall, getCourseDetailsCall, postsBlogAndCommunityCall } from "../../store/Services/Others";
+import { bannersCall, customProductsCall, getCategoryCall, getCourseDetailsCall, getMyCoursesCall, postsBlogAndCommunityCall } from "../../store/Services/Others";
 
 export const useCustomProductsCall = (payload: any) =>
   useQuery(["customProductsCall", payload], () => customProductsCall(payload));
@@ -17,4 +17,6 @@ export const useBannersCall = () =>
 
   export const useGetCourseDetailsCall = (payload: any) =>
   useQuery(["getCourseDetailsCall", payload], () => getCourseDetailsCall(payload));
+  
+
   

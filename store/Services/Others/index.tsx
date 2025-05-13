@@ -54,3 +54,9 @@ export const getCourseTopicsCall = ({ query }: any) =>
     uriEndPoint: othersEndpoints.getCourseTopics.v1,
     query,
   });
+
+export const getMyCoursesCall = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.getMyCourses.v1,
+    query,
+  });

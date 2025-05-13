@@ -1,77 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, FlatList, View, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import HomeHeader from "../../Components/HomeHeader";
 import theme from "../../../utils/theme";
 import MyCourseListItem from "./Components/MyCourseListItem";
-
-const myCoursesData = [
-  {
-    id: "mc1",
-    title: "Introduction to Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.0,
-    ratingCount: 351,
-    status: "viewed" as const,
-  },
-  {
-    id: "mc2",
-    title: "Advanced Stock Trading Strategies",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.8,
-    ratingCount: 655,
-    status: "pending" as const,
-  },
-  {
-    id: "mc3",
-    title: "UI/UX Design Fundamentals",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.5,
-    ratingCount: 420,
-    status: "pending" as const,
-  },
-  {
-    id: "mc4",
-    title: "Python for Data Science Beginners",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.2,
-    ratingCount: 210,
-    status: "pending" as const,
-  },
-  {
-    id: "mc5",
-    title: "Mastering React Native Development",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.9,
-    ratingCount: 830,
-    status: "viewed" as const,
-  },
-  {
-    id: "mc6",
-    title: "The Complete Guide to Photography",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.4,
-    ratingCount: 515,
-    status: "pending" as const,
-  },
-];
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../../JotaiStore";
+import { getMyCoursesCall } from "../../../store/Services/Others";
 
 const MyCoursesScreen = ({ navigation }: any) => {
+  const [userDetails]: any = useAtom(userDetailsGlobal);
+  const [myCoursesData, setMyCoursesData]: any = useState([]);
+
+  const getAllCoursesManager = () => {
+    getMyCoursesCall({
+      query: {
+        user_id: userDetails?.id,
+      },
+    })
+      ?.then((res: any) => {
+        if (res?.code == 1) {
+          setMyCoursesData(res?.demoData);
+        }
+      })
+      ?.catch((err: any) => console.log("err", err));
+  };
+  useEffect(() => {
+    if (userDetails?.id) {
+      getAllCoursesManager();
+    }
+  }, [userDetails?.id]);
+
   const handleCoursePress = (courseId: string) => {
-    console.log("Navigate to Course Details:", courseId);
-    navigation.navigate("ViewCourseScreen", { courseId: "courseCrypto101" });
+    navigation.navigate("ViewCourseScreen", { courseId });
   };
 
   const handlePlayPress = (courseId: string) => {
-    console.log("Play Video for Course:", courseId);
-    // navigation.navigate('VideoPlayerScreen', { courseId });
+    navigation.navigate("VideoPlayerScreen", { courseId });
   };
 
   const renderCourseItem = ({ item }: { item: (typeof myCoursesData)[0] }) => (
     <MyCourseListItem
       course={item}
-      onPress={handleCoursePress}
-      onPlayPress={handlePlayPress}
+      onPress={() => handleCoursePress(item?.id)}
+      onPlayPress={() => handlePlayPress(item?.id)}
     />
   );
 
