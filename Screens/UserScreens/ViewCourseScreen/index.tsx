@@ -61,6 +61,10 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
       ?.then((res: any) => {
         setIsPurchased(res?.purchased);
         setCourse(res);
+        navigation.replace("MyCourseViewScreen", {
+          prodId: "",
+          subId: "",
+        });
       })
       ?.catch((err: any) => console.log("err", JSON.stringify(err)));
   };

@@ -7,6 +7,9 @@ import { PaperProvider, DefaultTheme } from "react-native-paper";
 import { en, registerTranslation } from "react-native-paper-dates";
 import theme from "./utils/theme";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/lib/integration/react";
+import { persistor, store } from "./VideoRedux";
 
 registerTranslation("en", en);
 export const queryClient = new QueryClient();
@@ -30,12 +33,16 @@ export default function App() {
     return null;
   } else {
     return (
-      <QueryClientProvider client={queryClient}>
-        <PaperProvider theme={customTheme}>
-          <Navigation />
-          <Toast position="top" />
-        </PaperProvider>
-      </QueryClientProvider>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <QueryClientProvider client={queryClient}>
+            <PaperProvider theme={customTheme}>
+              <Navigation />
+              <Toast position="top" />
+            </PaperProvider>
+          </QueryClientProvider>
+        </PersistGate>
+      </Provider>
     );
   }
 }

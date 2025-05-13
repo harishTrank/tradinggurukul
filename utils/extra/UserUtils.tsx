@@ -23,3 +23,11 @@ export const getProcessedHtml = (descriptionString: any) => {
   html = html.replace(/<br\s*\/?>\s*(<\/(ul|ol)>)/gi, "$1");
   return html;
 };
+
+export function validateIsEmail(email: any) {
+  return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+}
+
+export const isEmptyObj = (obj: any) => {
+  return Object.keys(obj).length === 0;
+};

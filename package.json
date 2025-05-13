@@ -4,8 +4,8 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
@@ -22,6 +22,7 @@
     "expo": "~53.0.5",
     "expo-image-picker": "~16.1.4",
     "expo-linear-gradient": "~14.1.4",
+    "expo-screen-orientation": "~8.1.6",
     "expo-splash-screen": "^0.30.8",
     "expo-status-bar": "~2.2.3",
     "formik": "^2.4.6",
@@ -33,6 +34,7 @@
     "react-native-animatable": "^1.4.0",
     "react-native-drawer-layout": "^4.1.6",
     "react-native-element-dropdown": "^2.12.4",
+    "react-native-flipper": "^0.273.0",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-image-resizer": "^1.4.5",
     "react-native-pager-view": "^6.7.1",
@@ -43,6 +45,11 @@
     "react-native-safe-area-context": "5.4.0",
     "react-native-toast-message": "^2.1.7",
     "react-native-webview": "^13.13.5",
+    "react-redux": "^7.2.6",
+    "redux": "^4.1.2",
+    "redux-flipper": "^2.0.1",
+    "redux-persist": "^6.0.0",
+    "redux-thunk": "^2.4.1",
     "yup": "^1.6.1"
   },
   "devDependencies": {
