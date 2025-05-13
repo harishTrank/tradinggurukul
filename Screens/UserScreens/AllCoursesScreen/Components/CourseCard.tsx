@@ -58,12 +58,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     borderRadius: 8,
     margin: 7.5, // This creates 15px between cards
-    elevation: 3,
-    shadowColor: theme.colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    overflow: "hidden", // Ensures content respects border radius
+    overflow: "hidden",
+    ...theme.elevationLight,
   },
   courseImage: {
     width: "100%",
@@ -71,18 +67,18 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   contentContainer: {
-    paddingVertical: 10,
+    padding: 10,
   },
   title: {
     ...theme.font.fontMedium,
     fontSize: 14,
     color: theme.colors.black,
-    marginBottom: 5,
+    marginBottom: 3,
   },
   ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5,
+    marginBottom: 3,
   },
   ratingText: {
     ...theme.font.fontRegular,
