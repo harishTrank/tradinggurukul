@@ -25,6 +25,7 @@ import { getCourseDetailsCall } from "../../../store/Services/Others";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import dayjs from "dayjs";
 import RenderHTML from "react-native-render-html";
+import { getProcessedHtml } from "../../../utils/extra/UserUtils";
 
 const { width } = Dimensions.get("window");
 
@@ -44,20 +45,6 @@ const tagsStyles: any = {
     fontWeight: "bold",
     fontSize: "20px",
   },
-};
-
-const getProcessedHtml = (descriptionString: any) => {
-  if (!descriptionString) {
-    return "<p>No description available.</p>";
-  }
-
-  let html = descriptionString;
-  html = html.replace(/\\n/g, "<br />");
-  html = html.replace(/\n/g, "<br />");
-  html = html.replace(/(<(ul|ol)(?: [^>]*)?>)\s*<br\s*\/?>/gi, "$1");
-  html = html.replace(/<\/li>\s*<br\s*\/?>\s*(<li(?: [^>]*)?>)/gi, "</li>$1");
-  html = html.replace(/<br\s*\/?>\s*(<\/(ul|ol)>)/gi, "$1");
-  return html;
 };
 
 const ViewCourseScreen = ({ navigation, route }: any) => {
@@ -177,7 +164,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
         </View>
       </ScrollView>
       <View style={bottomBarStyle}>
-        <Text style={styles.priceText}>{course.price}</Text>
+        <Text style={styles.priceText}>₹{course?.price}</Text>
         <TouchableOpacity
           style={styles.addToCartButton}
           onPress={handleAddToCart}

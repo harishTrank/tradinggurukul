@@ -9,3 +9,17 @@ export const getfileobj = (file: any) => {
     uri: localUri,
   };
 };
+
+export const getProcessedHtml = (descriptionString: any) => {
+  if (!descriptionString) {
+    return "<p>No description available.</p>";
+  }
+
+  let html = descriptionString;
+  html = html.replace(/\\n/g, "<br />");
+  html = html.replace(/\n/g, "<br />");
+  html = html.replace(/(<(ul|ol)(?: [^>]*)?>)\s*<br\s*\/?>/gi, "$1");
+  html = html.replace(/<\/li>\s*<br\s*\/?>\s*(<li(?: [^>]*)?>)/gi, "</li>$1");
+  html = html.replace(/<br\s*\/?>\s*(<\/(ul|ol)>)/gi, "$1");
+  return html;
+};
