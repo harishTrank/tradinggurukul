@@ -25,12 +25,7 @@ const CommunityReadScreen = ({ navigation, route }: any) => {
     },
   });
   return (
-    <SafeAreaView
-      style={[
-        styles.safeArea,
-        Platform.OS === "android" && { paddingTop: useSafeAreaInsets().top },
-      ]}
-    >
+    <SafeAreaView style={[styles.safeArea]}>
       {fetchParticularPost?.isLoading && <FullScreenLoader />}
       <StatusBar style="dark" />
       <View style={styles.header}>
