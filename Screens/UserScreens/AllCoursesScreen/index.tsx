@@ -232,7 +232,8 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    paddingHorizontal: 15,
+    alignItems: "center",
+    // paddingHorizontal: 15,
   },
   screenTitle: {
     fontSize: 20,
@@ -272,8 +273,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   dropDownStyle: {
-    width: width - 40,
-    marginLeft: 10,
+    width: width - 30,
   },
 });
 
