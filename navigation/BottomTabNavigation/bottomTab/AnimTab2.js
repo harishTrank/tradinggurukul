@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HomeScreen from "../../../Screens/UserScreens/HomeScreen";
 import MyCoursesScreen from "../../../Screens/UserScreens/MyCoursesScreen";
 import CommunityScreen from "../../../Screens/UserScreens/CommunityScreen";
+import theme from "../../../utils/theme";
 
 const TabArr = [
   {
@@ -168,7 +169,7 @@ export default function AnimTab1() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#FFF",
+        backgroundColor: theme.colors.white,
         paddingTop: Platform.OS === "android" ? insets.top : 0,
       }}
     >
