@@ -20,7 +20,7 @@ import theme from "../../../utils/theme";
 
 const TabArr = [
   {
-    route: "Home",
+    route: "HomeBottom",
     label: "Home",
     type: Icons.Feather,
     icon: "home",

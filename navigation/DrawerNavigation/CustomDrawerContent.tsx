@@ -83,7 +83,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
                 )?.key === focusedRouteKey;
 
               return (
-                <>
+                <View key={index}>
                   {!item.isLogout && !isLoginFlag ? (
                     <DrawerItem
                       key={index}
@@ -145,7 +145,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
                       />
                     )
                   )}
-                </>
+                </View>
               );
             })}
           </View>
