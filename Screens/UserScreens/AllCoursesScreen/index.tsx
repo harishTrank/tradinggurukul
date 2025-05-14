@@ -37,15 +37,16 @@ const AllCoursesScreen = ({ route }: any) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { script } = route?.params;
   const [selectScript, setSelectScript]: any = useState({});
   const [categoryId, setCategoryId]: any = useState(undefined);
 
   useEffect(() => {
-    if (script) {
-      setSelectScript(script);
+    if (route?.params?.script) {
+      setTimeout(() => {
+        setSelectScript(route?.params?.script);
+      }, 500);
     }
-  }, [script]);
+  }, [route?.params?.script]);
 
   const setCategoriesId = (select: any) => {
     setCategoryId(select?.id);
@@ -180,7 +181,8 @@ const AllCoursesScreen = ({ route }: any) => {
     <SafeAreaView
       style={[
         styles.safeArea,
-        Platform.OS === "android" && { paddingTop: insets.top },
+        !route?.params?.script &&
+          Platform.OS === "android" && { paddingTop: insets.top },
       ]}
     >
       <StatusBar style="dark" />
