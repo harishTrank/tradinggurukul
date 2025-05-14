@@ -41,8 +41,6 @@ const SearchCourseScreen = ({ navigation, route }: any) => {
     level: null,
     duration: null,
   });
-  const { searchText }: any = route?.params;
-
   const handleApplyFilters = (newFilters: any) => {
     console.log("Filters applied in parent:", newFilters);
     setCurrentFilters(newFilters);
@@ -56,11 +54,13 @@ const SearchCourseScreen = ({ navigation, route }: any) => {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (searchText) {
-      setSearchQuery(searchText);
-      setSearchState(true);
+    if (route?.params) {
+      setTimeout(() => {
+        setSearchQuery(route?.params);
+        setSearchState(true);
+      }, 500);
     }
-  }, [searchText]);
+  }, [route?.params]);
 
   const handleTopSearchPress = (searchTerm: string) => {
     setSearchQuery(searchTerm);
