@@ -10,6 +10,7 @@ import {
   ScrollView,
   Platform,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Feather from "@expo/vector-icons/Feather";
@@ -17,9 +18,9 @@ import HomeHeader from "../../Components/HomeHeader";
 import theme from "../../../utils/theme";
 import CategoryCard from "./Component/CategoryCard";
 import SearchResultCard from "./Component/SearchResultCard";
-import FilterModal from "./Component/FilterModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetCategoryCall } from "../../../hooks/Others/query";
+import { useCustomSearchCourseCall } from "../../../hooks/Others/mutation";
 
 const topSearchesData = [
   "Stock Market",
@@ -28,43 +29,19 @@ const topSearchesData = [
   "Graphic Designing",
 ];
 
-const searchResults = [
-  {
-    id: "sr1",
-    title: "Introduction to Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    priceStatus: "Free",
-    studentCount: 4000,
-    rating: 4.7,
-  },
-  {
-    id: "sr2",
-    title: "Introduction to Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    priceStatus: "Free",
-    studentCount: 2000,
-    rating: 4.0,
-  },
-  {
-    id: "sr3",
-    title: "Introduction to Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    priceStatus: "Paid",
-    studentCount: 1000,
-    rating: 4.2,
-  },
-];
-
-const SearchCourseScreen = ({ navigation }: any) => {
+const SearchCourseScreen = ({ navigation, route }: any) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchState, setSearchState] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const categoriesApi: any = useGetCategoryCall();
+  const searchCourses: any = useCustomSearchCourseCall();
+  const [searchResultData, setSearchResultData]: any = useState([]);
   const [currentFilters, setCurrentFilters] = useState({
     sortBy: "free",
     level: null,
     duration: null,
   });
+  const { searchText }: any = route?.params;
 
   const handleApplyFilters = (newFilters: any) => {
     console.log("Filters applied in parent:", newFilters);
@@ -78,6 +55,13 @@ const SearchCourseScreen = ({ navigation }: any) => {
     }
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (searchText) {
+      setSearchQuery(searchText);
+      setSearchState(true);
+    }
+  }, [searchText]);
+
   const handleTopSearchPress = (searchTerm: string) => {
     setSearchQuery(searchTerm);
     setSearchState(true);
@@ -87,6 +71,28 @@ const SearchCourseScreen = ({ navigation }: any) => {
     setSearchQuery(categoryName);
     setSearchState(true);
   };
+
+  const searchCoursesManager = () => {
+    searchCourses
+      ?.mutateAsync({
+        body: {
+          search: searchQuery,
+          per_page: 20,
+        },
+      })
+      ?.then((res: any) => {
+        setSearchResultData(res?.products);
+      })
+      ?.catch((err: any) => {
+        console.log("err", err);
+      });
+  };
+
+  useEffect(() => {
+    if (searchQuery?.length > 0 && searchState) {
+      searchCoursesManager();
+    }
+  }, [searchQuery, searchState]);
 
   const renderCategoryItem = ({ item }: any) => (
     <View style={styles.categoryItemContainer}>
@@ -99,7 +105,7 @@ const SearchCourseScreen = ({ navigation }: any) => {
   );
 
   const handleResultPress = (itemId: string) => {
-    console.log("Search Result Pressed:", itemId);
+    navigation.navigate("ViewCourseScreen", { courseId: itemId });
   };
 
   const searchBtnHandler = () => {
@@ -196,7 +202,7 @@ const SearchCourseScreen = ({ navigation }: any) => {
         </ScrollView>
       ) : (
         <>
-          <Modal
+          {/* <Modal
             animationType="slide"
             transparent={false}
             visible={isFilterVisible}
@@ -207,22 +213,40 @@ const SearchCourseScreen = ({ navigation }: any) => {
               onApply={handleApplyFilters}
               initialFilters={currentFilters}
             />
-          </Modal>
+          </Modal> */}
           <View style={styles.filterBox}>
             <Text style={styles.filterText}>Your search result</Text>
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Feather
                 name="filter"
                 onPress={() => setIsFilterVisible(true)}
                 size={24}
                 color={theme.colors.greyText}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <FlatList
-            data={searchResults}
+            data={searchResultData || []}
             renderItem={renderSearchResult}
             keyExtractor={(item) => item.id}
+            ListEmptyComponent={
+              <View>
+                {searchCourses?.isLoading || searchCourses?.isPending ? (
+                  <View style={styles.emptyBox}>
+                    <ActivityIndicator
+                      size={"large"}
+                      color={theme.colors.primary}
+                    />
+                  </View>
+                ) : (
+                  <View style={styles.emptyBox}>
+                    <Text style={styles.emptyText}>
+                      No courses found for "{searchQuery}"
+                    </Text>
+                  </View>
+                )}
+              </View>
+            }
           />
         </>
       )}
@@ -309,6 +333,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: theme.colors.greyText,
     ...theme.font.fontRegular,
+  },
+  emptyBox: {
+    height: 300,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyText: {
+    ...theme.font.fontMedium,
+    fontSize: 16,
+    color: theme.colors.primary,
   },
 });
 

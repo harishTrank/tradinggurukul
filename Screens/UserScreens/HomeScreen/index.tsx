@@ -58,6 +58,7 @@ const HomeScreenComponent = () => {
     if (type === "Top Search") {
       navigation.navigate("ViewCourseScreen", { courseId: val });
     } else {
+      navigation.navigate("SearchCourseScreen", { searchText: val });
     }
   };
 
