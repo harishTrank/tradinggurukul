@@ -65,9 +65,10 @@ const LoginScreen = ({ navigation }: any) => {
           );
           setUserDetails(res?.details);
           await AsyncStorage.setItem("loginFlag", "true");
-          setTimeout(() => {
-            navigation.replace("DrawerNavigation");
-          },500)
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "DrawerNavigation" }],
+          });
         }
       })
       ?.catch((err: any) => {
