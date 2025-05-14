@@ -60,3 +60,9 @@ export const getMyCoursesCall = ({ query }: any) =>
     uriEndPoint: othersEndpoints.getMyCourses.v1,
     query,
   });
+
+export const customSearchCourseCall = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.customSearchCourse.v1,
+    body,
+  });

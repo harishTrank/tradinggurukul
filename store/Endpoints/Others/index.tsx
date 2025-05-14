@@ -71,4 +71,11 @@ export const othersEndpoints = {
       uri: "/myCourse",
     },
   },
+  customSearchCourse: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/custom-search",
+    },
+  },
 };

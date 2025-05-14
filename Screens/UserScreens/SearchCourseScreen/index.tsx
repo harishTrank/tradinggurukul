@@ -22,10 +22,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetCategoryCall } from "../../../hooks/Others/query";
 
 const topSearchesData = [
-  "Stock Analysis",
-  "CryptoTrading",
-  "Froex Trading",
-  "marketing",
+  "Stock Market",
+  "Cryptocurrency",
+  "Digital Marketing",
+  "Graphic Designing",
 ];
 
 const searchResults = [
@@ -55,49 +55,6 @@ const searchResults = [
   },
 ];
 
-const categoriesData = [
-  {
-    id: "cat1",
-    title: "Stock Analysis",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "cat2",
-    title: "Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "cat3",
-    title: "Stock Analysis",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "cat4",
-    title: "Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "cat5",
-    title: "Stock Analysis",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "cat6",
-    title: "Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "cat7",
-    title: "Stock Analysis",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-  {
-    id: "cat8",
-    title: "Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-  },
-];
-
 const SearchCourseScreen = ({ navigation }: any) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchState, setSearchState] = useState(false);
@@ -122,12 +79,13 @@ const SearchCourseScreen = ({ navigation }: any) => {
   }, [searchQuery]);
 
   const handleTopSearchPress = (searchTerm: string) => {
-    console.log("Top Search Pressed:", searchTerm);
     setSearchQuery(searchTerm);
+    setSearchState(true);
   };
 
-  const handleCategoryPress = (categoryId: string, categoryTitle: string) => {
-    console.log("Category Pressed:", categoryTitle);
+  const handleCategoryPress = (categoryId: any, categoryName: string) => {
+    setSearchQuery(categoryName);
+    setSearchState(true);
   };
 
   const renderCategoryItem = ({ item }: any) => (
@@ -135,7 +93,7 @@ const SearchCourseScreen = ({ navigation }: any) => {
       <CategoryCard
         title={item.name}
         imageUrl={item?.image?.src}
-        onPress={() => handleCategoryPress(item.id, item.title)}
+        onPress={() => handleCategoryPress(item.id, item?.name)}
       />
     </View>
   );
@@ -150,11 +108,14 @@ const SearchCourseScreen = ({ navigation }: any) => {
     }
   };
 
-  const renderSearchResult = ({
-    item,
-  }: {
-    item: (typeof searchResults)[0];
-  }) => <SearchResultCard item={item} onPress={handleResultPress} />;
+  const crossBtnHandler = () => {
+    setSearchQuery("");
+    setSearchState(false);
+  };
+
+  const renderSearchResult = ({ item }: any) => (
+    <SearchResultCard item={item} onPress={handleResultPress} />
+  );
 
   return (
     <SafeAreaView
@@ -190,9 +151,15 @@ const SearchCourseScreen = ({ navigation }: any) => {
           />
           <TouchableOpacity
             style={styles.searchIcon}
-            onPress={searchBtnHandler}
+            onPress={() =>
+              !searchState ? searchBtnHandler() : crossBtnHandler()
+            }
           >
-            <Feather name="search" size={22} color={theme.colors.greyText} />
+            <Feather
+              name={!searchState ? "search" : "x"}
+              size={22}
+              color={theme.colors.greyText}
+            />
           </TouchableOpacity>
         </View>
       </View>
