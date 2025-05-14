@@ -130,6 +130,7 @@ const MyCustomTabBar = ({ state, descriptors, navigation }) => {
           backgroundColor: colors.card,
           height: Platform.OS === "ios" ? 70 : insets.bottom + 70,
         },
+        theme.elevationHeavy,
       ]}
     >
       {state.routes.map((route, index) => {
