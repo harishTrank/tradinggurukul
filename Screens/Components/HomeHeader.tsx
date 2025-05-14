@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import theme from "../../utils/theme";
 import ImageModule from "../../ImageModule";
 import { useNavigation } from "@react-navigation/native";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../JotaiStore";
 
 const logoSource = ImageModule.appIcon;
 
@@ -14,8 +16,11 @@ const HomeHeader = ({
   onCartPress,
   search,
   menu = true,
+  cart = true,
 }: any) => {
   const navigation: any = useNavigation();
+  const [userDetails]: any = useAtom(userDetailsGlobal);
+
   return (
     <View style={styles.headerContainer}>
       {menu ? (
@@ -26,7 +31,11 @@ const HomeHeader = ({
         <View />
       )}
       <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-        <Image source={logoSource} style={styles.logo} resizeMode="contain" />
+        <Image
+          source={logoSource}
+          style={[styles.logo, !userDetails?.id && { marginLeft: -25 }]}
+          resizeMode="contain"
+        />
       </TouchableOpacity>
       <View style={styles.rightIcons}>
         {search && (
@@ -34,9 +43,15 @@ const HomeHeader = ({
             <Feather name="search" size={24} color={theme.colors.black} />
           </TouchableOpacity>
         )}
-        <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
-          <Ionicons name="cart-outline" size={26} color={theme.colors.black} />
-        </TouchableOpacity>
+        {cart && userDetails?.id && (
+          <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
+            <Ionicons
+              name="cart-outline"
+              size={26}
+              color={theme.colors.black}
+            />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

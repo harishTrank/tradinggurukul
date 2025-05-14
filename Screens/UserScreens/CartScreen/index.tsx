@@ -20,12 +20,15 @@ import { useCartItemListCall } from "../../../hooks/Others/mutation";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
+import { removeCartItemCall } from "../../../store/Services/Others";
+import Toast from "react-native-toast-message";
 
 const CartScreen = ({ navigation }: any) => {
   const [cartApiResponse, setcartApiResponse]: any = useState([]);
   const cartItemListApi: any = useCartItemListCall();
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const [cartBottomPrices, setCartBottomPrices]: any = useState({});
+  const [loading, setLoading]: any = useState(false);
 
   const cartListApiManager = () => {
     cartItemListApi
@@ -48,6 +51,24 @@ const CartScreen = ({ navigation }: any) => {
     }
   }, [userDetails?.id]);
 
+  const removeCartManager = (cart_item_key: any) => {
+    setLoading(true);
+    removeCartItemCall({
+      query: {
+        cart_item_key,
+      },
+    })
+      ?.then(() => {
+        cartListApiManager();
+        Toast.show({
+          type: "success",
+          text1: "Remove course successfully.",
+        });
+        setLoading(false);
+      })
+      ?.catch((err: any) => setLoading(false));
+  };
+
   const handleRemoveItem = (itemId: string) => {
     Alert.alert(
       "Remove Item",
@@ -57,15 +78,14 @@ const CartScreen = ({ navigation }: any) => {
         {
           text: "Remove",
           style: "destructive",
-          onPress: () => {
-            setcartApiResponse((prevItems: any) =>
-              prevItems.filter((item: any) => item.id !== itemId)
-            );
-            console.log("Removed item:", itemId);
-          },
+          onPress: () => removeCartManager(itemId),
         },
       ]
     );
+  };
+
+  const handleCoursePressed = (courseId: any) => {
+    navigation.navigate("ViewCourseScreen", { courseId });
   };
 
   const handleProceedToCheckout = () => {
@@ -80,7 +100,11 @@ const CartScreen = ({ navigation }: any) => {
   };
 
   const renderCartItem: any = ({ item }: any) => (
-    <CartItem item={item} onRemove={handleRemoveItem} />
+    <CartItem
+      item={item}
+      onRemove={handleRemoveItem}
+      onPress={handleCoursePressed}
+    />
   );
 
   return (
@@ -91,12 +115,14 @@ const CartScreen = ({ navigation }: any) => {
       ]}
     >
       <StatusBar style="dark" />
-      {cartItemListApi?.isLoading && <FullScreenLoader />}
+      {(loading || cartItemListApi?.isLoading) && <FullScreenLoader />}
       <HomeHeader
         onMenuPress={() => navigation.toggleDrawer()}
         onNotificationPress={() => console.log("Notifications pressed")}
         onCartPress={() => navigation.navigate("CartScreen")}
         navigation={navigation}
+        menu={false}
+        cart={false}
       />
 
       <View style={styles.contentContainer}>

@@ -23,7 +23,7 @@ const CartItem: any = ({ item, onRemove, onPress }: any) => {
         </View>
       </View>
       <TouchableOpacity
-        onPress={() => onRemove(item.id)}
+        onPress={() => onRemove(item?.cart_item_key)}
         style={styles.removeButton}
       >
         <Feather name="trash-2" size={20} color={theme.colors.greyText} />
