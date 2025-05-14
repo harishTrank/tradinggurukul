@@ -72,3 +72,9 @@ export const addToCartCall = ({ body }: any) =>
     uriEndPoint: othersEndpoints.addToCart.v1,
     body,
   });
+
+export const cartItemListCall = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.cartItemList.v1,
+    body,
+  });

@@ -1,6 +1,6 @@
 // screens/CartScreen.tsx
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,35 +16,37 @@ import HomeHeader from "../../Components/HomeHeader";
 import CartItem from "./Components/CartItem";
 import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const initialCartData = [
-  {
-    id: "cart1",
-    title: "Introduction to Digital Marketing",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.0,
-    ratingCount: 351,
-    price: 999,
-  },
-  {
-    id: "cart2",
-    title: "Advanced Stock Trading Strategies for Experts and Beginners",
-    imageUrl: require("../../../assets/Images/dummy1.png"),
-    rating: 4.8,
-    ratingCount: 655,
-    price: 999,
-  },
-];
-
-interface OrderSummary {
-  subTotal: number;
-  discount: number;
-  taxes: number;
-  total: number;
-}
+import { useCartItemListCall } from "../../../hooks/Others/mutation";
+import FullScreenLoader from "../../Components/FullScreenLoader";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../../JotaiStore";
 
 const CartScreen = ({ navigation }: any) => {
-  const [cartItems, setCartItems] = useState(initialCartData);
+  const [cartApiResponse, setcartApiResponse]: any = useState([]);
+  const cartItemListApi: any = useCartItemListCall();
+  const [userDetails]: any = useAtom(userDetailsGlobal);
+  const [cartBottomPrices, setCartBottomPrices]: any = useState({});
+
+  const cartListApiManager = () => {
+    cartItemListApi
+      ?.mutateAsync({
+        body: {
+          user_id: userDetails?.id,
+        },
+      })
+      ?.then((res: any) => {
+        setcartApiResponse(res?.cart_data);
+        delete res?.cart_data;
+        setCartBottomPrices(res);
+      })
+      ?.catch((err: any) => console.log("err", err));
+  };
+
+  useEffect(() => {
+    if (userDetails?.id) {
+      cartListApiManager();
+    }
+  }, [userDetails?.id]);
 
   const handleRemoveItem = (itemId: string) => {
     Alert.alert(
@@ -56,8 +58,8 @@ const CartScreen = ({ navigation }: any) => {
           text: "Remove",
           style: "destructive",
           onPress: () => {
-            setCartItems((prevItems) =>
-              prevItems.filter((item) => item.id !== itemId)
+            setcartApiResponse((prevItems: any) =>
+              prevItems.filter((item: any) => item.id !== itemId)
             );
             console.log("Removed item:", itemId);
           },
@@ -67,26 +69,17 @@ const CartScreen = ({ navigation }: any) => {
   };
 
   const handleProceedToCheckout = () => {
-    if (cartItems.length === 0) {
+    if (cartApiResponse.length === 0) {
       Alert.alert(
         "Empty Cart",
         "Your cart is empty. Please add courses to proceed."
       );
       return;
     }
-    console.log("Proceeding to Checkout with items:", cartItems);
-    console.log("Order Summary:", orderSummary);
+    console.log("Proceeding to Checkout with items:", cartApiResponse);
   };
 
-  const orderSummary: OrderSummary = useMemo(() => {
-    const subTotal = cartItems.reduce((sum, item) => sum + item.price, 0);
-    const discount = 0.0;
-    const taxes = subTotal * 0.05;
-    const total = subTotal - discount + taxes;
-    return { subTotal, discount, taxes, total };
-  }, [cartItems]);
-
-  const renderCartItem = ({ item }: { item: (typeof initialCartData)[0] }) => (
+  const renderCartItem: any = ({ item }: any) => (
     <CartItem item={item} onRemove={handleRemoveItem} />
   );
 
@@ -98,6 +91,7 @@ const CartScreen = ({ navigation }: any) => {
       ]}
     >
       <StatusBar style="dark" />
+      {cartItemListApi?.isLoading && <FullScreenLoader />}
       <HomeHeader
         onMenuPress={() => navigation.toggleDrawer()}
         onNotificationPress={() => console.log("Notifications pressed")}
@@ -109,7 +103,7 @@ const CartScreen = ({ navigation }: any) => {
         <Text style={styles.screenTitle}>Cart</Text>
 
         <FlatList
-          data={cartItems}
+          data={cartApiResponse || []}
           renderItem={renderCartItem}
           keyExtractor={(item) => item.id}
           style={styles.list}
@@ -119,33 +113,33 @@ const CartScreen = ({ navigation }: any) => {
           contentContainerStyle={{ paddingBottom: 10 }}
         />
 
-        {cartItems.length > 0 && (
+        {cartApiResponse.length > 0 && (
           <View style={styles.footerContainer}>
             <View style={styles.orderInfoCard}>
               <Text style={styles.orderInfoTitle}>Order Info</Text>
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>SubTotal</Text>
                 <Text style={styles.infoValue}>
-                  ₹ {orderSummary.subTotal.toFixed(2)}
+                  ₹ {cartBottomPrices?.cart_subtotal}
                 </Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Discount</Text>
                 <Text style={styles.infoValue}>
-                  ₹ {orderSummary.discount.toFixed(2)}
+                  ₹ {cartBottomPrices?.discount_total}
                 </Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Taxes</Text>
                 <Text style={styles.infoValue}>
-                  ₹ {orderSummary.taxes.toFixed(2)}
+                  ₹ {cartBottomPrices?.taxes}
                 </Text>
               </View>
               <View style={styles.divider} />
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, styles.totalLabel]}>Total</Text>
                 <Text style={[styles.infoValue, styles.totalValue]}>
-                  ₹ {orderSummary.total.toFixed(2)}
+                  ₹ {cartBottomPrices?.total}
                 </Text>
               </View>
             </View>
