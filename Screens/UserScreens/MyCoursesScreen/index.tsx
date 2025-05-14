@@ -36,7 +36,7 @@ const MyCoursesScreen = ({ navigation }: any) => {
   };
 
   const handlePlayPress = (courseId: string) => {
-    navigation.navigate("VideoPlayerScreen", { courseId });
+    navigation.navigate("ViewCourseScreen", { courseId });
   };
 
   const renderCourseItem = ({ item }: { item: (typeof myCoursesData)[0] }) => (
