@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { customSearchCourseCall, editProfileCall } from "../../store/Services/Others";
+import { addToCartCall, customSearchCourseCall, editProfileCall } from "../../store/Services/Others";
 
 export const useEditProfileCall = () => {
     return useMutation((payload) => editProfileCall(payload));
@@ -8,4 +8,9 @@ export const useEditProfileCall = () => {
 export const useCustomSearchCourseCall = () => {
     return useMutation((payload) => customSearchCourseCall(payload));
 };
+
+export const useAddToCartCall = () => {
+    return useMutation((payload) => addToCartCall(payload));
+};
+
 

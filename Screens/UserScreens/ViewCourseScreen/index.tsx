@@ -11,6 +11,7 @@ import {
   Platform,
   Alert,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import FeatherIcon from "react-native-vector-icons/Feather";
@@ -27,6 +28,8 @@ import dayjs from "dayjs";
 import RenderHTML from "react-native-render-html";
 import { getProcessedHtml } from "../../../utils/extra/UserUtils";
 import TopicList from "./Components/TopicList";
+import { useAddToCartCall } from "../../../hooks/Others/mutation";
+import Toast from "react-native-toast-message";
 
 const { width } = Dimensions.get("window");
 
@@ -55,6 +58,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
   const [isPurchased, setIsPurchased] = useState(false);
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const [topicsData, setTopicsData]: any = useState([]);
+  const addTocartApiCall: any = useAddToCartCall();
 
   const viewCourseApiCallManager = () => {
     getCourseDetailsCall({
@@ -96,7 +100,28 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
   }, [courseId]);
 
   const handleAddToCart = () => {
-    Alert.alert("Add to Cart", `"${course?.title}" added to cart (simulated).`);
+    addTocartApiCall
+      ?.mutateAsync({
+        body: {
+          user_id: userDetails?.id,
+          id: courseId,
+          quantity: 1,
+        },
+      })
+      ?.then((res: any) => {
+        if (res?.code == 1) {
+          Toast.show({
+            type: "success",
+            text1: res?.message,
+          });
+        } else {
+          Toast.show({
+            type: "error",
+            text1: res?.message,
+          });
+        }
+      })
+      ?.catch((err: any) => console.log("err", JSON.stringify(err)));
   };
 
   const renderHeader = () => (
@@ -196,7 +221,11 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
           style={styles.addToCartButton}
           onPress={handleAddToCart}
         >
-          <Text style={styles.addToCartButtonText}>Add To Cart</Text>
+          {addTocartApiCall?.isLoading ? (
+            <ActivityIndicator size={"small"} color={theme.colors.white} />
+          ) : (
+            <Text style={styles.addToCartButtonText}>Add To Cart</Text>
+          )}
         </TouchableOpacity>
       </View>
     </>

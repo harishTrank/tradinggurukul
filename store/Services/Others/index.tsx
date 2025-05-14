@@ -66,3 +66,9 @@ export const customSearchCourseCall = ({ body }: any) =>
     uriEndPoint: othersEndpoints.customSearchCourse.v1,
     body,
   });
+
+export const addToCartCall = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.addToCart.v1,
+    body,
+  });

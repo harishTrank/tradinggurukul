@@ -78,4 +78,11 @@ export const othersEndpoints = {
       uri: "/custom-search",
     },
   },
+  addToCart: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/cart/add",
+    },
+  },
 };
