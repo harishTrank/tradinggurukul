@@ -21,7 +21,7 @@ const TopicItem = ({ data, isPreview, handlePreview, sectionId }) => {
       <Icon
         type="MaterialIcons"
         name={data.topicType === "video" ? "videocam" : "content-paste"}
-        color={theme.colors.secondary}
+        color={theme.colors.black}
         size={24}
       />
       <View style={styles.topicContentWrap}>
@@ -36,7 +36,7 @@ const TopicItem = ({ data, isPreview, handlePreview, sectionId }) => {
           <Icon
             type="MaterialIcons"
             name="play-circle-outline"
-            color={theme.colors.secondary}
+            color={theme.colors.primary}
             size={24}
           />
         </View>
