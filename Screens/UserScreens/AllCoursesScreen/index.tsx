@@ -37,10 +37,15 @@ const AllCoursesScreen = ({ route }: any) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectScript, setSelectScript]: any = useState(
-    route?.params?.script || {}
-  );
+  const { script } = route?.params;
+  const [selectScript, setSelectScript]: any = useState({});
   const [categoryId, setCategoryId]: any = useState(undefined);
+
+  useEffect(() => {
+    if (script) {
+      setSelectScript(script);
+    }
+  }, [script]);
 
   const setCategoriesId = (select: any) => {
     setCategoryId(select?.id);
