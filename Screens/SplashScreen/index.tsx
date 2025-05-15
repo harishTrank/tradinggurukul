@@ -7,7 +7,7 @@ import { userDetailsGlobal } from "../../JotaiStore";
 import { getUserProfileCall } from "../../store/Services/Others";
 
 const SplashScreen = ({ navigation }: any) => {
-  const [, setUserDetailsState]: any = useAtom(userDetailsGlobal);
+  const [userData, setUserDetailsState]: any = useAtom(userDetailsGlobal);
   useEffect(() => {
     setTimeout(async () => {
       const loginFlag: any = await AsyncStorage.getItem("loginFlag");
