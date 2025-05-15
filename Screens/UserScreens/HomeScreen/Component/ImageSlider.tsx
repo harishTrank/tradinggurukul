@@ -31,11 +31,13 @@ const ImageSlider = ({ data, navigation }: any) => {
       style={styles.slide}
       onPress={() => navigation.navigate("AllCoursesSearch", { script: item })}
     >
-      <Image
-        source={{ uri: item?.banner_url }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      {item?.banner_url && (
+        <Image
+          source={{ uri: item?.banner_url }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      )}
     </TouchableOpacity>
   );
 

@@ -229,7 +229,7 @@ const EditProfileScreen = () => {
           values,
           errors,
           touched,
-        }) => (
+        }: any) => (
           <KeyboardAvoidingView
             style={styles.keyboardAvoidingContainer}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -246,10 +246,12 @@ const EditProfileScreen = () => {
               >
                 <View style={styles.profileImageContainer}>
                   <TouchableOpacity onPress={handleChangeProfileImage}>
-                    <Image
-                      source={{ uri: profileImage }}
-                      style={styles.profileImage}
-                    />
+                    {profileImage && profileImage !== "" && (
+                      <Image
+                        source={{ uri: profileImage }}
+                        style={styles.profileImage}
+                      />
+                    )}
                     <View style={styles.editIconOverlay}>
                       <Icon
                         name="camera"

@@ -11,11 +11,13 @@ const SearchResultCard = ({ item, onPress }: any) => {
       onPress={() => onPress(item.id)}
       activeOpacity={0.8}
     >
-      <Image
-        source={{ uri: item?.images?.[0]?.src }}
-        style={styles.courseImage}
-        resizeMode="cover"
-      />
+      {item?.images?.[0]?.src && (
+        <Image
+          source={{ uri: item?.images?.[0]?.src }}
+          style={styles.courseImage}
+          resizeMode="cover"
+        />
+      )}
       <View style={styles.detailsContainer}>
         <Text style={styles.title} numberOfLines={2}>
           {item.name}

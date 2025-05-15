@@ -46,10 +46,12 @@ const CommunityReadScreen = ({ navigation, route }: any) => {
         contentContainerStyle={styles.scrollContentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Image
-          source={{ uri: fetchParticularPost?.data?.posts?.[0]?.image }}
-          style={styles.postImage}
-        />
+        {fetchParticularPost?.data?.posts?.[0]?.image && (
+          <Image
+            source={{ uri: fetchParticularPost?.data?.posts?.[0]?.image }}
+            style={styles.postImage}
+          />
+        )}
         <View style={styles.contentPadding}>
           <Text style={styles.postTitle}>
             {fetchParticularPost?.data?.posts?.[0]?.title || ""}

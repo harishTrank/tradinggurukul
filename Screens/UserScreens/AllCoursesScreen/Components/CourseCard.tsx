@@ -32,10 +32,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ item, onPress }: any) => {
       onPress={() => onPress(item.id)}
       activeOpacity={0.8}
     >
-      <Image
-        source={{ uri: item?.images?.[0]?.src }}
-        style={styles.courseImage}
-      />
+      {item?.images?.[0]?.src && (
+        <Image
+          source={{ uri: item?.images?.[0]?.src }}
+          style={styles.courseImage}
+        />
+      )}
       <View style={styles.contentContainer}>
         <Text style={styles.title} numberOfLines={2}>
           {item.name}

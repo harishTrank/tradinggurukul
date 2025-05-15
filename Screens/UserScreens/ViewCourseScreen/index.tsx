@@ -175,10 +175,12 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.videoPreviewContainer}>
-          <Image
-            source={{ uri: course?.images?.[0]?.src }}
-            style={styles.videoPreviewImage}
-          />
+          {course?.images?.[0]?.src && (
+            <Image
+              source={{ uri: course?.images?.[0]?.src }}
+              style={styles.videoPreviewImage}
+            />
+          )}
         </View>
 
         <View style={styles.contentPadding}>

@@ -30,7 +30,9 @@ const CommunityPostCard: React.FC<CommunityPostCardProps> = ({
       onPress={onPress ? () => onPress(post.id) : undefined}
       activeOpacity={onPress ? 0.8 : 1}
     >
-      <Image source={{ uri: post?.image }} style={styles.postImage} />
+      {post?.image && (
+        <Image source={{ uri: post?.image }} style={styles.postImage} />
+      )}
       <View style={styles.contentContainer}>
         <Text
           style={[

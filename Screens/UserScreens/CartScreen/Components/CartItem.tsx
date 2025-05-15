@@ -12,7 +12,9 @@ const CartItem: any = ({ item, onRemove, onPress }: any) => {
       onPress={onPress ? () => onPress(item.id) : undefined}
       activeOpacity={onPress ? 0.7 : 1}
     >
-      <Image source={{ uri: item.image }} style={styles.courseImage} />
+      {item?.image && (
+        <Image source={{ uri: item.image }} style={styles.courseImage} />
+      )}
       <View style={styles.detailsContainer}>
         <Text style={styles.title} numberOfLines={2}>
           {item?.name}

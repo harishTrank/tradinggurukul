@@ -23,7 +23,7 @@ const CourseCard = ({
 }: any) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.card}>
-      <Image source={{ uri: imageUrl }} style={styles.image} />
+      {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
       <Text style={styles.title} numberOfLines={2}>
         {title}
       </Text>

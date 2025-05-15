@@ -27,11 +27,13 @@ const MyCourseListItem: React.FC<MyCourseListItemProps> = ({
       onPress={() => onPress(course.id)}
       activeOpacity={0.8}
     >
-      <Image
-        source={{ uri: course.courseFeatImgUrl }}
-        style={styles.courseImage}
-        resizeMode="cover"
-      />
+      {course?.courseFeatImgUrl && (
+        <Image
+          source={{ uri: course?.courseFeatImgUrl }}
+          style={styles.courseImage}
+          resizeMode="cover"
+        />
+      )}
       <View style={styles.detailsContainer}>
         <View style={styles.textInfoContainer}>
           <Text style={styles.courseNameText} numberOfLines={2}>
