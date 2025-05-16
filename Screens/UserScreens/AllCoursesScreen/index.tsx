@@ -119,6 +119,7 @@ const AllCoursesScreen = ({ route }: any) => {
   };
 
   const handleRefresh = () => {
+    setSelectScript({});
     setHasMoreData(true);
     setError(null);
     fetchCourses(1, true);

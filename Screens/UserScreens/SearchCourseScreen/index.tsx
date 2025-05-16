@@ -54,13 +54,13 @@ const SearchCourseScreen = ({ navigation, route }: any) => {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (route?.params) {
+    if (route?.params?.searchText) {
       setTimeout(() => {
-        setSearchQuery(route?.params);
+        setSearchQuery(route?.params?.searchText);
         setSearchState(true);
       }, 500);
     }
-  }, [route?.params]);
+  }, [route?.params?.searchText]);
 
   const handleTopSearchPress = (searchTerm: string) => {
     setSearchQuery(searchTerm);
