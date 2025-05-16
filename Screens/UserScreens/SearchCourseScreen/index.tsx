@@ -24,7 +24,7 @@ import { useCustomSearchCourseCall } from "../../../hooks/Others/mutation";
 
 const topSearchesData = [
   "Stock Market",
-  "Cryptocurrency",
+  "Crypto Currency",
   "Digital Marketing",
   "Graphic Designing",
 ];

@@ -42,9 +42,11 @@ const AllCoursesScreen = ({ route }: any) => {
 
   useEffect(() => {
     if (route?.params?.script) {
+      setIsLoading(true);
       setTimeout(() => {
         setSelectScript(route?.params?.script);
-      }, 500);
+        setIsLoading(false);
+      }, 1000);
     }
   }, [route?.params?.script]);
 
