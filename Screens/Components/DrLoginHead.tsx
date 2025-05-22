@@ -6,7 +6,7 @@ import ImageModule from "../../ImageModule";
 const DrLoginHead = ({ navigation }: any) => {
   return (
     <View style={styles.viewBox}>
-      <Image source={ImageModule.logoWhite} style={styles.logoStyle} />
+      <Image source={ImageModule.appIcon} style={styles.logoStyle} />
       <View style={styles.rapper}>
         <Image source={ImageModule.defaultUser} style={styles.userIcon} />
         <TouchableOpacity
@@ -24,9 +24,10 @@ const styles = StyleSheet.create({
   viewBox: {
     width: "100%",
     height: "23%",
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.white,
     alignItems: "center",
     justifyContent: "center",
+    ...theme.elevationHeavy,
   },
   logoStyle: {
     height: "50%",
@@ -45,12 +46,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   btnBox: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.primary,
     padding: 10,
     borderRadius: 10,
+    ...theme.elevationLight,
   },
   btnText: {
-    color: theme.colors.primary,
+    color: theme.colors.white,
     ...theme.font.fontSemiBold,
   },
 });

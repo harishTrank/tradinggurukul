@@ -1,10 +1,11 @@
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import { View, Image } from "react-native";
 import ImageModule from "../../ImageModule";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../JotaiStore";
 import { getUserProfileCall } from "../../store/Services/Others";
+import theme from "../../utils/theme";
 
 const SplashScreen = ({ navigation }: any) => {
   const [userData, setUserDetailsState]: any = useAtom(userDetailsGlobal);
@@ -26,7 +27,7 @@ const SplashScreen = ({ navigation }: any) => {
       } else {
         navigation?.replace("StartScreen");
       }
-    }, 500);
+    }, 8000);
   }, []);
 
   return (
@@ -35,13 +36,15 @@ const SplashScreen = ({ navigation }: any) => {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: theme.colors.white,
       }}
     >
       <Image
-        source={ImageModule.splash}
+        source={ImageModule.animatedLogo}
         style={{
           height: "100%",
           width: "100%",
+          objectFit: "contain",
         }}
       />
     </View>

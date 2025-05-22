@@ -1,4 +1,5 @@
 const ImageModule = {
+  animatedLogo: require("../assets/animated/animatedlogo.gif"),
   appIcon: require("../assets/Icons/appIcon.png"),
   appIconCrop: require("../assets/Icons/appIconCrop.png"),
   start1: require("../assets/Images/start1.png"),
