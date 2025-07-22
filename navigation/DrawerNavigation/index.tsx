@@ -9,6 +9,7 @@ import AllCoursesScreen from "../../Screens/UserScreens/AllCoursesScreen";
 import AboutUsScreen from "../../Screens/UserScreens/AboutUsScreen";
 import PrivacyPolicyScreen from "../../Screens/UserScreens/PrivacyPolicyScreen";
 import TermsAndConditionScreen from "../../Screens/UserScreens/TermsAndConditionScreen";
+import RefundScreen from "../../Screens/UserScreens/RefundScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -35,6 +36,7 @@ export default function DrawerNavigator() {
       <Drawer.Screen name="Blog" component={BlogScreen} />
       <Drawer.Screen name="AboutUs" component={AboutUsScreen} />
       <Drawer.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+      <Drawer.Screen name="RefundScreen" component={RefundScreen} />
       <Drawer.Screen name="Terms" component={TermsAndConditionScreen} />
     </Drawer.Navigator>
   );

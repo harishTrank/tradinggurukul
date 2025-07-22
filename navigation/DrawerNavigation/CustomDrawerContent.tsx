@@ -21,6 +21,7 @@ const drawerItems = [
   { label: "Blog", iconName: "edit-3", navigateTo: "Blog" },
   { label: "About Us", iconName: "info", navigateTo: "AboutUs" },
   { label: "Privacy Policy", iconName: "shield", navigateTo: "PrivacyPolicy" },
+  { label: "Refund Policy", iconName: "shield", navigateTo: "RefundScreen" },
   { label: "Terms & Condition", iconName: "file-text", navigateTo: "Terms" },
   { label: "Logout", iconName: "log-out", isLogout: true },
 ];
