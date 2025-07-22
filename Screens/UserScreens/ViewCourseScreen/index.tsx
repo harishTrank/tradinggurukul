@@ -27,7 +27,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import dayjs from "dayjs";
 import RenderHTML from "react-native-render-html";
 import { getProcessedHtml } from "../../../utils/extra/UserUtils";
-import TopicList from "./Components/TopicList";
+import TopicList from "./Components/TopicList.js";
 import { useAddToCartCall } from "../../../hooks/Others/mutation";
 import Toast from "react-native-toast-message";
 

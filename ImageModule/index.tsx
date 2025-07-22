@@ -8,6 +8,7 @@ const ImageModule = {
   splash: require("../assets/Images/splash.png"),
   logoWhite: require("../assets/Images/logowhite.png"),
   defaultUser: require("../assets/Images/default-user.png"),
+  aboutUs: require("../assets/Images/aboutus.png")
 };
 
 export default ImageModule;

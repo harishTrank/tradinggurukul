@@ -61,6 +61,16 @@ const TopicList = ({ topicList, isPreview, navigation }) => {
     <View style={styles.parentContainer}>
       {/* <Accordian title="Test Acc" data="Test data" /> */}
       <Text style={styles.topicHead}>Course Content</Text>
+      {topicList?.[0]?.sectionMeta?.sectionVideos && (
+        <Text style={styles.durationsText}>
+          Total Videos: {topicList?.[0]?.sectionMeta?.sectionVideos}
+        </Text>
+      )}
+      {topicList?.[0]?.sectionMeta?.sectionDuration && (
+        <Text style={styles.durationsText}>
+          Course Duration: {topicList?.[0]?.sectionMeta?.sectionDuration}
+        </Text>
+      )}
       {renderList(topicList)}
     </View>
   );
@@ -75,6 +85,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontWeight: "700",
     textTransform: "uppercase",
+    lineHeight: 18,
+    color: theme.colors.text,
+    paddingBottom: 8,
+  },
+  durationsText: {
+    fontSize: 14,
+    paddingHorizontal: 16,
+    fontWeight: "700",
     lineHeight: 18,
     color: theme.colors.text,
     paddingBottom: 8,

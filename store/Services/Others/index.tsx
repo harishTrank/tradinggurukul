@@ -84,3 +84,8 @@ export const removeCartItemCall = ({ query }: any) =>
     uriEndPoint: othersEndpoints.removeCartItem.v1,
     query,
   });
+
+export const getallContent = () =>
+  callApi({
+    uriEndPoint: othersEndpoints.getallContent.v1,
+  });

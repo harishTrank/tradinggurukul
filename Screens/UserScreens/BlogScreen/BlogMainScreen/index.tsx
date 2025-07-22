@@ -114,6 +114,11 @@ const BlogMainScreen = ({ navigation }: any) => {
             showsVerticalScrollIndicator={false}
             onEndReached={loadMorePosts}
             onEndReachedThreshold={0.5}
+            ListEmptyComponent={
+              <View style={styles.emptyBox}>
+                <Text style={styles.emptyText}>There is no blog!</Text>
+              </View>
+            }
             ListFooterComponent={renderFooter}
           />
         )}
@@ -149,6 +154,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  emptyBox: {
+    height: 500,
+    alignItems:"center",
+    justifyContent:"center"
+  },
+  emptyText: {
+    color: theme.colors.red,
+    ...theme.font.fontMedium
+  }
 });
 
 export default BlogMainScreen;

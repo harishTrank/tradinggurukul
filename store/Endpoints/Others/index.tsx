@@ -99,4 +99,11 @@ export const othersEndpoints = {
       uri: "/cart/remove",
     },
   },
+  getallContent: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/getallContent",
+    },
+  },
 };
