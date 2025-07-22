@@ -68,7 +68,7 @@ const TopicList = ({ topicList, isPreview, navigation }) => {
       )}
       {topicList?.[0]?.sectionMeta?.sectionDuration && (
         <Text style={styles.durationsText}>
-          Course Duration: {topicList?.[0]?.sectionMeta?.sectionDuration}
+          Course Duration: {`${topicList?.[0]?.sectionMeta?.sectionDuration?.split(":")?.[0]}Hours ${topicList?.[0]?.sectionMeta?.sectionDuration?.split(":")?.[1]}Minutes ${topicList?.[0]?.sectionMeta?.sectionDuration?.split(":")?.[2]}Seconds`}
         </Text>
       )}
       {renderList(topicList)}
