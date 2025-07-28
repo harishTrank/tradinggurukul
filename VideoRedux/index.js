@@ -3,7 +3,6 @@ import thunk from "redux-thunk";
 import { persistStore, persistReducer } from "redux-persist";
 import autoMergeLevel1 from "redux-persist/lib/stateReconciler/autoMergeLevel1";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import createDebugger from "redux-flipper";
 import rootReducer from "./reducers";
 
 const persistConfig = {
@@ -18,10 +17,6 @@ const persistConfig = {
 };
 
 const middlewares = [thunk];
-
-if (__DEV__) {
-  middlewares.push(createDebugger());
-}
 
 const pReducer = persistReducer(persistConfig, rootReducer);
 

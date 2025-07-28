@@ -4,13 +4,11 @@ import {
   StyleSheet,
   ScrollView,
   Text,
-  Image, // Changed from ImageBackground for semantic correctness
   ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetallContent } from "../../../hooks/Others/query";
 import HomeHeader from "../../Components/HomeHeader";
-import ImageModule from "../../../ImageModule";
 import theme from "../../../utils/theme";
 
 // Helper function to remove HTML tags from a string
@@ -65,11 +63,11 @@ const AboutUsScreen = ({ navigation }: any) => {
 
           {/* Section 2: Image with baked-in metrics */}
           {/* We now use a simple Image component, assuming ImageModule.aboutUs contains the full image with text */}
-          <Image
+          {/* <Image
             source={ImageModule.aboutUs}
             style={styles.metricsImage}
             resizeMode="cover" // Fills the area, might crop slightly if aspect ratios don't match perfectly
-          />
+          /> */}
 
           {/* Section 3: Numbered Features List (as per the first request) */}
           <View style={styles.featuresSection}>
