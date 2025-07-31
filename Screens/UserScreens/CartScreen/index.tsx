@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
+  Linking,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import HomeHeader from "../../Components/HomeHeader";
@@ -20,8 +21,9 @@ import { useCartItemListCall } from "../../../hooks/Others/mutation";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
-import { removeCartItemCall } from "../../../store/Services/Others";
+import { phonePeApi, removeCartItemCall } from "../../../store/Services/Others";
 import Toast from "react-native-toast-message";
+import axios from "axios";
 
 const CartScreen = ({ navigation }: any) => {
   const [cartApiResponse, setcartApiResponse]: any = useState([]);
@@ -88,15 +90,25 @@ const CartScreen = ({ navigation }: any) => {
     navigation.navigate("ViewCourseScreen", { courseId });
   };
 
-  const handleProceedToCheckout = () => {
-    if (cartApiResponse.length === 0) {
-      Alert.alert(
-        "Empty Cart",
-        "Your cart is empty. Please add courses to proceed."
-      );
-      return;
+  const handleProceedToCheckout = async () => {
+    try {
+      const result: any = await phonePeApi({
+        body: {
+          "user_id": userDetails?.id,
+          "amount": cartBottomPrices?.total,
+          "merchantId": "M23NDSN3ZSIP5"
+        }
+      })
+      const url = result?.data?.instrumentResponse?.redirectInfo?.url;
+      console.log('url', result)
+      if (url) {
+        Linking.openURL(url);
+      } else {
+        console.log("Payment URL not found");
+      }
+    } catch(error) {
+      console.log('error', error)
     }
-    console.log("Proceeding to Checkout with items:", cartApiResponse);
   };
 
   const renderCartItem: any = ({ item }: any) => (

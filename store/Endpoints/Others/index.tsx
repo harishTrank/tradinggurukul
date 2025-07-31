@@ -106,4 +106,11 @@ export const othersEndpoints = {
       uri: "/getallContent",
     },
   },
+  phonePeApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/phonepe-initiate",
+    },
+  }
 };

@@ -89,3 +89,10 @@ export const getallContent = () =>
   callApi({
     uriEndPoint: othersEndpoints.getallContent.v1,
   });
+
+export const phonePeApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.phonePeApi.v1,
+    body
+  });
+  
