@@ -102,6 +102,12 @@ const CartScreen = ({ navigation }: any) => {
   );
 
   const updateOrderStatusManager = (order_id: any, transaction_id: any, status: any) => {
+    console.log('first', {
+        order_id,
+        user_id: userDetails?.id,
+        transaction_id,
+        status,
+      })
     updateStatusOrderApi({
       body: {
         order_id,
@@ -125,16 +131,16 @@ const CartScreen = ({ navigation }: any) => {
       query: {
         u_id: userDetails?.id,
         payment_method: "razorpay",
+        amount: cartBottomPrices?.total
       },
     })
       ?.then((res: any) => {
-        console.log('res', res)
         var options: any = {
           description: "Order Payment",
           image:
             "https://tradinggurukul.com/trading_backend/wp-content/uploads/2025/08/tradinggurukul-logo-e1754378245418.jpeg",
           currency: "INR",
-          key: "rzp_test_fYsFbuRsIm5q8W",
+          key: "rzp_live_MEv3w5udH0dgor",
           amount: cartBottomPrices?.total * 100,
           name: "Trading Gurukul",
           prefill: {
@@ -149,12 +155,12 @@ const CartScreen = ({ navigation }: any) => {
           .then((data) => {
             alert(`Success: ${data.razorpay_payment_id}`);
             setLoading(false);
-            updateOrderStatusManager(res?.data?.id, data?.razorpay_payment_id, "completed");
+            updateOrderStatusManager(res?.data?.order_id, data?.razorpay_payment_id, "completed");
           })
           .catch((error) => {
             alert(`Error: ${error.code} | ${error.description}`);
             setLoading(false);
-            updateOrderStatusManager(res?.data?.id, error?.details?.metadata?.payment_id, error?.details?.reason);
+            updateOrderStatusManager(res?.data?.order_id, error?.details?.metadata?.payment_id, error?.details?.reason);
           });
       })
       ?.catch((err) => {
