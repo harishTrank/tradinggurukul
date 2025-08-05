@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
-  Linking,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import HomeHeader from "../../Components/HomeHeader";
@@ -21,9 +20,13 @@ import { useCartItemListCall } from "../../../hooks/Others/mutation";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
-import { phonePeApi, removeCartItemCall } from "../../../store/Services/Others";
+import {
+  createOrderApi,
+  removeCartItemCall,
+  updateStatusOrderApi,
+} from "../../../store/Services/Others";
 import Toast from "react-native-toast-message";
-import axios from "axios";
+import RazorpayCheckout from "react-native-razorpay";
 
 const CartScreen = ({ navigation }: any) => {
   const [cartApiResponse, setcartApiResponse]: any = useState([]);
@@ -90,27 +93,6 @@ const CartScreen = ({ navigation }: any) => {
     navigation.navigate("ViewCourseScreen", { courseId });
   };
 
-  const handleProceedToCheckout = async () => {
-    try {
-      const result: any = await phonePeApi({
-        body: {
-          "user_id": userDetails?.id,
-          "amount": cartBottomPrices?.total,
-          "merchantId": "M23NDSN3ZSIP5"
-        }
-      })
-      const url = result?.data?.instrumentResponse?.redirectInfo?.url;
-      console.log('url', result)
-      if (url) {
-        Linking.openURL(url);
-      } else {
-        console.log("Payment URL not found");
-      }
-    } catch(error) {
-      console.log('error', error)
-    }
-  };
-
   const renderCartItem: any = ({ item }: any) => (
     <CartItem
       item={item}
@@ -118,6 +100,68 @@ const CartScreen = ({ navigation }: any) => {
       onPress={handleCoursePressed}
     />
   );
+
+  const updateOrderStatusManager = (order_id: any, transaction_id: any, status: any) => {
+    updateStatusOrderApi({
+      body: {
+        order_id,
+        user_id: userDetails?.id,
+        transaction_id,
+        status,
+      },
+    })
+      ?.then((res: any) => {
+        console.log("res", res);
+        cartListApiManager();
+      })
+      ?.catch((err: any) => {
+        console.log("err", err);
+      });
+  };
+
+  const payWithRazorpay = (userDetails: any, cartBottomPrices: any) => {
+    setLoading(true);
+    createOrderApi({
+      query: {
+        u_id: userDetails?.id,
+        payment_method: "razorpay",
+      },
+    })
+      ?.then((res: any) => {
+        console.log('res', res)
+        var options: any = {
+          description: "Order Payment",
+          image:
+            "https://tradinggurukul.com/trading_backend/wp-content/uploads/2025/08/tradinggurukul-logo-e1754378245418.jpeg",
+          currency: "INR",
+          key: "rzp_test_fYsFbuRsIm5q8W",
+          amount: cartBottomPrices?.total * 100,
+          name: "Trading Gurukul",
+          prefill: {
+            email: userDetails?.billing?.email,
+            contact: userDetails?.billing?.phone,
+            name: userDetails?.username,
+          },
+          theme: { color: theme.colors.primary },
+        };
+
+        RazorpayCheckout.open(options)
+          .then((data) => {
+            alert(`Success: ${data.razorpay_payment_id}`);
+            setLoading(false);
+            updateOrderStatusManager(res?.data?.id, data?.razorpay_payment_id, "completed");
+          })
+          .catch((error) => {
+            alert(`Error: ${error.code} | ${error.description}`);
+            setLoading(false);
+            updateOrderStatusManager(res?.data?.id, error?.details?.metadata?.payment_id, error?.details?.reason);
+          });
+      })
+      ?.catch((err) => {
+        console.log("err", err);
+        setLoading(false);
+      });
+  };
 
   return (
     <SafeAreaView
@@ -184,7 +228,7 @@ const CartScreen = ({ navigation }: any) => {
 
             <TouchableOpacity
               style={styles.checkoutButton}
-              onPress={handleProceedToCheckout}
+              onPress={() => payWithRazorpay(userDetails, cartBottomPrices)}
             >
               <Text style={styles.checkoutButtonText}>Proceed to checkout</Text>
             </TouchableOpacity>

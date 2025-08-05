@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react"; // Added useEffect
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Image,
   FlatList,
   Dimensions,
+  Alert, // Added Alert
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import HomeHeader from "../../Components/HomeHeader";
@@ -45,6 +46,41 @@ const HomeScreenComponent = () => {
     },
   });
 
+  // --- Start of Added Code ---
+
+  // Combine the loading states of all relevant APIs.
+  const isAnyApiLoading =
+    bannersApi?.isLoading ||
+    categoriesApi?.isLoading ||
+    topSearchApi?.isLoading;
+
+  useEffect(() => {
+    let timeoutId: any = null;
+
+    // If any API is loading, set a 1-minute timer.
+    if (isAnyApiLoading) {
+      timeoutId = setTimeout(() => {
+        // If the timer finishes, it means an API is still loading. Show the alert.
+        Alert.alert(
+          "Loading...",
+          "The app is taking a while to load. Please restart the app or clear the app cache if this issue persists.",
+          [{ text: "OK" }]
+        );
+      }, 30000);
+    }
+
+    // Cleanup function: This will run when the component unmounts or when
+    // `isAnyApiLoading` changes. If the data loads successfully before 1 minute,
+    // this will clear the timer and prevent the alert from showing.
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isAnyApiLoading]); // This effect re-runs only when the combined loading state changes.
+
+  // --- End of Added Code ---
+
   const handleSeeMore = (section: string) => {
     console.log(`See More pressed for: ${section}`);
     if (section === "Top Search") {
@@ -65,6 +101,7 @@ const HomeScreenComponent = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
+      {/* This loader will only show for the bannersApi, as per your original code. */}
       {bannersApi?.isLoading && <FullScreenLoader />}
       <HomeHeader
         onMenuPress={navigation.toggleDrawer}

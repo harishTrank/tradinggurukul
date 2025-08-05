@@ -93,6 +93,17 @@ export const getallContent = () =>
 export const phonePeApi = ({ body }: any) =>
   callApi({
     uriEndPoint: othersEndpoints.phonePeApi.v1,
-    body
+    body,
   });
-  
+
+export const createOrderApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.createOrderApi.v1,
+    query,
+  });
+
+export const updateStatusOrderApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.updateStatusOrderApi.v1,
+    body,
+  });

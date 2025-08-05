@@ -112,5 +112,19 @@ export const othersEndpoints = {
       ...defaults.versions.v1,
       uri: "/phonepe-initiate",
     },
-  }
+  },
+  createOrderApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/checkout/new-order",
+    },
+  },
+  updateStatusOrderApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/checkout/update-order",
+    },
+  },
 };

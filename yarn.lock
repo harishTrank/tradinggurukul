@@ -1630,6 +1630,13 @@
   dependencies:
     ts-toolbelt "^6.15.1"
 
+"@types/react-native-razorpay@^2.2.6":
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/@types/react-native-razorpay/-/react-native-razorpay-2.2.6.tgz#811f2755c75597f516ee472fd6f6c2eda6dd5c53"
+  integrity sha512-8CqZvL53bqs51aLaNXssEaBFN5a09WB5nWEOa1RtNXTnuh9zDyMZ9yKqjN+buVFFOAH4mE9IpB7J1V1I3REnMQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-native-vector-icons@^6.4.18":
   version "6.4.18"
   resolved "https://registry.yarnpkg.com/@types/react-native-vector-icons/-/react-native-vector-icons-6.4.18.tgz#18671c617b9d0958747bc959903470dde91a8c79"
@@ -4420,6 +4427,11 @@ react-native-paper@^5.14.0:
     "@callstack/react-theme-provider" "^3.0.9"
     color "^3.1.2"
     use-latest-callback "^0.2.3"
+
+react-native-razorpay@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-razorpay/-/react-native-razorpay-2.3.0.tgz#e89f3c635e439bc85e4c7972eb2d67e2c0e0abc3"
+  integrity sha512-xxiZCPuZmiRq5UHDr+D4OoyxEjMu0ujC+RaE+rYo938EK0Vc21dZRUVxMVP1L2WgzA8PYwmD5FWvdHNtWLQC4Q==
 
 react-native-reanimated@~3.17.4:
   version "3.17.5"
