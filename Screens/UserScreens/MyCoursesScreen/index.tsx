@@ -26,10 +26,12 @@ const MyCoursesScreen = ({ navigation }: any) => {
       ?.catch((err: any) => console.log("err", err));
   };
   useEffect(() => {
-    if (userDetails?.id) {
-      getAllCoursesManager();
-    }
-  }, [userDetails?.id]);
+    return navigation.addListener("focus", () => {
+      if (userDetails?.id) {
+        getAllCoursesManager();
+      }
+    });
+  }, [userDetails?.id, navigation]);
 
   const handleCoursePress = (courseId: string) => {
     navigation.navigate("ViewCourseScreen", { courseId });
@@ -68,6 +70,11 @@ const MyCoursesScreen = ({ navigation }: any) => {
         contentContainerStyle={styles.listContentContainer}
         ItemSeparatorComponent={renderSeparator}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyBox}>
+            <Text style={styles.emptyText}>There is no purchased courses!</Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );
@@ -96,6 +103,15 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: theme.colors.lightGrey,
     marginLeft: 110,
+  },
+  emptyBox: {
+    height: 500,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyText: {
+    color: theme.colors.red,
+    ...theme.font.fontMedium,
   },
 });
 

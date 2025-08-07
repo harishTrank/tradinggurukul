@@ -177,16 +177,10 @@ const LoginScreen = ({ navigation }: any) => {
                 <TouchableOpacity
                   style={[
                     styles.loginButton,
-                    isSubmitting && styles.buttonDisabled,
                   ]}
                   onPress={() => handleSubmit()}
-                  disabled={isSubmitting}
                 >
-                  {isSubmitting ? (
-                    <ActivityIndicator color={theme.colors.white} />
-                  ) : (
-                    <Text style={styles.loginButtonText}>Log in</Text>
-                  )}
+                  <Text style={styles.loginButtonText}>Log in</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity

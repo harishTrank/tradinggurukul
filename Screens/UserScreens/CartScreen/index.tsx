@@ -142,6 +142,7 @@ const CartScreen = ({ navigation }: any) => {
           currency: "INR",
           key: "rzp_live_MEv3w5udH0dgor",
           amount: cartBottomPrices?.total * 100,
+          order_id: res?.data?.razorpay_order?.id,
           name: "Trading Gurukul",
           prefill: {
             email: userDetails?.billing?.email,

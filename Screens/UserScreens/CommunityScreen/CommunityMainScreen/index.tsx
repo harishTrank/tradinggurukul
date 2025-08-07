@@ -111,6 +111,13 @@ const CommunityMainScreen = ({ navigation }: any) => {
             onEndReached={loadMorePosts}
             onEndReachedThreshold={0.5}
             ListFooterComponent={renderFooter}
+            ListEmptyComponent={
+              <View style={styles.emptyBox}>
+                <Text style={styles.emptyText}>
+                  There is no Community!
+                </Text>
+              </View>
+            }
           />
         )}
       </View>
@@ -144,6 +151,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  emptyBox: {
+    height: 500,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyText: {
+    color: theme.colors.red,
+    ...theme.font.fontMedium,
   },
 });
 
