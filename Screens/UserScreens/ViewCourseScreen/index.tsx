@@ -277,7 +277,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
             <ActivityIndicator size={"small"} color={theme.colors.white} />
           ) : (
             <Text style={styles.addToCartButtonText}>
-              {isInCart ? "Proceed to checkout" : "Add To Cart"}
+              {isInCart ? "Go To Cart" : "Add To Cart"}
             </Text>
           )}
         </TouchableOpacity>
