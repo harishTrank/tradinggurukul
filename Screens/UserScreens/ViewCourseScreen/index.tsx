@@ -28,8 +28,12 @@ import dayjs from "dayjs";
 import RenderHTML from "react-native-render-html";
 import { getProcessedHtml } from "../../../utils/extra/UserUtils";
 import TopicList from "./Components/TopicList.js";
-import { useAddToCartCall } from "../../../hooks/Others/mutation";
+import {
+  useAddToCartCall,
+  useCartItemListCall,
+} from "../../../hooks/Others/mutation";
 import Toast from "react-native-toast-message";
+import FullScreenLoader from "../../Components/FullScreenLoader";
 
 const { width } = Dimensions.get("window");
 
@@ -58,7 +62,40 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
   const [isPurchased, setIsPurchased] = useState(false);
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const [topicsData, setTopicsData]: any = useState([]);
+  const [isInCart, setIsInCart]: any = useState(false);
+  const [loading, setLoading]: any = useState(false);
   const addTocartApiCall: any = useAddToCartCall();
+  const cartItemListApi: any = useCartItemListCall();
+
+  const cartListApiManager = () => {
+    if (userDetails?.id) {
+      setLoading(true);
+      cartItemListApi
+        ?.mutateAsync({
+          body: {
+            user_id: userDetails?.id,
+          },
+        })
+        ?.then((res: any) => {
+          setLoading(false);
+          const findItem = res?.cart_data?.find(
+            (item: any) => item?.id === courseId
+          )?.id;
+          if (findItem) {
+            setIsInCart(true);
+          } else {
+            setIsInCart(false);
+          }
+        })
+        ?.catch((err: any) => setLoading(false));
+    }
+  };
+
+  useEffect(() => {
+    return navigation.addListener("focus", () => {
+      cartListApiManager();
+    });
+  }, [navigation]);
 
   const viewCourseApiCallManager = () => {
     getCourseDetailsCall({
@@ -100,28 +137,41 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
   }, [courseId]);
 
   const handleAddToCart = () => {
-    addTocartApiCall
-      ?.mutateAsync({
-        body: {
-          user_id: userDetails?.id,
-          id: courseId,
-          quantity: 1,
-        },
-      })
-      ?.then((res: any) => {
-        if (res?.code == 1) {
-          Toast.show({
-            type: "success",
-            text1: res?.message,
-          });
-        } else {
-          Toast.show({
-            type: "error",
-            text1: res?.message,
-          });
-        }
-      })
-      ?.catch((err: any) => console.log("err", JSON.stringify(err)));
+    if (userDetails?.id) {
+      if (isInCart) {
+        navigation.navigate("CartScreen");
+      } else {
+        addTocartApiCall
+          ?.mutateAsync({
+            body: {
+              user_id: userDetails?.id,
+              id: courseId,
+              quantity: 1,
+            },
+          })
+          ?.then((res: any) => {
+            if (res?.code == 1) {
+              setIsInCart(true);
+              Toast.show({
+                type: "success",
+                text1: res?.message,
+              });
+            } else {
+              Toast.show({
+                type: "error",
+                text1: res?.message,
+              });
+            }
+          })
+          ?.catch((err: any) => console.log("err", JSON.stringify(err)));
+      }
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Please Signin/Signup first.",
+      });
+      navigation.navigate("LoginScreen");
+    }
   };
 
   const renderHeader = () => (
@@ -226,7 +276,9 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
           {addTocartApiCall?.isLoading ? (
             <ActivityIndicator size={"small"} color={theme.colors.white} />
           ) : (
-            <Text style={styles.addToCartButtonText}>Add To Cart</Text>
+            <Text style={styles.addToCartButtonText}>
+              {isInCart ? "Proceed to checkout" : "Add To Cart"}
+            </Text>
           )}
         </TouchableOpacity>
       </View>
@@ -241,6 +293,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
       ]}
     >
       <StatusBar style="dark" />
+      <FullScreenLoader loading={loading} />
       {renderHeader()}
       {!isPurchased && renderNotPurchasedView()}
     </SafeAreaView>

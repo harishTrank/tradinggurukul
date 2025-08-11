@@ -80,7 +80,6 @@ const PreviewTopicScreen = ({ navigation }) => {
                   color: theme.colors.white,
                   padding: 16,
                   borderRadius: 30,
-                  width: 150,
                   alignItems: "center",
                 }}
               >
