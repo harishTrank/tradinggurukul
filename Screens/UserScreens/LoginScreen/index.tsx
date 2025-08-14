@@ -191,13 +191,13 @@ const LoginScreen = ({ navigation }: any) => {
                   <Text style={styles.forgotPasswordText}>Forgot password</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={styles.skipButton}
                   onPress={() => navigation.replace("DrawerNavigation")}
                   disabled={isSubmitting}
                 >
                   <Text style={styles.skipButtonText}>{"Skip >"}</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <View style={styles.footer}>
                   <TouchableOpacity

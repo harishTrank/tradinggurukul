@@ -49,7 +49,7 @@ const PrivacyPolicyScreen = ({ navigation }: any) => {
           navigation={navigation}
         />
       </View>
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
         {renderContent()}
       </ScrollView>
     </View>

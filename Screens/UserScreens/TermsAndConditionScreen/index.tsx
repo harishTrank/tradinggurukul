@@ -81,6 +81,7 @@ const TermsAndConditionScreen = ({ navigation }: any) => {
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
       >
         {renderContent()}
       </ScrollView>

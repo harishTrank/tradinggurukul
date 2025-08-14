@@ -239,12 +239,12 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
             <Text style={styles.priceTag}>₹{course?.price}</Text>
             <Text style={styles.regularPrice}>₹{course?.regular_price}</Text>
           </View>
-          <View style={styles.priceTagBox}>
+          {/* <View style={styles.priceTagBox}>
             <AntDesign name="earth" size={20} color={theme.colors.black} />
             <Text style={styles.updatedDateText}>{`Updated on ${dayjs(
               course?.date_modified
             ).format("DD-MM-YYYY")}`}</Text>
-          </View>
+          </View> */}
           <RenderHTML
             contentWidth={width}
             source={{
