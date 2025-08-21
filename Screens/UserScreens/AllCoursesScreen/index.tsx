@@ -51,7 +51,7 @@ const AllCoursesScreen = ({ route }: any) => {
   }, [route?.params?.script]);
 
   const setCategoriesId = (select: any) => {
-    setCategoryId(select?.id);
+    setCategoryId(select?.id || select?.banner_category);
   };
 
   useEffect(() => {
