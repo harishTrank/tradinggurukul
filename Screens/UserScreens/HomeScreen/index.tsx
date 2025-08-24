@@ -117,7 +117,7 @@ const HomeScreenComponent = () => {
         <View style={styles.greetingContainer}>
           <View>
             <Text style={styles.greeting}>
-              Hola, {userDetails?.first_name || "User"}!
+              Hello, {userDetails?.first_name || "User"}!
             </Text>
             <Text style={styles.subtitle}>What do you wanna learn today?</Text>
           </View>
