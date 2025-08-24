@@ -16,6 +16,8 @@ import SplashScreen from "../SplashScreen";
 import MyCourseViewScreen from "./MyCourseViewScreen/index.jsx";
 import PreviewTopicScreen from "./PreviewTopicScreen";
 import PdfPreviewScreen from "./PdfPreviewScreen";
+import CommentsScreen from "./CommentsScreen";
+import DoubtsScreen from "./DoubtsScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -49,6 +51,16 @@ const UserScreens = () => {
       <Stack.Screen name="MyCourseViewScreen" component={MyCourseViewScreen} />
       <Stack.Screen name="PreviewTopicScreen" component={PreviewTopicScreen} />
       <Stack.Screen name="PdfPreview" component={PdfPreviewScreen} />
+      <Stack.Screen
+        name="CommentsScreen"
+        component={CommentsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="DoubtsScreen"
+        component={DoubtsScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };

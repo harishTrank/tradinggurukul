@@ -1,18 +1,18 @@
+// TopicItems.js
+
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useDispatch } from "react-redux";
-import { useNavigation } from "@react-navigation/native"; // <-- Import useNavigation
+import { useNavigation } from "@react-navigation/native";
 import { changeTopic } from "../../../VideoRedux/topic.actions";
 import TopicItem from "./TopicItem";
 import theme from "../../../utils/theme";
 
 const TopicItems = ({ topicData, activeTopic, sectionId }) => {
   const dispatch = useDispatch();
-  const navigation = useNavigation(); // <-- Get navigation object
+  const navigation = useNavigation();
 
-  // This handler is for changing the main video
   const handleVideoChange = (topicInfo) => {
-    // Check if it's a video and has playable data
     if (
       topicInfo.topicType !== "video" ||
       !topicInfo.topicPreview?.previewData
@@ -29,7 +29,6 @@ const TopicItems = ({ topicData, activeTopic, sectionId }) => {
     dispatch(changeTopic(dataToSend));
   };
 
-  // NEW: This handler is for opening the study material preview
   const handleDownloadPreview = (topicInfo) => {
     if (topicInfo?.studyDoc) {
       navigation.navigate("PdfPreview", {
@@ -39,9 +38,22 @@ const TopicItems = ({ topicData, activeTopic, sectionId }) => {
     }
   };
 
+  const handleCommentPress = (topicInfo) => {
+    navigation.navigate("CommentsScreen", {
+      videoId: topicInfo.id,
+      videoTitle: topicInfo.topicTitle,
+    });
+  };
+
+  const handleDoubtPress = (topicInfo) => {
+    navigation.navigate("DoubtsScreen", {
+      videoId: topicInfo.id,
+      videoTitle: topicInfo.topicTitle,
+    });
+  };
+
   const renderTopics = () => {
     return topicData.map((el) => (
-      // The TouchableOpacity now handles video changes
       <TouchableOpacity
         key={el.id}
         activeOpacity={0.8}
@@ -57,8 +69,9 @@ const TopicItems = ({ topicData, activeTopic, sectionId }) => {
           <TopicItem
             data={el}
             sectionId={sectionId}
-            // Pass the new handler to the TopicItem component
             onDownloadPress={() => handleDownloadPreview(el)}
+            onCommentPress={() => handleCommentPress(el)}
+            onDoubtPress={() => handleDoubtPress(el)}
           />
         </View>
       </TouchableOpacity>
@@ -75,15 +88,11 @@ const TopicItems = ({ topicData, activeTopic, sectionId }) => {
 const styles = StyleSheet.create({
   topicItemWrap: {
     paddingHorizontal: 16,
-    paddingTop: 16, // This comes from your original code
+    paddingTop: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#ECECEC",
   },
-  noLectureText: {
-    padding: 20,
-    textAlign: "center",
-    color: theme.colors.grey,
-  },
+  noLectureText: { padding: 20, textAlign: "center", color: theme.colors.grey },
 });
 
 export default TopicItems;

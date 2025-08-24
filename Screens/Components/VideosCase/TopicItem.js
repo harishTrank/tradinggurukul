@@ -1,19 +1,20 @@
+// TopicItem.js
+
 import React from "react";
-// Make sure to import TouchableOpacity if it's not already there
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import Icon from "./IconNB";
+import Icon from "./IconNB"; // Assuming this is your custom Icon component
 import theme from "../../../utils/theme";
 
-// Add a new prop 'onDownloadPress' to handle the icon tap
 const TopicItem = ({
   data,
   isPreview,
   handlePreview,
   sectionId,
   onDownloadPress,
+  onCommentPress,
+  onDoubtPress,
 }) => {
   const onPreviewClick = () => {
-    // This function for playing videos remains the same
     const dataToSend = {
       title: data.topicTitle,
       data: data.topicPreview.previewData,
@@ -28,7 +29,7 @@ const TopicItem = ({
     <View style={styles.parentTopic}>
       <Icon
         type="MaterialIcons"
-        name={data.topicType === "video" ? "videocam" : "article"} // 'article' is a good alternative to 'content-paste'
+        name={data.topicType === "video" ? "videocam" : "article"}
         color={theme.colors.black}
         size={24}
       />
@@ -40,38 +41,64 @@ const TopicItem = ({
         </View>
       </View>
 
-      {/* Conditionally render a download button if studyDoc exists */}
-      {data?.studyDoc ? (
-        <TouchableOpacity onPress={onDownloadPress} style={styles.iconButton}>
-          <Icon
-            type="MaterialIcons"
-            name="file-download" // A clear icon for downloading
-            color={theme.colors.primary}
-            size={26}
-          />
-        </TouchableOpacity>
-      ) : null}
+      {/* Container for all action icons */}
+      <View style={styles.actionsContainer}>
+        {/* Preview Play Button */}
+        {isPreview && (
+          <TouchableOpacity onPress={onPreviewClick} style={styles.iconButton}>
+            <Icon
+              type="MaterialIcons"
+              name="play-circle-outline"
+              color={theme.colors.secondary}
+              size={26}
+            />
+          </TouchableOpacity>
+        )}
 
-      {/* Your existing preview play button logic */}
-      {isPreview ? (
-        <TouchableOpacity onPress={onPreviewClick} style={styles.iconButton}>
-          <Icon
-            type="MaterialIcons"
-            name="play-circle-outline"
-            color={theme.colors.secondary} // I used secondary color from your commented out code
-            size={26}
-          />
-        </TouchableOpacity>
-      ) : null}
+        {/* Ask a Doubt Button */}
+        {data.topicType === "video" && (
+          <TouchableOpacity onPress={onDoubtPress} style={styles.iconButton}>
+            <Icon
+              type="MaterialIcons"
+              name="help-outline"
+              color={theme.colors.primary}
+              size={24}
+            />
+          </TouchableOpacity>
+        )}
+
+        {/* Comments Button */}
+        {data.topicType === "video" && (
+          <TouchableOpacity onPress={onCommentPress} style={styles.iconButton}>
+            <Icon
+              type="MaterialCommunityIcons"
+              name="comment-text-outline"
+              color={theme.colors.primary}
+              size={24}
+            />
+          </TouchableOpacity>
+        )}
+
+        {/* Download Button */}
+        {data.studyDoc && (
+          <TouchableOpacity onPress={onDownloadPress} style={styles.iconButton}>
+            <Icon
+              type="MaterialIcons"
+              name="file-download"
+              color={theme.colors.primary}
+              size={26}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   parentTopic: {
-    flex: 1,
     flexDirection: "row",
-    alignItems: "center", // Align items vertically
+    alignItems: "center",
     marginBottom: 16,
   },
   topicMeta: {
@@ -84,8 +111,8 @@ const styles = StyleSheet.create({
     ...theme.font.fontSemiBold,
   },
   topicContentWrap: {
-    paddingStart: 12, // Increased padding
-    flex: 1,
+    paddingStart: 12,
+    flex: 1, // This is important to push the icons to the right
   },
   topicType: {
     color: theme.colors.text,
@@ -93,17 +120,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     ...theme.font.fontRegular,
   },
-  // Re-using a style for both icon buttons
+  actionsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   iconButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 8,
+    paddingLeft: 10, // Gives space between icons
   },
 });
 
-// Add a default prop for the new handler to prevent errors
 TopicItem.defaultProps = {
   handlePreview: () => {},
   onDownloadPress: () => {},
+  onCommentPress: () => {},
+  onDoubtPress: () => {},
 };
 
 export default TopicItem;
