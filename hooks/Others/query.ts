@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   bannersCall,
   customProductsCall,
+  getAllCommentsApi,
   getallContent,
   getCategoryCall,
   getCourseDetailsCall,
@@ -27,6 +28,13 @@ export const useGetCourseDetailsCall = (payload: any) =>
   useQuery(["getCourseDetailsCall", payload], () =>
     getCourseDetailsCall(payload)
   );
+
+export const useGetAllCommentsApi = (payload: any) =>
+  useQuery(["getAllCommentsApi", payload], () =>
+    getAllCommentsApi(payload)
+  );
+
+;
 
 export const useGetallContent = () =>
   useQuery(["getallContent"], () => getallContent());

@@ -107,3 +107,21 @@ export const updateStatusOrderApi = ({ body }: any) =>
     uriEndPoint: othersEndpoints.updateStatusOrderApi.v1,
     body,
   });
+
+export const addCommentApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.addCommentApi.v1,
+    body,
+  });
+
+export const addCommentReplyApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.addCommentReplyApi.v1,
+    body,
+  });
+
+export const getAllCommentsApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.getAllCommentsApi.v1,
+    query,
+  });

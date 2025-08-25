@@ -1,6 +1,6 @@
 // src/screens/Comments/CommentsScreen.js
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -10,40 +10,19 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import theme from "../../../utils/theme";
-
-const initialComments = [
-  {
-    id: "c1",
-    user: "John Doe",
-    text: "This was a really helpful video, thank you!",
-    timestamp: "10:45 AM",
-    replies: [
-      {
-        id: "r1",
-        user: "Admin",
-        text: "You're welcome, John!",
-        timestamp: "10:50 AM",
-      },
-      {
-        id: "r2",
-        user: "Jane Smith",
-        text: "I agree, it was great!",
-        timestamp: "11:02 AM",
-      },
-    ],
-  },
-  {
-    id: "c2",
-    user: "Jane Smith",
-    text: "Can you explain the part at 5:32 again?",
-    timestamp: "11:10 AM",
-    replies: [],
-  },
-];
+import {
+  useAddCommentApi,
+  useAddCommentReplyApi,
+} from "../../../hooks/Others/mutation";
+import FullScreenLoader from "../../Components/FullScreenLoader";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../../JotaiStore";
+import { useGetAllCommentsApi } from "../../../hooks/Others/query";
 
 const ReplyItem = ({ reply }) => (
   <View style={styles.replyContainer}>
@@ -65,7 +44,7 @@ const CommentItem = ({ comment, onReplyPress }) => (
         </TouchableOpacity>
       </View>
     </View>
-    {comment.replies.length > 0 && (
+    {comment.replies && comment.replies.length > 0 && (
       <View style={styles.repliesList}>
         {comment.replies.map((reply) => (
           <ReplyItem key={reply.id} reply={reply} />
@@ -79,31 +58,89 @@ const CommentsScreen = ({ route, navigation }) => {
   const { videoId, videoTitle } = route.params;
   const insets = useSafeAreaInsets();
   const textInputRef = useRef(null);
-  const [comments, setComments] = useState(initialComments);
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
+  const [userDetails] = useAtom(userDetailsGlobal);
+
+  const addCommentApiCall = useAddCommentApi();
+  const addCommentReplyApiCall = useAddCommentReplyApi();
+
+  const getAllComments = useGetAllCommentsApi({
+    query: {
+      topic_id: videoId,
+      page: 1,
+      limit: 50,
+    },
+  });
+
+  const formatApiComment = (apiComment) => {
+    const isCurrentUser = apiComment.user_id === userDetails?.id?.toString();
+    const date = new Date(apiComment.created_at.replace(" ", "T") + "Z");
+    const formattedTime = date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const formattedDate = date.toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+    });
+
+    return {
+      id: apiComment.id,
+      user: isCurrentUser ? "You" : `User ${apiComment.user_id}`,
+      text: apiComment.comment,
+      timestamp: `${formattedDate}, ${formattedTime}`,
+      replies: apiComment.replies
+        ? apiComment.replies.map(formatApiComment)
+        : [],
+    };
+  };
+
+  const comments = useMemo(() => {
+    if (getAllComments.data?.data?.comments) {
+      return getAllComments.data.data.comments.map(formatApiComment);
+    }
+    return [];
+  }, [getAllComments.data, userDetails?.id]);
 
   const handleSend = () => {
-    if (newComment.trim() === "") return;
-    const newReply = {
-      id: Math.random().toString(),
-      user: "You",
-      text: newComment.trim(),
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+    if (newComment.trim() === "" || !userDetails?.id) return;
+
+    const onSettled = () => {
+      setNewComment("");
+      setReplyingTo(null);
+      textInputRef.current?.blur();
+      getAllComments.refetch();
     };
+
+    const onError = (err) => {
+      console.error("Error posting:", err);
+    };
+
     if (replyingTo) {
-      const updatedComments = comments.map((c) =>
-        c.id === replyingTo.id ? { ...c, replies: [...c.replies, newReply] } : c
-      );
-      setComments(updatedComments);
+      addCommentReplyApiCall.mutate(
+        {
+          body: {
+            comment_id: replyingTo.id,
+            user_id: userDetails.id,
+            topic_id: videoId,
+            reply: newComment.trim(),
+          },
+        },
+        { onSettled, onError }
+      )
     } else {
-      setComments([...comments, { ...newReply, replies: [] }]);
+      addCommentApiCall.mutate(
+        {
+          body: {
+            topic_id: videoId,
+            comment: newComment.trim(),
+            user_id: userDetails.id,
+          },
+        },
+        { onSettled, onError }
+      );
     }
-    setNewComment("");
-    setReplyingTo(null);
   };
 
   const handleReplyPress = (comment) => {
@@ -114,8 +151,49 @@ const CommentsScreen = ({ route, navigation }) => {
     setReplyingTo(null);
   };
 
+  const renderContent = () => {
+    if (getAllComments.isLoading) {
+      return (
+        <View style={styles.centerMessage}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      );
+    }
+
+    if (getAllComments.isError) {
+      return (
+        <View style={styles.centerMessage}>
+          <Text>Failed to load comments. Please try again.</Text>
+        </View>
+      );
+    }
+
+    if (comments.length === 0) {
+      return (
+        <View style={styles.centerMessage}>
+          <Text>No comments yet. Be the first to comment!</Text>
+        </View>
+      );
+    }
+
+    return (
+      <FlatList
+        data={comments}
+        renderItem={({ item }) => (
+          <CommentItem comment={item} onReplyPress={handleReplyPress} />
+        )}
+        keyExtractor={(item) => item.id}
+        style={[styles.list, { paddingTop: 80 + insets.top }]}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      />
+    );
+  };
+
   return (
     <View style={styles.container}>
+      {addCommentApiCall.isLoading || addCommentReplyApiCall.isLoading ? (
+        <FullScreenLoader />
+      ) : null}
       <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -131,17 +209,12 @@ const CommentsScreen = ({ route, navigation }) => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={60}
+        // REMOVED: keyboardVerticalOffset={60}
+        // This offset was adding extra unwanted space at the bottom on iOS.
+        // With an absolutely positioned header, an offset is typically not needed
+        // as long as the list inside has its own padding to avoid the header.
       >
-        <FlatList
-          data={comments}
-          renderItem={({ item }) => (
-            <CommentItem comment={item} onReplyPress={handleReplyPress} />
-          )}
-          keyExtractor={(item) => item.id}
-          style={[styles.list, { paddingTop: 80 + insets.top }]}
-          contentContainerStyle={{ paddingBottom: 20 }}
-        />
+        {renderContent()}
         <View
           style={[
             styles.inputContainer,
@@ -166,8 +239,21 @@ const CommentsScreen = ({ route, navigation }) => {
               value={newComment}
               onChangeText={setNewComment}
               multiline
+              autoCorrect={false}
+              autoComplete={false}
             />
-            <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+            <TouchableOpacity
+              style={[
+                styles.sendButton,
+                (addCommentApiCall.isLoading ||
+                  addCommentReplyApiCall.isLoading) &&
+                  styles.disabledSendButton,
+              ]}
+              onPress={handleSend}
+              disabled={
+                addCommentApiCall.isLoading || addCommentReplyApiCall.isLoading
+              }
+            >
               <Icon name="send" size={24} color={theme.colors.white} />
             </TouchableOpacity>
           </View>
@@ -201,6 +287,12 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: { color: theme.colors.white, fontSize: 12, marginLeft: 16 },
   list: { flex: 1, paddingHorizontal: 16 },
+  centerMessage: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
   commentWrapper: { marginVertical: 8 },
   commentContainer: {
     backgroundColor: "#f1f1f1",
@@ -266,6 +358,9 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
+  },
+  disabledSendButton: {
+    backgroundColor: "#cccccc",
   },
 });
 

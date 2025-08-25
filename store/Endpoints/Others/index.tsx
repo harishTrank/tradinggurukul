@@ -127,4 +127,25 @@ export const othersEndpoints = {
       uri: "/checkout/update-order",
     },
   },
+  addCommentApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/add_comment",
+    },
+  },
+  addCommentReplyApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/reply-comment",
+    },
+  },
+  getAllCommentsApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/get-comment",
+    },
+  },
 };
