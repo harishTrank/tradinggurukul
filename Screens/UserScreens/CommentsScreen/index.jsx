@@ -26,31 +26,37 @@ import { useGetAllCommentsApi } from "../../../hooks/Others/query";
 
 const ReplyItem = ({ reply }) => (
   <View style={styles.replyContainer}>
-    <Text style={styles.commentUser}>{reply.user}</Text>
-    <Text style={styles.commentText}>{reply.text}</Text>
-    <Text style={styles.commentTimestamp}>{reply.timestamp}</Text>
+    {/* Inverted list renders upside down, so we apply a transform to flip it back */}
+    <View>
+      <Text style={styles.commentUser}>{reply.user}</Text>
+      <Text style={styles.commentText}>{reply.text}</Text>
+      <Text style={styles.commentTimestamp}>{reply.timestamp}</Text>
+    </View>
   </View>
 );
 
 const CommentItem = ({ comment, onReplyPress }) => (
   <View style={styles.commentWrapper}>
-    <View style={styles.commentContainer}>
-      <Text style={styles.commentUser}>{comment.user}</Text>
-      <Text style={styles.commentText}>{comment.text}</Text>
-      <View style={styles.commentFooter}>
-        <Text style={styles.commentTimestamp}>{comment.timestamp}</Text>
-        <TouchableOpacity onPress={() => onReplyPress(comment)}>
-          <Text style={styles.replyButtonText}>Reply</Text>
-        </TouchableOpacity>
+    {/* Inverted list renders upside down, so we apply a transform to flip it back */}
+    <View>
+      <View style={styles.commentContainer}>
+        <Text style={styles.commentUser}>{comment.user}</Text>
+        <Text style={styles.commentText}>{comment.text}</Text>
+        <View style={styles.commentFooter}>
+          <Text style={styles.commentTimestamp}>{comment.timestamp}</Text>
+          <TouchableOpacity onPress={() => onReplyPress(comment)}>
+            <Text style={styles.replyButtonText}>Reply</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+      {comment.replies && comment.replies.length > 0 && (
+        <View style={styles.repliesList}>
+          {comment.replies.map((reply) => (
+            <ReplyItem key={reply.id} reply={reply} />
+          ))}
+        </View>
+      )}
     </View>
-    {comment.replies && comment.replies.length > 0 && (
-      <View style={styles.repliesList}>
-        {comment.replies.map((reply) => (
-          <ReplyItem key={reply.id} reply={reply} />
-        ))}
-      </View>
-    )}
   </View>
 );
 
@@ -98,6 +104,8 @@ const CommentsScreen = ({ route, navigation }) => {
 
   const comments = useMemo(() => {
     if (getAllComments.data?.data?.comments) {
+      // With an inverted list, we do NOT reverse the data.
+      // The API returns newest first, which is what inverted needs.
       return getAllComments.data.data.comments.map(formatApiComment);
     }
     return [];
@@ -128,7 +136,7 @@ const CommentsScreen = ({ route, navigation }) => {
           },
         },
         { onSettled, onError }
-      )
+      );
     } else {
       addCommentApiCall.mutate(
         {
@@ -152,7 +160,7 @@ const CommentsScreen = ({ route, navigation }) => {
   };
 
   const renderContent = () => {
-    if (getAllComments.isLoading) {
+    if (getAllComments.isLoading && !getAllComments.data) {
       return (
         <View style={styles.centerMessage}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -183,8 +191,13 @@ const CommentsScreen = ({ route, navigation }) => {
           <CommentItem comment={item} onReplyPress={handleReplyPress} />
         )}
         keyExtractor={(item) => item.id}
-        style={[styles.list, { paddingTop: 80 + insets.top }]}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        style={styles.list} // The list itself needs to be inverted
+        // Padding is added to the content container to create space for the header and input
+        contentContainerStyle={{
+          paddingTop: 10, // Visual bottom of the list
+          paddingBottom: 80 + insets.top, // Visual top of the list (space for header)
+        }}
+        inverted // This is the key change!
       />
     );
   };
@@ -194,6 +207,8 @@ const CommentsScreen = ({ route, navigation }) => {
       {addCommentApiCall.isLoading || addCommentReplyApiCall.isLoading ? (
         <FullScreenLoader />
       ) : null}
+
+      {/* The header is absolutely positioned and stays on top */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -206,15 +221,14 @@ const CommentsScreen = ({ route, navigation }) => {
           <Text style={styles.headerSubtitle}>{videoTitle}</Text>
         </View>
       </View>
+
+      {/* The FlatList now sits directly inside the main view */}
+      {renderContent()}
+
+      {/* The KeyboardAvoidingView now ONLY wraps the input area */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-        // REMOVED: keyboardVerticalOffset={60}
-        // This offset was adding extra unwanted space at the bottom on iOS.
-        // With an absolutely positioned header, an offset is typically not needed
-        // as long as the list inside has its own padding to avoid the header.
       >
-        {renderContent()}
         <View
           style={[
             styles.inputContainer,
@@ -239,8 +253,6 @@ const CommentsScreen = ({ route, navigation }) => {
               value={newComment}
               onChangeText={setNewComment}
               multiline
-              autoCorrect={false}
-              autoComplete={false}
             />
             <TouchableOpacity
               style={[
@@ -286,6 +298,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   headerSubtitle: { color: theme.colors.white, fontSize: 12, marginLeft: 16 },
+  // The list style now applies the transform to flip the entire list
   list: { flex: 1, paddingHorizontal: 16 },
   centerMessage: {
     flex: 1,
