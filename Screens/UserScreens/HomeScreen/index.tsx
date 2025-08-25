@@ -29,12 +29,15 @@ import FullScreenLoader from "../../Components/FullScreenLoader";
 import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AllCoursesScreen from "../AllCoursesScreen";
+import { checkLoginTokenApi } from "../../../store/Services/Others";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 const { width } = Dimensions.get("window");
 const Stack = createStackNavigator<any>();
 
 const HomeScreenComponent = () => {
-  const [userDetails]: any = useAtom(userDetailsGlobal);
+  const [userDetails, setUserDetails]: any = useAtom(userDetailsGlobal);
   const navigation: any = useNavigation();
   const bannersApi: any = useBannersCall();
   const categoriesApi: any = useGetCategoryCall();
@@ -45,6 +48,34 @@ const HomeScreenComponent = () => {
       sort: "popularity",
     },
   });
+  const checkLoginTokenHandler = () => {
+    checkLoginTokenApi({
+      body: {
+        user_id: userDetails?.id,
+        device_token: userDetails?.device_token,
+      },
+    })
+      ?.then(async (res: any) => {
+        if (res?.status == 0) {
+          Toast.show({
+            type: "error",
+            text1: "We detected a login from another device.",
+          });
+          await AsyncStorage.clear();
+          setUserDetails({});
+          navigation.closeDrawer();
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "LoginScreen" }],
+          });
+        }
+      })
+      ?.catch((err: any) => console.log("err", err));
+  };
+
+  useEffect(() => {
+    checkLoginTokenHandler();
+  }, []);
 
   // --- Start of Added Code ---
 

@@ -73,7 +73,6 @@ const CommentsScreen = ({ route, navigation }) => {
 
   const addCommentApiCall = useAddCommentApi();
   const addCommentReplyApiCall = useAddCommentReplyApi();
-
   const getAllComments = useGetAllCommentsApi({
     query: {
       topic_id: videoId,

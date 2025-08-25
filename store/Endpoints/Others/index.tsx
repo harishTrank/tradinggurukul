@@ -143,9 +143,16 @@ export const othersEndpoints = {
   },
   getAllCommentsApi: {
     v1: {
-      ...defaults.methods.POST,
+      ...defaults.methods.GET,
       ...defaults.versions.v1,
       uri: "/get-comment",
+    },
+  },
+  checkLoginToken: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/check-token",
     },
   },
 };

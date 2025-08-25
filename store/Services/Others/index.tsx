@@ -125,3 +125,9 @@ export const getAllCommentsApi = ({ query }: any) =>
     uriEndPoint: othersEndpoints.getAllCommentsApi.v1,
     query,
   });
+
+export const checkLoginTokenApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.checkLoginToken.v1,
+    body,
+  });
