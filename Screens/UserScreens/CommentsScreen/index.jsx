@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Dimensions
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -23,6 +24,8 @@ import FullScreenLoader from "../../Components/FullScreenLoader";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import { useGetAllCommentsApi } from "../../../hooks/Others/query";
+
+const {width} = Dimensions.get("window");
 
 const ReplyItem = ({ reply }) => (
   <View style={styles.replyContainer}>
@@ -295,9 +298,14 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
     fontSize: 18,
     fontWeight: "bold",
-    marginLeft: 16,
+    marginLeft: 10,
   },
-  headerSubtitle: { color: theme.colors.white, fontSize: 12, marginLeft: 16 },
+  headerSubtitle: {
+    color: theme.colors.white,
+    fontSize: 12,
+    marginLeft: 10,
+    width: width - 80,
+  },
   // The list style now applies the transform to flip the entire list
   list: { flex: 1, paddingHorizontal: 16 },
   centerMessage: {

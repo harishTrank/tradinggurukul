@@ -11,11 +11,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { launchImageLibrary } from "react-native-image-picker";
 import theme from "../../../utils/theme";
+
+const {width} = Dimensions.get("window");
 
 const initialDoubts = [
   {
@@ -33,7 +36,8 @@ const initialDoubts = [
   {
     id: "d3",
     sender: "admin",
-    imageUrl: "https://imgs.search.brave.com/r3OfxCZdaQbkqQ2CFUqMxH6iBGFuXauM_O4t2v21k2w/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kMnNs/Y3cza2lwNnFtay5j/bG91ZGZyb250Lm5l/dC9tYXJrZXRpbmcv/cGFnZXMvY2hhcnQv/c2VvL2RhdGEtZmxv/dy1kaWFncmFtL2Rp/c2NvdmVyeS9kYXRh/LWZsb3ctZGlhZ3Jh/bS00LnN2Zw",
+    imageUrl:
+      "https://imgs.search.brave.com/r3OfxCZdaQbkqQ2CFUqMxH6iBGFuXauM_O4t2v21k2w/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kMnNs/Y3cza2lwNnFtay5j/bG91ZGZyb250Lm5l/dC9tYXJrZXRpbmcv/cGFnZXMvY2hhcnQv/c2VvL2RhdGEtZmxv/dy1kaWFncmFtL2Rp/c2NvdmVyeS9kYXRh/LWZsb3ctZGlhZ3Jh/bS00LnN2Zw",
     text: "This diagram should help clarify it.",
     timestamp: "1:15 PM",
   },
@@ -196,9 +200,14 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
     fontSize: 18,
     fontWeight: "bold",
-    marginLeft: 16,
+    marginLeft: 10,
   },
-  headerSubtitle: { color: theme.colors.white, fontSize: 12, marginLeft: 16 },
+  headerSubtitle: {
+    color: theme.colors.white,
+    fontSize: 12,
+    marginLeft: 10,
+    width: width - 80,
+  },
   messageList: { flex: 1, paddingHorizontal: 10 },
   messageContainerBase: {
     borderRadius: 8,
