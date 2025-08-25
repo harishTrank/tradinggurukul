@@ -1,6 +1,6 @@
 // src/screens/Comments/CommentsScreen.js
 
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -25,11 +25,10 @@ import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import { useGetAllCommentsApi } from "../../../hooks/Others/query";
 
-const {width} = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const ReplyItem = ({ reply }) => (
   <View style={styles.replyContainer}>
-    {/* Inverted list renders upside down, so we apply a transform to flip it back */}
     <View>
       <Text style={styles.commentUser}>{reply.user}</Text>
       <Text style={styles.commentText}>{reply.text}</Text>
@@ -40,7 +39,6 @@ const ReplyItem = ({ reply }) => (
 
 const CommentItem = ({ comment, onReplyPress }) => (
   <View style={styles.commentWrapper}>
-    {/* Inverted list renders upside down, so we apply a transform to flip it back */}
     <View>
       <View style={styles.commentContainer}>
         <Text style={styles.commentUser}>{comment.user}</Text>
@@ -67,20 +65,25 @@ const CommentsScreen = ({ route, navigation }) => {
   const { videoId, videoTitle } = route.params;
   const insets = useSafeAreaInsets();
   const textInputRef = useRef(null);
+
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [userDetails] = useAtom(userDetailsGlobal);
 
+  // pagination states
+  const [page, setPage] = useState(1);
+  const [commentsList, setCommentsList] = useState([]);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
   const addCommentApiCall = useAddCommentApi();
   const addCommentReplyApiCall = useAddCommentReplyApi();
+
   const getAllComments = useGetAllCommentsApi({
-    query: {
-      topic_id: videoId,
-      page: 1,
-      limit: 50,
-    },
+    query: { topic_id: videoId, page, limit: 20 },
   });
 
+  // format comment
   const formatApiComment = (apiComment) => {
     const isCurrentUser = apiComment.user_id === userDetails?.id?.toString();
     const date = new Date(apiComment.created_at.replace(" ", "T") + "Z");
@@ -94,7 +97,7 @@ const CommentsScreen = ({ route, navigation }) => {
     });
 
     return {
-      id: apiComment.id,
+      id: apiComment.id.toString(),
       user: isCurrentUser ? "You" : `User ${apiComment.user_id}`,
       text: apiComment.comment,
       timestamp: `${formattedDate}, ${formattedTime}`,
@@ -104,14 +107,24 @@ const CommentsScreen = ({ route, navigation }) => {
     };
   };
 
-  const comments = useMemo(() => {
+  // update comments list on api success
+  useEffect(() => {
     if (getAllComments.data?.data?.comments) {
-      // With an inverted list, we do NOT reverse the data.
-      // The API returns newest first, which is what inverted needs.
-      return getAllComments.data.data.comments.map(formatApiComment);
+      const newData = getAllComments.data.data.comments.map(formatApiComment);
+
+      if (page === 1) {
+        setCommentsList(newData);
+      } else {
+        setCommentsList((prev) => [...prev, ...newData]);
+      }
+
+      // check if more pages available
+      if (newData.length === 0 || newData.length < 20) {
+        setHasMore(false);
+      }
+      setIsFetchingMore(false);
     }
-    return [];
-  }, [getAllComments.data, userDetails?.id]);
+  }, [getAllComments.data]);
 
   const handleSend = () => {
     if (newComment.trim() === "" || !userDetails?.id) return;
@@ -120,11 +133,9 @@ const CommentsScreen = ({ route, navigation }) => {
       setNewComment("");
       setReplyingTo(null);
       textInputRef.current?.blur();
+      setPage(1);
+      setHasMore(true);
       getAllComments.refetch();
-    };
-
-    const onError = (err) => {
-      console.error("Error posting:", err);
     };
 
     if (replyingTo) {
@@ -137,7 +148,7 @@ const CommentsScreen = ({ route, navigation }) => {
             reply: newComment.trim(),
           },
         },
-        { onSettled, onError }
+        { onSettled }
       );
     } else {
       addCommentApiCall.mutate(
@@ -148,7 +159,7 @@ const CommentsScreen = ({ route, navigation }) => {
             user_id: userDetails.id,
           },
         },
-        { onSettled, onError }
+        { onSettled }
       );
     }
   };
@@ -157,12 +168,28 @@ const CommentsScreen = ({ route, navigation }) => {
     setReplyingTo(comment);
     textInputRef.current?.focus();
   };
-  const cancelReply = () => {
-    setReplyingTo(null);
+
+  const cancelReply = () => setReplyingTo(null);
+
+  // load more when reaching end
+  const handleLoadMore = () => {
+    if (!isFetchingMore && hasMore) {
+      setIsFetchingMore(true);
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  const renderFooter = () => {
+    if (!isFetchingMore) return null;
+    return (
+      <View style={{ paddingVertical: 10 }}>
+        <ActivityIndicator size="small" color={theme.colors.primary} />
+      </View>
+    );
   };
 
   const renderContent = () => {
-    if (getAllComments.isLoading && !getAllComments.data) {
+    if (getAllComments.isLoading && page === 1) {
       return (
         <View style={styles.centerMessage}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -170,7 +197,7 @@ const CommentsScreen = ({ route, navigation }) => {
       );
     }
 
-    if (getAllComments.isError) {
+    if (getAllComments.isError && page === 1) {
       return (
         <View style={styles.centerMessage}>
           <Text>Failed to load comments. Please try again.</Text>
@@ -178,7 +205,7 @@ const CommentsScreen = ({ route, navigation }) => {
       );
     }
 
-    if (comments.length === 0) {
+    if (commentsList.length === 0 && page === 1) {
       return (
         <View style={styles.centerMessage}>
           <Text>No comments yet. Be the first to comment!</Text>
@@ -188,29 +215,31 @@ const CommentsScreen = ({ route, navigation }) => {
 
     return (
       <FlatList
-        data={comments}
+        data={commentsList}
         renderItem={({ item }) => (
           <CommentItem comment={item} onReplyPress={handleReplyPress} />
         )}
         keyExtractor={(item) => item.id}
-        style={styles.list} // The list itself needs to be inverted
-        // Padding is added to the content container to create space for the header and input
+        style={styles.list}
         contentContainerStyle={{
-          paddingTop: 10, // Visual bottom of the list
-          paddingBottom: 80 + insets.top, // Visual top of the list (space for header)
+          paddingTop: 10,
+          paddingBottom: 80 + insets.top,
         }}
-        inverted // This is the key change!
+        inverted
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
       />
     );
   };
 
   return (
     <View style={styles.container}>
-      {addCommentApiCall.isLoading || addCommentReplyApiCall.isLoading ? (
+      {(addCommentApiCall.isLoading || addCommentReplyApiCall.isLoading) && (
         <FullScreenLoader />
-      ) : null}
+      )}
 
-      {/* The header is absolutely positioned and stays on top */}
+      {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -224,10 +253,10 @@ const CommentsScreen = ({ route, navigation }) => {
         </View>
       </View>
 
-      {/* The FlatList now sits directly inside the main view */}
+      {/* Content */}
       {renderContent()}
 
-      {/* The KeyboardAvoidingView now ONLY wraps the input area */}
+      {/* Input */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
@@ -305,7 +334,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     width: width - 80,
   },
-  // The list style now applies the transform to flip the entire list
   list: { flex: 1, paddingHorizontal: 16 },
   centerMessage: {
     flex: 1,

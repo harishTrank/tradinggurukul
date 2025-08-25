@@ -1,6 +1,6 @@
 // src/screens/Doubts/DoubtsScreen.js
 
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -12,60 +12,56 @@ import {
   Platform,
   Image,
   Dimensions,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { launchImageLibrary } from "react-native-image-picker";
 import theme from "../../../utils/theme";
+import { useGetAllDoubtsApi } from "../../../hooks/Others/query";
+import { useAtom } from "jotai";
+import { userDetailsGlobal } from "../../../JotaiStore";
+import { useAddDoubtApi } from "../../../hooks/Others/mutation";
+import FullScreenLoader from "../../Components/FullScreenLoader";
+import { getImage, takePicture } from "../../../utils/extra/ImagePicker";
 
-const {width} = Dimensions.get("window");
-
-const initialDoubts = [
-  {
-    id: "d1",
-    sender: "admin",
-    text: "Feel free to ask any doubts you have about this topic!",
-    timestamp: "1:10 PM",
-  },
-  {
-    id: "d2",
-    sender: "user",
-    text: "What is the difference between state and props?",
-    timestamp: "1:12 PM",
-  },
-  {
-    id: "d3",
-    sender: "admin",
-    imageUrl:
-      "https://imgs.search.brave.com/r3OfxCZdaQbkqQ2CFUqMxH6iBGFuXauM_O4t2v21k2w/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kMnNs/Y3cza2lwNnFtay5j/bG91ZGZyb250Lm5l/dC9tYXJrZXRpbmcv/cGFnZXMvY2hhcnQv/c2VvL2RhdGEtZmxv/dy1kaWFncmFtL2Rp/c2NvdmVyeS9kYXRh/LWZsb3ctZGlhZ3Jh/bS00LnN2Zw",
-    text: "This diagram should help clarify it.",
-    timestamp: "1:15 PM",
-  },
-];
+const { width } = Dimensions.get("window");
 
 const MessageItem = ({ message, isSentByCurrentUser }) => {
   const containerStyle = isSentByCurrentUser
     ? [styles.messageContainerBase, styles.userMessageContainer]
     : [styles.messageContainerBase, styles.adminMessageContainer];
 
+  const timestampColor = isSentByCurrentUser ? "#66776b" : "#999";
+
   return (
     <View style={containerStyle}>
-      {!isSentByCurrentUser && <Text style={styles.senderName}>Admin</Text>}
-      {message.imageUrl && (
+      {!isSentByCurrentUser && (
+        <Text style={styles.senderName}>
+          {message.user_id === "1" ? "Admin" : `User ${message.user_id}`}
+        </Text>
+      )}
+      {message.attachments?.map((img, idx) => (
         <Image
-          source={{ uri: message.imageUrl }}
+          key={idx}
+          source={{ uri: img }}
           style={styles.chatImage}
           resizeMode="cover"
         />
+      ))}
+      {message.doubt && <Text style={styles.messageText}>{message.doubt}</Text>}
+      {message.reply_text && (
+        <Text style={[styles.messageText, { fontStyle: "italic" }]}>
+          {message.reply_text}
+        </Text>
       )}
-      {message.text && <Text style={styles.messageText}>{message.text}</Text>}
-      <Text
-        style={[
-          styles.timestamp,
-          { color: isSentByCurrentUser ? "#66776b" : "#999" },
-        ]}
-      >
-        {message.timestamp}
+      <Text style={[styles.timestamp, { color: timestampColor }]}>
+        {new Date(
+          message.created_at.replace(" ", "T") + "Z"
+        ).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
       </Text>
     </View>
   );
@@ -74,47 +70,197 @@ const MessageItem = ({ message, isSentByCurrentUser }) => {
 const DoubtsScreen = ({ route, navigation }) => {
   const { videoId, videoTitle } = route.params;
   const insets = useSafeAreaInsets();
-  const flatListRef = useRef(null);
+  const [userDetails] = useAtom(userDetailsGlobal);
 
-  const currentUserRole = "user";
-  const [messages, setMessages] = useState(initialDoubts);
   const [newMessage, setNewMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  const handleImagePick = () => {
-    launchImageLibrary({ mediaType: "photo" }, (response) => {
-      if (!response.didCancel && !response.errorCode && response.assets) {
-        const source = { uri: response.assets[0].uri };
-        const messageToSend = {
-          id: Math.random().toString(),
-          sender: currentUserRole,
-          imageUrl: source.uri,
-          timestamp: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        };
-        setMessages((prev) => [...prev, messageToSend]);
+  // --- PAGINATION STATES ---
+  const [page, setPage] = useState(1);
+  const [messagesList, setMessagesList] = useState([]);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const PER_PAGE = 20;
+
+  // API hooks
+  const getAllDoubtApi = useGetAllDoubtsApi({
+    query: {
+      user_id: userDetails?.id,
+      topic_id: videoId,
+      page,
+      per_page: PER_PAGE,
+    },
+  });
+
+  const addDoubtApi = useAddDoubtApi();
+
+  const formatApiMessages = (apiMessages) => {
+    const allMsgs = [];
+    apiMessages.forEach((msg) => {
+      allMsgs.push({
+        id: `doubt-${msg.id}`,
+        ...msg,
+      });
+      if (msg.replies && msg.replies.length > 0) {
+        msg.replies.forEach((r) => {
+          allMsgs.push({
+            id: `reply-${r.id}`,
+            reply_text: r.reply_text,
+            ...r,
+          });
+        });
       }
     });
+    // Sort by creation date
+    return allMsgs.sort(
+      (a, b) =>
+        new Date(a.created_at.replace(" ", "T") + "Z") -
+        new Date(b.created_at.replace(" ", "T") + "Z")
+    );
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
-    const messageToSend = {
-      id: Math.random().toString(),
-      sender: currentUserRole,
-      text: newMessage.trim(),
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-    setMessages((prev) => [...prev, messageToSend]);
-    setNewMessage("");
+  // --- UPDATE MESSAGES LIST ON API SUCCESS ---
+  useEffect(() => {
+    console.log('getAllDoubtApi?.data', getAllDoubtApi?.data)
+    if (getAllDoubtApi.data?.messages) {
+      const newData = formatApiMessages(getAllDoubtApi.data.doubts);
+
+      if (page === 1) {
+        // fresh load → reset messages
+        setMessagesList(newData.reverse());
+      } else {
+        // append older messages
+        setMessagesList((prev) => [...prev, ...newData.reverse()]);
+      }
+
+      // pagination end check
+      if (newData.length === 0 || newData.length < PER_PAGE) {
+        setHasMore(false);
+      }
+      setIsFetchingMore(false);
+    }
+  }, [getAllDoubtApi.data]);
+
+  const handlePickImage = () => {
+    Alert.alert("Pick Image", "Choose from camera or gallery", [
+      {
+        text: "Gallery",
+        onPress: () => getImage(setSelectedImage),
+        style: "default",
+      },
+      {
+        text: "Camera",
+        onPress: async () => await takePicture(setSelectedImage),
+        style: "default",
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  };
+
+  const addDoubtMessageHandler = () => {
+    if (!newMessage.trim() && !selectedImage) return;
+
+    const formData = new FormData();
+    formData.append("user_id", userDetails?.id);
+    formData.append("topic_id", videoId);
+    formData.append("doubt", newMessage.trim());
+
+    if (selectedImage) {
+      formData.append("attachment", {
+        uri: selectedImage.uri,
+        name: selectedImage.fileName || "image.jpg",
+        type: selectedImage.type || "image/jpeg",
+      });
+    }
+
+    addDoubtApi.mutate(
+      { body: formData },
+      {
+        onSuccess: () => {
+          setNewMessage("");
+          setSelectedImage(null);
+
+          // reset pagination and reload
+          setPage(1);
+          setHasMore(true);
+          setMessagesList([]); // ✅ clear old messages
+          getAllDoubtApi.refetch();
+        },
+        onError: (err) => console.error("Error sending doubt:", err),
+      }
+    );
+  };
+
+  // --- LOAD MORE ---
+  const handleLoadMore = () => {
+    if (!isFetchingMore && hasMore && !getAllDoubtApi.isLoading) {
+      setIsFetchingMore(true);
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const renderFooter = () => {
+    if (!isFetchingMore) return null;
+    return (
+      <View style={{ paddingVertical: 20 }}>
+        <ActivityIndicator size="small" color={theme.colors.primary} />
+      </View>
+    );
+  };
+
+  const renderContent = () => {
+    if (getAllDoubtApi.isLoading && page === 1) {
+      return (
+        <View style={styles.centerMessage}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      );
+    }
+
+    if (getAllDoubtApi.isError && page === 1) {
+      return (
+        <View style={styles.centerMessage}>
+          <Text>Failed to load messages. Please try again.</Text>
+        </View>
+      );
+    }
+
+    if (messagesList.length === 0 && !hasMore) {
+      return (
+        <View style={styles.centerMessage}>
+          <Text>No doubts yet. Be the first to ask!</Text>
+        </View>
+      );
+    }
+
+    return (
+      <FlatList
+        data={messagesList}
+        renderItem={({ item }) => (
+          <MessageItem
+            message={item}
+            isSentByCurrentUser={item.user_id === userDetails?.id?.toString()}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        style={styles.messageList}
+        contentContainerStyle={{
+          paddingTop: 10,
+          paddingBottom: 80 + insets.top,
+        }}
+        inverted
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+      />
+    );
   };
 
   return (
     <View style={styles.container}>
+      {addDoubtApi.isLoading && <FullScreenLoader />}
+
+      {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -124,30 +270,19 @@ const DoubtsScreen = ({ route, navigation }) => {
         </TouchableOpacity>
         <View>
           <Text style={styles.headerTitle}>Ask a Doubt</Text>
-          <Text style={styles.headerSubtitle}>{videoTitle}</Text>
+          <Text style={styles.headerSubtitle} numberOfLines={1}>
+            {videoTitle}
+          </Text>
         </View>
       </View>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingContainer}
-        keyboardVerticalOffset={60}
       >
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={({ item }) => (
-            <MessageItem
-              message={item}
-              isSentByCurrentUser={item.sender === currentUserRole}
-            />
-          )}
-          keyExtractor={(item) => item.id}
-          style={[styles.messageList, { paddingTop: 80 + insets.top }]}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToEnd({ animated: true })
-          }
-        />
+        {renderContent()}
+
+        {/* Input */}
         <View
           style={[
             styles.inputContainer,
@@ -155,7 +290,7 @@ const DoubtsScreen = ({ route, navigation }) => {
           ]}
         >
           <TouchableOpacity
-            onPress={handleImagePick}
+            onPress={handlePickImage}
             style={styles.attachButton}
           >
             <Icon name="attach-file" size={24} color="#555" />
@@ -169,7 +304,8 @@ const DoubtsScreen = ({ route, navigation }) => {
           />
           <TouchableOpacity
             style={styles.sendButton}
-            onPress={handleSendMessage}
+            onPress={addDoubtMessageHandler}
+            disabled={addDoubtApi.isLoading}
           >
             <Icon name="send" size={24} color={theme.colors.white} />
           </TouchableOpacity>
@@ -207,6 +343,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginLeft: 10,
     width: width - 80,
+  },
+  centerMessage: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginTop: 60,
   },
   messageList: { flex: 1, paddingHorizontal: 10 },
   messageContainerBase: {

@@ -73,9 +73,27 @@ const HomeScreenComponent = () => {
       ?.catch((err: any) => console.log("err", err));
   };
 
+  const useEffectCallAsync = async () => {
+    if (userDetails?.id && userDetails?.device_token) {
+      checkLoginTokenHandler();
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "We detected a login from another device.",
+      });
+      await AsyncStorage.clear();
+      setUserDetails({});
+      navigation.closeDrawer();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "LoginScreen" }],
+      });
+    }
+  };
+
   useEffect(() => {
-    checkLoginTokenHandler();
-  }, []);
+    useEffectCallAsync();
+  }, [userDetails?.id, userDetails?.device_token]);
 
   // --- Start of Added Code ---
 

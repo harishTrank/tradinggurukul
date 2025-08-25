@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { addCommentApi, addCommentReplyApi, addToCartCall, cartItemListCall, customSearchCourseCall, editProfileCall } from "../../store/Services/Others";
+import { addCommentApi, addCommentReplyApi, addDoubtApi, addToCartCall, cartItemListCall, customSearchCourseCall, editProfileCall } from "../../store/Services/Others";
 
 export const useEditProfileCall = () => {
     return useMutation((payload) => editProfileCall(payload));
@@ -24,3 +24,9 @@ export const useAddCommentApi = () => {
 export const useAddCommentReplyApi = () => {
     return useMutation((payload) => addCommentReplyApi(payload));
 };
+
+export const useAddDoubtApi = () => {
+    return useMutation((payload) => addDoubtApi(payload));
+};
+
+

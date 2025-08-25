@@ -8,7 +8,7 @@ import { getUserProfileCall } from "../../store/Services/Others";
 import theme from "../../utils/theme";
 
 const SplashScreen = ({ navigation }: any) => {
-  const [userData, setUserDetailsState]: any = useAtom(userDetailsGlobal);
+  const [, setUserDetailsState]: any = useAtom(userDetailsGlobal);
   useEffect(() => {
     setTimeout(async () => {
       const loginFlag: any = await AsyncStorage.getItem("loginFlag");

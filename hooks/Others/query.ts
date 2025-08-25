@@ -4,6 +4,7 @@ import {
   customProductsCall,
   getAllCommentsApi,
   getallContent,
+  getAllDoubtsApi,
   getCategoryCall,
   getCourseDetailsCall,
   getMyCoursesCall,
@@ -34,7 +35,11 @@ export const useGetAllCommentsApi = (payload: any) =>
     getAllCommentsApi(payload)
   );
 
-;
-
 export const useGetallContent = () =>
   useQuery(["getallContent"], () => getallContent());
+
+
+export const useGetAllDoubtsApi = (payload: any) =>
+  useQuery(["getAllDoubtsApi", payload], () =>
+    getAllDoubtsApi(payload)
+  );

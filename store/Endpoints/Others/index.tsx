@@ -155,4 +155,18 @@ export const othersEndpoints = {
       uri: "/check-token",
     },
   },
+  addDoubtApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/course/add-doubt",
+    },
+  },
+  getAllDoubtsApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/course/get-doubts",
+    },
+  },
 };

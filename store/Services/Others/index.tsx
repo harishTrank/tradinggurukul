@@ -131,3 +131,15 @@ export const checkLoginTokenApi = ({ body }: any) =>
     uriEndPoint: othersEndpoints.checkLoginToken.v1,
     body,
   });
+
+export const addDoubtApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.addDoubtApi.v1,
+    body,
+    multipart: true
+  });
+export const getAllDoubtsApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.getAllDoubtsApi.v1,
+    query
+  });
