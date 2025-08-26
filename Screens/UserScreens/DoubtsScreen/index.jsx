@@ -14,6 +14,8 @@ import {
   Dimensions,
   Alert,
   ActivityIndicator,
+  Modal,
+  Pressable,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -23,38 +25,62 @@ import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import { useAddDoubtApi } from "../../../hooks/Others/mutation";
 import FullScreenLoader from "../../Components/FullScreenLoader";
-import { getImage, takePicture } from "../../../utils/extra/ImagePicker";
+import {
+  getfileobj,
+  getImage,
+  takePicture,
+} from "../../../utils/extra/ImagePicker";
 
 const { width } = Dimensions.get("window");
 
-const MessageItem = ({ message, isSentByCurrentUser }) => {
-  const containerStyle = isSentByCurrentUser
-    ? [styles.messageContainerBase, styles.userMessageContainer]
-    : [styles.messageContainerBase, styles.adminMessageContainer];
+// ✅ Single Message Component
+const MessageItem = ({ message, isSentByCurrentUser, onImagePress }) => {
+  const containerStyle = message?.isAdmin
+    ? [styles.messageContainerBase, styles.adminMessageContainer]
+    : [styles.messageContainerBase, styles.userMessageContainer];
 
   const timestampColor = isSentByCurrentUser ? "#66776b" : "#999";
 
   return (
     <View style={containerStyle}>
-      {!isSentByCurrentUser && (
-        <Text style={styles.senderName}>
-          {message.user_id === "1" ? "Admin" : `User ${message.user_id}`}
-        </Text>
+      {/* Show sender name if admin */}
+      {!isSentByCurrentUser && message.isAdmin && (
+        <Text style={styles.senderName}>Admin</Text>
       )}
-      {message.attachments?.map((img, idx) => (
-        <Image
-          key={idx}
-          source={{ uri: img }}
-          style={styles.chatImage}
-          resizeMode="cover"
-        />
-      ))}
+
+      {/* User Doubt */}
       {message.doubt && <Text style={styles.messageText}>{message.doubt}</Text>}
-      {message.reply_text && (
+
+      {/* User Attachment */}
+      {message.attachment && (
+        <Pressable onPress={() => onImagePress(message.attachment)}>
+          <Image
+            source={{ uri: message.attachment }}
+            style={styles.chatImage}
+            resizeMode="cover"
+          />
+        </Pressable>
+      )}
+
+      {/* Admin Answer */}
+      {message.answer && (
         <Text style={[styles.messageText, { fontStyle: "italic" }]}>
-          {message.reply_text}
+          {message.answer}
         </Text>
       )}
+
+      {/* Admin Answer Attachment */}
+      {message.answer_attachment && (
+        <Pressable onPress={() => onImagePress(message.answer_attachment)}>
+          <Image
+            source={{ uri: message.answer_attachment }}
+            style={styles.chatImage}
+            resizeMode="cover"
+          />
+        </Pressable>
+      )}
+
+      {/* Timestamp */}
       <Text style={[styles.timestamp, { color: timestampColor }]}>
         {new Date(
           message.created_at.replace(" ", "T") + "Z"
@@ -82,6 +108,9 @@ const DoubtsScreen = ({ route, navigation }) => {
   const [hasMore, setHasMore] = useState(true);
   const PER_PAGE = 20;
 
+  // ✅ Image Preview State
+  const [previewImage, setPreviewImage] = useState(null);
+
   // API hooks
   const getAllDoubtApi = useGetAllDoubtsApi({
     query: {
@@ -94,24 +123,32 @@ const DoubtsScreen = ({ route, navigation }) => {
 
   const addDoubtApi = useAddDoubtApi();
 
+  // ✅ Format API Data
   const formatApiMessages = (apiMessages) => {
     const allMsgs = [];
     apiMessages.forEach((msg) => {
+      // User's doubt
       allMsgs.push({
         id: `doubt-${msg.id}`,
-        ...msg,
+        created_at: msg.created_at,
+        doubt: msg.doubt,
+        attachment: msg.attachment || null,
+        isAdmin: false,
+        user_id: msg.user_id?.toString(),
       });
-      if (msg.replies && msg.replies.length > 0) {
-        msg.replies.forEach((r) => {
-          allMsgs.push({
-            id: `reply-${r.id}`,
-            reply_text: r.reply_text,
-            ...r,
-          });
+
+      // Admin answer (if exists)
+      if (msg.answer || msg.answer_attachment) {
+        allMsgs.push({
+          id: `answer-${msg.id}`,
+          created_at: msg.answered_at || msg.created_at,
+          answer: msg.answer,
+          answer_attachment: msg.answer_attachment || null,
+          isAdmin: true,
+          user_id: "1",
         });
       }
     });
-    // Sort by creation date
     return allMsgs.sort(
       (a, b) =>
         new Date(a.created_at.replace(" ", "T") + "Z") -
@@ -121,22 +158,19 @@ const DoubtsScreen = ({ route, navigation }) => {
 
   // --- UPDATE MESSAGES LIST ON API SUCCESS ---
   useEffect(() => {
-    console.log('getAllDoubtApi?.data', getAllDoubtApi?.data)
-    if (getAllDoubtApi.data?.messages) {
+    if (getAllDoubtApi.data?.doubts) {
       const newData = formatApiMessages(getAllDoubtApi.data.doubts);
 
       if (page === 1) {
-        // fresh load → reset messages
         setMessagesList(newData.reverse());
       } else {
-        // append older messages
         setMessagesList((prev) => [...prev, ...newData.reverse()]);
       }
 
-      // pagination end check
-      if (newData.length === 0 || newData.length < PER_PAGE) {
+      if (newData.length === 0 || page >= getAllDoubtApi.data.total_page) {
         setHasMore(false);
       }
+
       setIsFetchingMore(false);
     }
   }, [getAllDoubtApi.data]);
@@ -157,6 +191,7 @@ const DoubtsScreen = ({ route, navigation }) => {
     ]);
   };
 
+  // ✅ Send Message with Attachment
   const addDoubtMessageHandler = () => {
     if (!newMessage.trim() && !selectedImage) return;
 
@@ -166,11 +201,8 @@ const DoubtsScreen = ({ route, navigation }) => {
     formData.append("doubt", newMessage.trim());
 
     if (selectedImage) {
-      formData.append("attachment", {
-        uri: selectedImage.uri,
-        name: selectedImage.fileName || "image.jpg",
-        type: selectedImage.type || "image/jpeg",
-      });
+      console.log('selectedImage', selectedImage)
+      formData.append("attachment", getfileobj(selectedImage));
     }
 
     addDoubtApi.mutate(
@@ -179,11 +211,9 @@ const DoubtsScreen = ({ route, navigation }) => {
         onSuccess: () => {
           setNewMessage("");
           setSelectedImage(null);
-
-          // reset pagination and reload
           setPage(1);
           setHasMore(true);
-          setMessagesList([]); // ✅ clear old messages
+          setMessagesList([]);
           getAllDoubtApi.refetch();
         },
         onError: (err) => console.error("Error sending doubt:", err),
@@ -191,9 +221,13 @@ const DoubtsScreen = ({ route, navigation }) => {
     );
   };
 
-  // --- LOAD MORE ---
   const handleLoadMore = () => {
-    if (!isFetchingMore && hasMore && !getAllDoubtApi.isLoading) {
+    if (
+      !isFetchingMore &&
+      hasMore &&
+      !getAllDoubtApi.isLoading &&
+      page < (getAllDoubtApi.data?.total_page || 1)
+    ) {
       setIsFetchingMore(true);
       setPage((prevPage) => prevPage + 1);
     }
@@ -240,6 +274,7 @@ const DoubtsScreen = ({ route, navigation }) => {
           <MessageItem
             message={item}
             isSentByCurrentUser={item.user_id === userDetails?.id?.toString()}
+            onImagePress={(uri) => setPreviewImage(uri)}
           />
         )}
         keyExtractor={(item) => item.id}
@@ -282,6 +317,22 @@ const DoubtsScreen = ({ route, navigation }) => {
       >
         {renderContent()}
 
+        {/* ✅ Image Preview (before sending) */}
+        {selectedImage && (
+          <View style={styles.previewContainer}>
+            <Image
+              source={{ uri: selectedImage }}
+              style={styles.previewImage}
+            />
+            <TouchableOpacity
+              onPress={() => setSelectedImage(null)}
+              style={styles.removePreview}
+            >
+              <Icon name="close" size={20} color="white" />
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* Input */}
         <View
           style={[
@@ -311,6 +362,23 @@ const DoubtsScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      {/* ✅ Full Screen Image Preview */}
+      <Modal visible={!!previewImage} transparent={true}>
+        <View style={styles.previewModal}>
+          <Image
+            source={{ uri: previewImage }}
+            style={styles.fullImage}
+            resizeMode="contain"
+          />
+          <TouchableOpacity
+            style={styles.closePreviewButton}
+            onPress={() => setPreviewImage(null)}
+          >
+            <Icon name="close" size={28} color="white" />
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -370,7 +438,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     fontSize: 13,
   },
-  chatImage: { width: 200, height: 200, borderRadius: 8, marginBottom: 5 },
+  chatImage: { width: 200, height: 200, borderRadius: 8, marginVertical: 5 },
   messageText: { fontSize: 15, color: "#333" },
   timestamp: { fontSize: 11, marginTop: 5, alignSelf: "flex-end" },
   inputContainer: {
@@ -400,6 +468,40 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
+  },
+  previewContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 8,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderColor: "#ddd",
+  },
+  previewImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+  },
+  removePreview: {
+    marginLeft: 10,
+    backgroundColor: "red",
+    borderRadius: 12,
+    padding: 4,
+  },
+  previewModal: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullImage: { width: "90%", height: "80%" },
+  closePreviewButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    borderRadius: 20,
+    padding: 8,
   },
 });
 
