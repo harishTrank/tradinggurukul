@@ -305,7 +305,7 @@ const DoubtsScreen = ({ route, navigation }) => {
         </TouchableOpacity>
         <View>
           <Text style={styles.headerTitle}>Ask a Doubt</Text>
-          <Text style={styles.headerSubtitle} numberOfLines={1}>
+          <Text style={styles.headerSubtitle}>
             {videoTitle}
           </Text>
         </View>
