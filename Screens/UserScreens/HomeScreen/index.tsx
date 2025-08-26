@@ -48,11 +48,12 @@ const HomeScreenComponent = () => {
       sort: "popularity",
     },
   });
-  const checkLoginTokenHandler = () => {
+
+  const checkLoginTokenHandler = async (fetchToken: any) => {
     checkLoginTokenApi({
       body: {
         user_id: userDetails?.id,
-        device_token: userDetails?.device_token,
+        device_token: fetchToken
       },
     })
       ?.then(async (res: any) => {
@@ -74,21 +75,10 @@ const HomeScreenComponent = () => {
   };
 
   const useEffectCallAsync = async () => {
-    if (userDetails?.id && userDetails?.device_token) {
-      checkLoginTokenHandler();
-    } else {
-      Toast.show({
-        type: "error",
-        text1: "We detected a login from another device.",
-      });
-      await AsyncStorage.clear();
-      setUserDetails({});
-      navigation.closeDrawer();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "LoginScreen" }],
-      });
-    }
+    const fetchToken = await AsyncStorage.getItem("device_token");
+    if (userDetails?.id && fetchToken) {
+      checkLoginTokenHandler(fetchToken);
+    } 
   };
 
   useEffect(() => {

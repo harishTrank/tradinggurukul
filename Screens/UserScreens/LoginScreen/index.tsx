@@ -65,6 +65,7 @@ const LoginScreen = ({ navigation }: any) => {
           );
           setUserDetails(res?.details);
           await AsyncStorage.setItem("loginFlag", "true");
+          await AsyncStorage.setItem("device_token", res?.details?.device_token);
           navigation.reset({
             index: 0,
             routes: [{ name: "DrawerNavigation" }],
