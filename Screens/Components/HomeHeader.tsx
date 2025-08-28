@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
+import React from "react";
+import { View, Image, TouchableOpacity, StyleSheet, Text } from "react-native"; // <-- Import Text
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import theme from "../../utils/theme";
 import ImageModule from "../../ImageModule";
 import { useNavigation } from "@react-navigation/native";
 import { useAtom } from "jotai";
-import { userDetailsGlobal } from "../../JotaiStore";
+import { unReadNotificationGlobal, userDetailsGlobal } from "../../JotaiStore";
 
 const logoSource = ImageModule.appIcon;
 
@@ -20,9 +20,24 @@ const HomeHeader = ({
 }: any) => {
   const navigation: any = useNavigation();
   const [userDetails]: any = useAtom(userDetailsGlobal);
+  const [noticount]: any = useAtom(unReadNotificationGlobal);
   const onNotificationPress = () => {
     navigation.navigate("NotificationScreen");
-  }
+  };
+
+  const renderNotificationBadge = () => {
+    if (!noticount || noticount <= 0) {
+      return null;
+    }
+
+    const badgeText = noticount > 99 ? "99+" : noticount;
+
+    return (
+      <View style={styles.badgeContainer}>
+        <Text style={styles.badgeText}>{badgeText}</Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.headerContainer}>
@@ -48,13 +63,20 @@ const HomeHeader = ({
         )}
         {cart && userDetails?.id && (
           <>
-            <TouchableOpacity onPress={onNotificationPress} style={styles.iconButton}>
+            {/* --- MODIFIED: NOTIFICATION ICON CONTAINER --- */}
+            <TouchableOpacity
+              onPress={onNotificationPress}
+              style={styles.iconButton}
+            >
               <Ionicons
                 name="notifications-outline"
                 size={26}
                 color={theme.colors.black}
               />
+              {/* Call the function to render the badge here */}
+              {renderNotificationBadge()}
             </TouchableOpacity>
+
             <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
               <Ionicons
                 name="cart-outline"
@@ -79,15 +101,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   logo: {
-    height: 30, // Adjust size as needed
-    width: 150, // Adjust size as needed
+    height: 30,
+    width: 150,
   },
   rightIcons: {
     flexDirection: "row",
     alignItems: "center",
   },
   iconButton: {
-    padding: 5, // Increase touchable area
+    padding: 5,
+    // This container is the reference for the absolute positioning of the badge
+  },
+  // --- NEW STYLES FOR THE BADGE ---
+  badgeContainer: {
+    position: "absolute",
+    top: 2, // Adjust position as needed
+    right: 2, // Adjust position as needed
+    backgroundColor: "red",
+    borderRadius: 9, // Make it circular
+    height: 18,
+    minWidth: 18, // Ensure it's circular even with one digit
+    paddingHorizontal: 4, // Add padding for double digits or '99+'
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
   },
 });
 

@@ -7,7 +7,6 @@ import {
   getAllDoubtsApi,
   getCategoryCall,
   getCourseDetailsCall,
-  getMyCoursesCall,
   getNotificationListApi,
   postsBlogAndCommunityCall,
 } from "../../store/Services/Others";
@@ -44,3 +43,5 @@ export const useGetNotificationListApi = (payload: any) =>
   useQuery(["getNotificationListApi", payload], () =>
     getNotificationListApi(payload)
   );
+
+  

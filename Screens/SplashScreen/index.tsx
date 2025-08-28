@@ -3,12 +3,14 @@ import { View, Image } from "react-native";
 import ImageModule from "../../ImageModule";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAtom } from "jotai";
-import { userDetailsGlobal } from "../../JotaiStore";
-import { getUserProfileCall } from "../../store/Services/Others";
+import { unReadNotificationGlobal, userDetailsGlobal } from "../../JotaiStore";
+import { getUserProfileCall, unReadNotificationCountApi } from "../../store/Services/Others";
 import theme from "../../utils/theme";
 
 const SplashScreen = ({ navigation }: any) => {
   const [, setUserDetailsState]: any = useAtom(userDetailsGlobal);
+  const [,setNotiCount]: any = useAtom(unReadNotificationGlobal);
+
   useEffect(() => {
     setTimeout(async () => {
       const loginFlag: any = await AsyncStorage.getItem("loginFlag");
@@ -21,6 +23,12 @@ const SplashScreen = ({ navigation }: any) => {
         })
           ?.then((res: any) => {
             setUserDetailsState(res?.data);
+            unReadNotificationCountApi({
+              query: {
+                user_id: res?.data?.id
+              }
+            })?.then((res2: any) => setNotiCount(res2?.unread_count))
+            ?.catch((err: any) => console.log('err', err))
           })
           ?.catch((err: any) => console.log("err", err));
         navigation?.replace("DrawerNavigation");

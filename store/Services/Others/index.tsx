@@ -155,3 +155,9 @@ export const readAllNotificationApi = ({ query }: any) =>
     uriEndPoint: othersEndpoints.readAllNotificationApi.v1,
     query,
   });
+
+export const unReadNotificationCountApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.unReadNotificationCount.v1,
+    query,
+  });

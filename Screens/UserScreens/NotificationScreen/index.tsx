@@ -10,39 +10,34 @@ import {
   Button,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import theme from "../../../utils/theme"; // Adjust path
-import HomeHeader from "../../Components/HomeHeader"; // Adjust path
+import theme from "../../../utils/theme"; 
+import HomeHeader from "../../Components/HomeHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetNotificationListApi } from "../../../hooks/Others/query";
 import { useAtom } from "jotai";
-import { userDetailsGlobal } from "../../../JotaiStore";
-import NotificationItem, { Notification } from "./Component/NotificationItem"; // Make sure this path is correct
+import { unReadNotificationGlobal, userDetailsGlobal } from "../../../JotaiStore";
+import NotificationItem, { Notification } from "./Component/NotificationItem";
 import { readAllNotificationApi } from "../../../store/Services/Others";
 
-type NotificationScreenNavigationProp = StackNavigationProp<any>;
-
-const PER_PAGE = 15; // Set items per page
+const PER_PAGE = 15; 
 
 const NotificationScreen = () => {
   const navigation: any = useNavigation();
   const insets = useSafeAreaInsets();
   const [userDetails] = useAtom(userDetailsGlobal);
+  const [,setNotiCount] = useAtom(unReadNotificationGlobal);
 
-  // --- PAGINATION STATES ---
   const [page, setPage] = useState(1);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-  // ✅ API hook driven by the 'page' state
   const notificationListApi: any = useGetNotificationListApi({
     query: {
       user_id: userDetails?.id,
       page: page,
       per_page: PER_PAGE,
     },
-    // The query will be disabled until userDetails.id is available
     enabled: !!userDetails?.id,
   });
 
@@ -55,7 +50,7 @@ const NotificationScreen = () => {
             user_id: userDetails.id,
           },
         })
-          ?.then((res) => console.log("res", res))
+          ?.then((res) => setNotiCount(0))
           ?.catch((err) => console.log("err", err));
       }
     };
@@ -66,38 +61,28 @@ const NotificationScreen = () => {
   useEffect(() => {
     if (notificationListApi.data?.notifications) {
       const newNotifications = notificationListApi.data.notifications;
-
-      // If it's the first page, replace the list. Otherwise, append.
       if (page === 1) {
         setNotifications(newNotifications);
       } else {
         setNotifications((prev) => [...prev, ...newNotifications]);
       }
-
-      // Check if there's more data to load
       if (newNotifications.length === 0 || newNotifications.length < PER_PAGE) {
         setHasMoreData(false);
       }
 
       setIsFetchingMore(false);
     }
-  }, [notificationListApi.data]); // This effect runs when new data arrives
-
-  // ✅ This function is called when the user scrolls to the end of the list
+  }, [notificationListApi.data]); 
   const handleLoadMore = () => {
-    // Prevent fetching if already loading, or if there's no more data
     if (!isFetchingMore && hasMoreData && !notificationListApi.isFetching) {
-      setIsFetchingMore(true); // Show footer loader
-      setPage((prevPage) => prevPage + 1); // Increment page, which triggers the API hook to refetch
+      setIsFetchingMore(true); 
+      setPage((prevPage) => prevPage + 1); 
     }
   };
 
-  // ✅ This function is called on pull-to-refresh
   const handleRefresh = () => {
-    setHasMoreData(true); // Reset pagination state
-    setPage(1); // Set page to 1
-    // React Query's hook will automatically refetch because the `page` state changed
-    // If page was already 1, we should explicitly refetch
+    setHasMoreData(true); 
+    setPage(1); 
     if (page === 1) {
       notificationListApi.refetch();
     }
@@ -108,7 +93,6 @@ const NotificationScreen = () => {
   );
 
   const renderFooter = () => {
-    // Show a spinner at the bottom while loading more pages
     if (!isFetchingMore) return null;
     return (
       <ActivityIndicator
@@ -120,10 +104,7 @@ const NotificationScreen = () => {
   };
 
   const ListEmptyComponent = () => {
-    // Don't show anything while the initial load is happening
     if (notificationListApi.isLoading) return null;
-
-    // Show error message if the fetch failed
     if (notificationListApi.isError) {
       return (
         <View style={styles.emptyListContainer}>
@@ -137,7 +118,6 @@ const NotificationScreen = () => {
       );
     }
 
-    // Show this message if there are no notifications
     if (notifications.length === 0) {
       return (
         <View style={styles.emptyListContainer}>
@@ -164,19 +144,16 @@ const NotificationScreen = () => {
       />
       <Text style={styles.screenTitle}>Notifications</Text>
 
-      {/* Show a full-screen loader ONLY on the initial fetch */}
       {notificationListApi.isLoading && page === 1 && (
         <View style={styles.fullScreenLoaderContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       )}
 
-      {/* The FlatList is only shown after the initial load attempt */}
       {(!notificationListApi.isLoading || page > 1) && (
         <FlatList
           data={notifications}
           renderItem={renderNotificationItem}
-          // Use a unique ID from the item if available, otherwise fallback
           keyExtractor={(item) =>
             item.reply_id ? `reply-${item.reply_id}` : `doubt-${item.doubt_id}`
           }
@@ -188,7 +165,6 @@ const NotificationScreen = () => {
           ListFooterComponent={renderFooter}
           ListEmptyComponent={ListEmptyComponent}
           onRefresh={handleRefresh}
-          // Show refreshing indicator from React Query's state
           refreshing={notificationListApi.isFetching && page === 1}
         />
       )}
@@ -226,7 +202,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 50, // Give it some space from the top
+    paddingTop: 50, 
     paddingHorizontal: 20,
   },
   emptyListText: {

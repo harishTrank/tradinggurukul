@@ -182,5 +182,12 @@ export const othersEndpoints = {
       ...defaults.versions.v1,
       uri: "/notification/read-all",
     },
-  }
+  },
+  unReadNotificationCount: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/unread-notifications",
+    },
+  },
 };
