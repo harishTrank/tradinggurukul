@@ -8,6 +8,7 @@ import {
   getCategoryCall,
   getCourseDetailsCall,
   getMyCoursesCall,
+  getNotificationListApi,
   postsBlogAndCommunityCall,
 } from "../../store/Services/Others";
 
@@ -31,15 +32,15 @@ export const useGetCourseDetailsCall = (payload: any) =>
   );
 
 export const useGetAllCommentsApi = (payload: any) =>
-  useQuery(["getAllCommentsApi", payload], () =>
-    getAllCommentsApi(payload)
-  );
+  useQuery(["getAllCommentsApi", payload], () => getAllCommentsApi(payload));
 
 export const useGetallContent = () =>
   useQuery(["getallContent"], () => getallContent());
 
-
 export const useGetAllDoubtsApi = (payload: any) =>
-  useQuery(["getAllDoubtsApi", payload], () =>
-    getAllDoubtsApi(payload)
+  useQuery(["getAllDoubtsApi", payload], () => getAllDoubtsApi(payload));
+
+export const useGetNotificationListApi = (payload: any) =>
+  useQuery(["getNotificationListApi", payload], () =>
+    getNotificationListApi(payload)
   );

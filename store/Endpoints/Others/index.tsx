@@ -169,4 +169,18 @@ export const othersEndpoints = {
       uri: "/course/get-doubts",
     },
   },
+  getNotificationListApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/notifications",
+    },
+  },
+  readAllNotificationApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/notification/read-all",
+    },
+  }
 };

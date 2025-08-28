@@ -18,6 +18,7 @@ import PreviewTopicScreen from "./PreviewTopicScreen";
 import PdfPreviewScreen from "./PdfPreviewScreen";
 import CommentsScreen from "./CommentsScreen";
 import DoubtsScreen from "./DoubtsScreen";
+import NotificationScreen from "./NotificationScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -51,6 +52,7 @@ const UserScreens = () => {
       <Stack.Screen name="MyCourseViewScreen" component={MyCourseViewScreen} />
       <Stack.Screen name="PreviewTopicScreen" component={PreviewTopicScreen} />
       <Stack.Screen name="PdfPreview" component={PdfPreviewScreen} />
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
       <Stack.Screen
         name="CommentsScreen"
         component={CommentsScreen}

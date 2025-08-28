@@ -136,10 +136,22 @@ export const addDoubtApi = ({ body }: any) =>
   callApi({
     uriEndPoint: othersEndpoints.addDoubtApi.v1,
     body,
-    multipart: true
+    multipart: true,
   });
 export const getAllDoubtsApi = ({ query }: any) =>
   callApi({
     uriEndPoint: othersEndpoints.getAllDoubtsApi.v1,
-    query
+    query,
+  });
+
+export const getNotificationListApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.getNotificationListApi.v1,
+    query,
+  });
+
+export const readAllNotificationApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.readAllNotificationApi.v1,
+    query,
   });

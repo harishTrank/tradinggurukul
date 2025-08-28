@@ -27,7 +27,7 @@ const SplashScreen = ({ navigation }: any) => {
       } else {
         navigation?.replace("StartScreen");
       }
-    }, 8000);
+    }, 4900);
   }, []);
 
   return (

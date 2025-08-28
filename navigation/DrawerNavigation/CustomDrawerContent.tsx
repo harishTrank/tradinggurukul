@@ -23,6 +23,7 @@ const drawerItems = [
   { label: "Privacy Policy", iconName: "shield", navigateTo: "PrivacyPolicy" },
   { label: "Refund Policy", iconName: "shield", navigateTo: "RefundScreen" },
   { label: "Terms & Condition", iconName: "file-text", navigateTo: "Terms" },
+  { label: "Support", iconName: "headphones", navigateTo: "SupportScreen" },
   { label: "Logout", iconName: "log-out", isLogout: true },
 ];
 

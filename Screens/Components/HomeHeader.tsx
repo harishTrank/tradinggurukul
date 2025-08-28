@@ -20,6 +20,9 @@ const HomeHeader = ({
 }: any) => {
   const navigation: any = useNavigation();
   const [userDetails]: any = useAtom(userDetailsGlobal);
+  const onNotificationPress = () => {
+    navigation.navigate("NotificationScreen");
+  }
 
   return (
     <View style={styles.headerContainer}>
@@ -44,13 +47,22 @@ const HomeHeader = ({
           </TouchableOpacity>
         )}
         {cart && userDetails?.id && (
-          <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
-            <Ionicons
-              name="cart-outline"
-              size={26}
-              color={theme.colors.black}
-            />
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity onPress={onNotificationPress} style={styles.iconButton}>
+              <Ionicons
+                name="notifications-outline"
+                size={26}
+                color={theme.colors.black}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
+              <Ionicons
+                name="cart-outline"
+                size={26}
+                color={theme.colors.black}
+              />
+            </TouchableOpacity>
+          </>
         )}
       </View>
     </View>

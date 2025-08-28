@@ -201,7 +201,7 @@ const DoubtsScreen = ({ route, navigation }) => {
     formData.append("doubt", newMessage.trim());
 
     if (selectedImage) {
-      console.log('selectedImage', selectedImage)
+      console.log("selectedImage", selectedImage);
       formData.append("attachment", getfileobj(selectedImage));
     }
 
@@ -305,9 +305,7 @@ const DoubtsScreen = ({ route, navigation }) => {
         </TouchableOpacity>
         <View>
           <Text style={styles.headerTitle}>Ask a Doubt</Text>
-          <Text style={styles.headerSubtitle}>
-            {videoTitle}
-          </Text>
+          <Text style={styles.headerSubtitle}>{videoTitle}</Text>
         </View>
       </View>
 
