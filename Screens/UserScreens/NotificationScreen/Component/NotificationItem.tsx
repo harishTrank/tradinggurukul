@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import theme from "../../../../utils/theme"; // Adjust this path to your theme file
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from "moment";
@@ -19,7 +19,7 @@ export interface Notification {
   reply?: string;
 }
 
-const NotificationItem = ({ item }: { item: Notification }) => {
+const NotificationItem = ({ item, cardClickHandler }: any) => {
   const isDoubt = item.type === 'doubt';
   
   const renderIcon = () => {
@@ -62,7 +62,7 @@ const NotificationItem = ({ item }: { item: Notification }) => {
   };
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={cardClickHandler}>
       <View style={styles.cardHeader}>
         {renderIcon()}
         <View style={styles.headerTextContainer}>
@@ -75,7 +75,7 @@ const NotificationItem = ({ item }: { item: Notification }) => {
       <View style={styles.contentSection}>
         {renderContent()}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

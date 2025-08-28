@@ -190,4 +190,11 @@ export const othersEndpoints = {
       uri: "/unread-notifications",
     },
   },
+  supportDetailsApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/contact-info",
+    },
+  },
 };

@@ -161,3 +161,12 @@ export const unReadNotificationCountApi = ({ query }: any) =>
     uriEndPoint: othersEndpoints.unReadNotificationCount.v1,
     query,
   });
+
+
+  export const supportDetailsApi = () =>
+  callApi({
+    uriEndPoint: othersEndpoints.supportDetailsApi.v1,
+  });
+
+
+  

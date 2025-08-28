@@ -10,22 +10,25 @@ import {
   Button,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import theme from "../../../utils/theme"; 
+import theme from "../../../utils/theme";
 import HomeHeader from "../../Components/HomeHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetNotificationListApi } from "../../../hooks/Others/query";
 import { useAtom } from "jotai";
-import { unReadNotificationGlobal, userDetailsGlobal } from "../../../JotaiStore";
+import {
+  unReadNotificationGlobal,
+  userDetailsGlobal,
+} from "../../../JotaiStore";
 import NotificationItem, { Notification } from "./Component/NotificationItem";
 import { readAllNotificationApi } from "../../../store/Services/Others";
 
-const PER_PAGE = 15; 
+const PER_PAGE = 15;
 
 const NotificationScreen = () => {
   const navigation: any = useNavigation();
   const insets = useSafeAreaInsets();
   const [userDetails] = useAtom(userDetailsGlobal);
-  const [,setNotiCount] = useAtom(unReadNotificationGlobal);
+  const [, setNotiCount] = useAtom(unReadNotificationGlobal);
 
   const [page, setPage] = useState(1);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -72,24 +75,41 @@ const NotificationScreen = () => {
 
       setIsFetchingMore(false);
     }
-  }, [notificationListApi.data]); 
+  }, [notificationListApi.data]);
   const handleLoadMore = () => {
     if (!isFetchingMore && hasMoreData && !notificationListApi.isFetching) {
-      setIsFetchingMore(true); 
-      setPage((prevPage) => prevPage + 1); 
+      setIsFetchingMore(true);
+      setPage((prevPage) => prevPage + 1);
     }
   };
 
   const handleRefresh = () => {
-    setHasMoreData(true); 
-    setPage(1); 
+    setHasMoreData(true);
+    setPage(1);
     if (page === 1) {
       notificationListApi.refetch();
     }
   };
 
+  const cardClickHandler = (data: any) => {
+    if (data?.type === "doubt") {
+      navigation.navigate("DoubtsScreen", {
+        videoId: data.topic_id,
+        videoTitle: data.topic_name,
+      });
+    } else {
+      navigation.navigate("CommentsScreen", {
+        videoId: data.topic_id,
+        videoTitle: data.topic_name,
+      });
+    }
+  };
+
   const renderNotificationItem = ({ item }: { item: Notification }) => (
-    <NotificationItem item={item} />
+    <NotificationItem
+      item={item}
+      cardClickHandler={() => cardClickHandler(item)}
+    />
   );
 
   const renderFooter = () => {
@@ -139,7 +159,7 @@ const NotificationScreen = () => {
       ]}
     >
       <HomeHeader
-        onMenuPress={() => navigation.toggleDrawer()}
+        menu={false}
         onCartPress={() => navigation.navigate("CartScreen")}
       />
       <Text style={styles.screenTitle}>Notifications</Text>
@@ -202,7 +222,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 50, 
+    paddingTop: 50,
     paddingHorizontal: 20,
   },
   emptyListText: {
