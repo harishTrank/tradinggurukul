@@ -21,7 +21,6 @@ const SupportScreen = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch support details when the component mounts
     const supportDetailsManager = () => {
       setIsLoading(true);
       supportDetailsApi()
@@ -30,7 +29,6 @@ const SupportScreen = ({ navigation }: any) => {
         })
         ?.catch((err: any) => {
           console.log("Error fetching support details:", err);
-          // Optionally set an error state here to show a message
         })
         .finally(() => {
           setIsLoading(false);
@@ -40,7 +38,6 @@ const SupportScreen = ({ navigation }: any) => {
     supportDetailsManager();
   }, []);
 
-  // --- Handlers for linking ---
   const handleLinkPress = (url: string) => {
     if (url) {
       Linking.openURL(url).catch((err) =>
@@ -72,7 +69,6 @@ const SupportScreen = ({ navigation }: any) => {
     const phone = contact_info?.phone;
     const whatsappUrl = social_media?.whatsapp?.url;
 
-    // Filter social media links that have a valid URL, excluding WhatsApp which is shown separately
     const socialLinks = Object.entries(social_media || {})
       .filter(([key, value]: [string, any]) => key !== "whatsapp" && value.url)
       .map(([key, value]: [string, any]) => ({
@@ -139,7 +135,7 @@ const SupportScreen = ({ navigation }: any) => {
                   onPress={() => handleLinkPress(url)}
                 >
                   <Image source={{ uri: icon }} style={styles.socialIcon} />
-                  <Text style={styles.socialText}>
+                  <Text style={styles.socialText} numberOfLines={1}>
                     {platform.charAt(0).toUpperCase() + platform.slice(1)}
                   </Text>
                 </TouchableOpacity>
@@ -236,17 +232,22 @@ const styles = StyleSheet.create({
   },
   socialButton: {
     alignItems: "center",
-    width: "25%", // 4 items per row
+    justifyContent: "center",
+    width: "25%", // slightly bigger so text fits
     marginBottom: 20,
+    paddingHorizontal: 4,
   },
   socialIcon: {
     width: 40,
     height: 40,
     marginBottom: 5,
+    resizeMode: "contain",
   },
   socialText: {
     fontSize: 12,
     color: "black",
+    textAlign: "center",
+    flexShrink: 1, // prevents text cutoff
   },
   footerText: {
     fontWeight: "600",
