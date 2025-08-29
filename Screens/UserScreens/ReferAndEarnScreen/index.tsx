@@ -55,6 +55,7 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
             referralCode: res?.data?.refer_earn_code,
             amount_referrer: res?.data?.amount_referrer,
             amount_earner: res?.data?.amount_earner,
+            total_earnings: res?.data?.total_earnings,
             rewardTitle: `Give ₹${res?.data?.amount_referrer}, Get ₹${res?.data?.amount_referrer}!`,
           };
         });
@@ -126,7 +127,7 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
             <View style={styles.walletTextContainer}>
               <Text style={styles.walletLabel}>Your Wallet Balance</Text>
               <Text style={styles.walletAmount}>
-                ₹{referralData?.amount_earner.toFixed(2)}
+                ₹{referralData?.total_earnings}
               </Text>
             </View>
           </View>
