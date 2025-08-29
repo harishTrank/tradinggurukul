@@ -124,7 +124,7 @@ const SupportScreen = ({ navigation }: any) => {
         </View>
 
         {/* --- Social Media Section --- */}
-        {socialLinks.length > 0 && (
+        {/* {socialLinks.length > 0 && (
           <>
             <Text style={styles.sectionTitle}>Follow us on Social Media</Text>
             <View style={styles.socialContainer}>
@@ -142,7 +142,7 @@ const SupportScreen = ({ navigation }: any) => {
               ))}
             </View>
           </>
-        )}
+        )} */}
 
         <Text style={styles.footerText}>
           Available all 365 days between 9AM to 9PM

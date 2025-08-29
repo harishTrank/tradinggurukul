@@ -11,6 +11,7 @@ import PrivacyPolicyScreen from "../../Screens/UserScreens/PrivacyPolicyScreen";
 import TermsAndConditionScreen from "../../Screens/UserScreens/TermsAndConditionScreen";
 import RefundScreen from "../../Screens/UserScreens/RefundScreen";
 import SupportScreen from "../../Screens/UserScreens/SupportScreen";
+import ReferAndEarnScreen from "../../Screens/UserScreens/ReferAndEarnScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -35,6 +36,7 @@ export default function DrawerNavigator() {
       <Drawer.Screen name="Home" component={AnimTab1} />
       <Drawer.Screen name="AllCourses" component={AllCoursesScreen} />
       <Drawer.Screen name="Blog" component={BlogScreen} />
+      <Drawer.Screen name="ReferAndEarnScreen" component={ReferAndEarnScreen} />
       <Drawer.Screen name="AboutUs" component={AboutUsScreen} />
       <Drawer.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
       <Drawer.Screen name="RefundScreen" component={RefundScreen} />
