@@ -29,6 +29,16 @@ public class AppDelegate: ExpoAppDelegate {
       launchOptions: launchOptions)
 #endif
 
+    // 👇 Add observer for screen capture detection (iOS 11+)
+    if #available(iOS 11.0, *) {
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(screenCaptureChanged),
+        name: UIScreen.capturedDidChangeNotification,
+        object: nil
+      )
+    }
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
@@ -50,13 +60,41 @@ public class AppDelegate: ExpoAppDelegate {
     let result = RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
     return super.application(application, continue: userActivity, restorationHandler: restorationHandler) || result
   }
+
+  // 👇 Handle screen recording detection
+  @objc func screenCaptureChanged() {
+    if #available(iOS 11.0, *) {
+      if UIScreen.main.isCaptured {
+        print("⚠️ Screen Recording / Mirroring Started")
+        // 👉 Blur or hide sensitive content here
+        addBlurOverlay()
+      } else {
+        print("✅ Screen Recording Stopped")
+        removeBlurOverlay()
+      }
+    }
+  }
+
+  // Helper: Add a blur overlay when recording is active
+  private func addBlurOverlay() {
+    guard let window = window else { return }
+    if window.viewWithTag(9999) != nil { return } // already added
+
+    let blurEffect = UIBlurEffect(style: .regular)
+    let blurView = UIVisualEffectView(effect: blurEffect)
+    blurView.frame = window.bounds
+    blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    blurView.tag = 9999
+    window.addSubview(blurView)
+  }
+
+  private func removeBlurOverlay() {
+    window?.viewWithTag(9999)?.removeFromSuperview()
+  }
 }
 
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
-  // Extension point for config-plugins
-
   override func sourceURL(for bridge: RCTBridge) -> URL? {
-    // needed to return the correct URL for expo-dev-client.
     bridge.bundleURL ?? bundleURL()
   }
 
