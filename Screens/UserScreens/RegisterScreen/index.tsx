@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+// Before running, make sure to install the new dependency:
+// npx expo install expo-application
+
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -21,6 +24,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRegisterUser } from "../../../hooks/Auth/mutation";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "../../Components/FullScreenLoader";
+import * as Application from "expo-application"; // Import expo-application
 
 const { height, width } = Dimensions.get("window");
 
@@ -41,14 +45,32 @@ const registerValidationSchema = Yup.object().shape({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password"), undefined], "Passwords must match")
     .required("Confirm Password is required"),
+  referralCode: Yup.string(), // Optional field, no .required()
 });
 
 const RegisterScreen = ({ navigation }: any) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
+  const [deviceToken, setDeviceToken] = useState<string | null>(null);
 
   const registerUserApiCall: any = useRegisterUser();
+
+  // Effect to get the unique device ID on component mount
+  useEffect(() => {
+    const getDeviceIdentifier = async () => {
+      let identifier;
+      if (Platform.OS === "android") {
+        identifier = Application.androidId;
+      } else if (Platform.OS === "ios") {
+        identifier = await Application.getIosIdForVendorAsync();
+      }
+      // Set a fallback in case the identifier is null
+      setDeviceToken(identifier || "unknown_device_id");
+    };
+
+    getDeviceIdentifier();
+  }, []); // Empty dependency array ensures this runs only once
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -61,7 +83,8 @@ const RegisterScreen = ({ navigation }: any) => {
     values: any,
     { setSubmitting, setErrors }: any
   ) => {
-    const { firstName, lastName, phoneNumber, email, password } = values;
+    const { firstName, lastName, phoneNumber, email, password, referralCode } =
+      values;
     const body: any = new FormData();
     body.append("fname", firstName);
     body.append("lname", lastName);
@@ -70,6 +93,16 @@ const RegisterScreen = ({ navigation }: any) => {
     body.append("mobile", phoneNumber);
     body.append("confirmpass", password);
     body.append("enableOffer", false);
+
+    // Append referral code if user entered one
+    if (referralCode) {
+      body.append("referral_code", referralCode);
+    }
+
+    // Append the unique device token
+    if (deviceToken) {
+      body.append("device_token", deviceToken);
+    }
 
     registerUserApiCall
       ?.mutateAsync({
@@ -139,6 +172,7 @@ const RegisterScreen = ({ navigation }: any) => {
               email: "",
               password: "",
               confirmPassword: "",
+              referralCode: "", // Added initial value for referral code
             }}
             validationSchema={registerValidationSchema}
             onSubmit={handleRegisterSubmit}
@@ -156,6 +190,7 @@ const RegisterScreen = ({ navigation }: any) => {
                 <View style={styles.formContainer}>
                   <Text style={styles.screenTitle}>Enter your details</Text>
 
+                  {/* First Name Input */}
                   <View style={styles.inputGroup}>
                     <TextInput
                       style={styles.input}
@@ -173,6 +208,7 @@ const RegisterScreen = ({ navigation }: any) => {
                     )}
                   </View>
 
+                  {/* Last Name Input */}
                   <View style={styles.inputGroup}>
                     <TextInput
                       style={styles.input}
@@ -189,6 +225,7 @@ const RegisterScreen = ({ navigation }: any) => {
                     )}
                   </View>
 
+                  {/* Phone Number Input */}
                   <View style={styles.inputGroup}>
                     <TextInput
                       style={styles.input}
@@ -206,6 +243,7 @@ const RegisterScreen = ({ navigation }: any) => {
                     )}
                   </View>
 
+                  {/* Email Input */}
                   <View style={styles.inputGroup}>
                     <TextInput
                       style={styles.input}
@@ -224,6 +262,7 @@ const RegisterScreen = ({ navigation }: any) => {
                     )}
                   </View>
 
+                  {/* Password Input */}
                   <View style={styles.inputGroup}>
                     <View style={styles.passwordWrapper}>
                       <TextInput
@@ -254,6 +293,7 @@ const RegisterScreen = ({ navigation }: any) => {
                     )}
                   </View>
 
+                  {/* Confirm Password Input */}
                   <View style={styles.inputGroup}>
                     <View style={styles.passwordWrapper}>
                       <TextInput
@@ -283,6 +323,21 @@ const RegisterScreen = ({ navigation }: any) => {
                         {errors.confirmPassword}
                       </Text>
                     )}
+                  </View>
+
+                  {/* Referral Code Input (New Field) */}
+                  <View style={styles.inputGroup}>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Referral Code (Optional)"
+                      placeholderTextColor={theme.colors.grey}
+                      value={values.referralCode}
+                      onChangeText={handleChange("referralCode")}
+                      onBlur={handleBlur("referralCode")}
+                      autoCapitalize="none"
+                    />
+                    <View style={styles.inputUnderline} />
+                    {/* No error text needed as it's an optional field */}
                   </View>
 
                   <TouchableOpacity

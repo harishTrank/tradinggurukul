@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Share,
   Alert,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Clipboard from "@react-native-clipboard/clipboard";
@@ -21,33 +22,41 @@ import { userDetailsGlobal } from "../../../JotaiStore";
 import { getRefralCodeApi } from "../../../store/Services/Others";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 
-// --- Mock Data (Replace with your API data) ---
-
-const walletBalance = 500; // This would also come from your API
+// --- Mock Data (Replace with your API data) --
 
 const ReferAndEarnScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [referralData, setReferralData]: any = useState({
-  referralCode: "FRIEND25",
-  referralLink: "https://yourapp.com/signup?ref=FRIEND25",
-  rewardTitle: "Give ₹100, Get ₹100!",
-  rewardDescription:
-    "Share your unique referral link with friends. When they sign up and make their first purchase, you both get a ₹100 credit!",
-});
+    referralCode: "FRIEND25",
+    referralLink:
+      Platform.OS === "android"
+        ? "https://play.google.com/store/apps/details?id=com.anonymous.tradinggurukul"
+        : "https://play.google.com/store/apps/details?id=com.anonymous.tradinggurukul",
+    rewardTitle: "Give ₹100, Get ₹100!",
+    rewardDescription:
+      "Share your unique referral link with friends. When they sign up and make their first purchase.",
+  });
   const [userDetails]: any = useAtom(userDetailsGlobal);
 
-  const getRefrenceHandler = () => {
+  const getRefrenceHandler = (user_id: any) => {
     setLoading(true);
     getRefralCodeApi({
-      user_id: userDetails.id,
+      body: {
+        user_id,
+      },
     })
       ?.then((res: any) => {
-        referralData.referralCode
         setLoading(false);
         setReferralData((oldval: any) => {
-            return {...oldval, referralCode: res?.data?.refer_earn_code}
+          return {
+            ...oldval,
+            referralCode: res?.data?.refer_earn_code,
+            amount_referrer: res?.data?.amount_referrer,
+            amount_earner: res?.data?.amount_earner,
+            rewardTitle: `Give ₹${res?.data?.amount_referrer}, Get ₹${res?.data?.amount_referrer}!`,
+          };
         });
       })
       ?.catch((err: any) => setLoading(false));
@@ -55,9 +64,9 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     if (userDetails?.id) {
-        getRefrenceHandler();
+      getRefrenceHandler(userDetails?.id);
     }
-  }, [userDetails?.id])
+  }, [userDetails?.id]);
 
   const onCopyToClipboard = () => {
     Clipboard.setString(referralData.referralCode);
@@ -72,7 +81,7 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
   const onShare = async () => {
     try {
       const result = await Share.share({
-        message: `Hey! I'm using this awesome app and I think you'll love it. Sign up using my referral link to get a special discount! 🎁\n\nLink: ${referralData.referralLink}\nOr use my code: ${referralData.referralCode}`,
+        message: `Hey! I'm using this awesome app and I think you'll love it. Sign up using my referral code to get a special discount! 🎁\n\nLink: ${referralData.referralLink}\nOr use my code: ${referralData.referralCode}`,
         title: "Join me on this Awesome App!",
       });
 
@@ -92,7 +101,7 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
 
   return (
     <View style={[styles.parentContainer, { paddingTop: insets.top }]}>
-        {loading && <FullScreenLoader/>}
+      {loading && <FullScreenLoader />}
       <View style={styles.headerWrapper}>
         <HomeHeader
           onMenuPress={navigation.toggleDrawer}
@@ -117,7 +126,7 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
             <View style={styles.walletTextContainer}>
               <Text style={styles.walletLabel}>Your Wallet Balance</Text>
               <Text style={styles.walletAmount}>
-                ₹{walletBalance.toFixed(2)}
+                ₹{referralData?.amount_earner.toFixed(2)}
               </Text>
             </View>
           </View>
