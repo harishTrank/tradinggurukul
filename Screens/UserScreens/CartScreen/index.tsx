@@ -84,10 +84,10 @@ const CartScreen = ({ navigation }: any) => {
       },
     })
       ?.then(() => {
-        Toast.show({
-          type: "success",
-          text1: `Wallet ${apply ? "applied" : "removed"} successfully.`,
-        });
+        // Toast.show({
+        //   type: "success",
+        //   text1: `Wallet ${apply ? "applied" : "removed"} successfully.`,
+        // });
         // 3. Refresh with the source of truth from the server
         return cartListApiManager();
       })
