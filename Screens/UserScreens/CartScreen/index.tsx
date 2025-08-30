@@ -24,6 +24,7 @@ import {
   createOrderApi,
   removeCartItemCall,
   updateStatusOrderApi,
+  walletApplyApi,
 } from "../../../store/Services/Others";
 import Toast from "react-native-toast-message";
 import RazorpayCheckout from "react-native-razorpay";
@@ -34,6 +35,20 @@ const CartScreen = ({ navigation }: any) => {
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const [cartBottomPrices, setCartBottomPrices]: any = useState({});
   const [loading, setLoading]: any = useState(false);
+
+  const applyWalletManager = (apply: any) => {
+    walletApplyApi({
+      body: {
+        user_id: userDetails?.id,
+        apply,
+        cart_total: 10,
+      },
+    })
+      ?.then((res: any) => {
+        console.log("res", res);
+      })
+      ?.catch((err: any) => console.log("err", err));
+  };
 
   const cartListApiManager = () => {
     cartItemListApi
@@ -101,13 +116,17 @@ const CartScreen = ({ navigation }: any) => {
     />
   );
 
-  const updateOrderStatusManager = (order_id: any, transaction_id: any, status: any) => {
-    console.log('first', {
-        order_id,
-        user_id: userDetails?.id,
-        transaction_id,
-        status,
-      })
+  const updateOrderStatusManager = (
+    order_id: any,
+    transaction_id: any,
+    status: any
+  ) => {
+    console.log("first", {
+      order_id,
+      user_id: userDetails?.id,
+      transaction_id,
+      status,
+    });
     updateStatusOrderApi({
       body: {
         order_id,
@@ -131,7 +150,7 @@ const CartScreen = ({ navigation }: any) => {
       query: {
         u_id: userDetails?.id,
         payment_method: "razorpay",
-        amount: cartBottomPrices?.total
+        amount: cartBottomPrices?.total,
       },
     })
       ?.then((res: any) => {
@@ -156,12 +175,20 @@ const CartScreen = ({ navigation }: any) => {
           .then((data) => {
             alert(`Success: ${data.razorpay_payment_id}`);
             setLoading(false);
-            updateOrderStatusManager(res?.data?.order_id, data?.razorpay_payment_id, "completed");
+            updateOrderStatusManager(
+              res?.data?.order_id,
+              data?.razorpay_payment_id,
+              "completed"
+            );
           })
           .catch((error) => {
             alert(`Error: ${error.code} | ${error.description}`);
             setLoading(false);
-            updateOrderStatusManager(res?.data?.order_id, error?.details?.metadata?.payment_id, error?.details?.reason);
+            updateOrderStatusManager(
+              res?.data?.order_id,
+              error?.details?.metadata?.payment_id,
+              error?.details?.reason
+            );
           });
       })
       ?.catch((err) => {

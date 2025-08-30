@@ -204,4 +204,11 @@ export const othersEndpoints = {
       uri: "/refer",
     },
   },
+  walletApplyApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/walletapply",
+    },
+  },
 };

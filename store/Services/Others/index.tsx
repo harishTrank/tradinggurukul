@@ -166,9 +166,15 @@ export const supportDetailsApi = () =>
   callApi({
     uriEndPoint: othersEndpoints.supportDetailsApi.v1,
   });
-  
+
 export const getRefralCodeApi = ({ body }: any) =>
   callApi({
     uriEndPoint: othersEndpoints.getRefralCodeApi.v1,
+    body,
+  });
+
+export const walletApplyApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.walletApplyApi.v1,
     body,
   });
