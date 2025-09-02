@@ -94,7 +94,7 @@ export const othersEndpoints = {
   },
   removeCartItem: {
     v1: {
-      ...defaults.methods.GET,
+      ...defaults.methods.POST,
       ...defaults.versions.v1,
       uri: "/cart/remove",
     },

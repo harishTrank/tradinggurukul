@@ -103,14 +103,22 @@ const CartScreen = ({ navigation }: any) => {
   };
 
   const handleWalletToggle = (apply: any) => {
-    setIsWalletApplied(apply);
+    if (Number(cartBottomPrices?.wallet_balance || 0) < Number(cartBottomPrices?.total)) {
+      setIsWalletApplied(apply);
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Cart total must be higher than wallet."
+      })
+    }
   };
 
   const removeCartManager = (cart_item_key: any) => {
     setLoading(true);
     removeCartItemCall({
-      query: {
+      body: {
         cart_item_key,
+        user_id: userDetails?.id
       },
     })
       ?.then(() => {

@@ -79,10 +79,10 @@ export const cartItemListCall = ({ body }: any) =>
     body,
   });
 
-export const removeCartItemCall = ({ query }: any) =>
+export const removeCartItemCall = ({ body }: any) =>
   callApi({
     uriEndPoint: othersEndpoints.removeCartItem.v1,
-    query,
+    body,
   });
 
 export const getallContent = () =>
