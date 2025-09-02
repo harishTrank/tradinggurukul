@@ -24,7 +24,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRegisterUser } from "../../../hooks/Auth/mutation";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "../../Components/FullScreenLoader";
-import * as Application from "expo-application"; // Import expo-application
+import * as SecureStore from "expo-secure-store";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
 
 const { height, width } = Dimensions.get("window");
 
@@ -57,20 +59,22 @@ const RegisterScreen = ({ navigation }: any) => {
   const registerUserApiCall: any = useRegisterUser();
 
   // Effect to get the unique device ID on component mount
+  const getDeviceToken = async () => {
+    let token = await SecureStore.getItemAsync("deviceToken");
+    if (!token) {
+      token = uuidv4();
+      await SecureStore.setItemAsync("deviceToken", token);
+    }
+    return token;
+  };
   useEffect(() => {
     const getDeviceIdentifier = async () => {
-      let identifier;
-      if (Platform.OS === "android") {
-        identifier = Application.androidId;
-      } else if (Platform.OS === "ios") {
-        identifier = await Application.getIosIdForVendorAsync();
-      }
-      // Set a fallback in case the identifier is null
-      setDeviceToken(identifier || "unknown_device_id");
+      const deviceToken: any = await getDeviceToken();
+      setDeviceToken(deviceToken);
     };
 
     getDeviceIdentifier();
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -96,12 +100,12 @@ const RegisterScreen = ({ navigation }: any) => {
 
     // Append referral code if user entered one
     if (referralCode) {
-      body.append("referral_code", referralCode);
+      body.append("refer_code", referralCode);
     }
 
     // Append the unique device token
     if (deviceToken) {
-      body.append("device_token", deviceToken);
+      body.append("device_info", deviceToken);
     }
 
     registerUserApiCall

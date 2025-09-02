@@ -20,8 +20,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import {
+  createOrderApi,
   getCourseDetailsCall,
   getCourseTopicsCall,
+  updateStatusOrderApi,
 } from "../../../store/Services/Others";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import dayjs from "dayjs";
@@ -34,6 +36,7 @@ import {
 } from "../../../hooks/Others/mutation";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "../../Components/FullScreenLoader";
+import RazorpayCheckout from "react-native-razorpay";
 
 const { width } = Dimensions.get("window");
 
@@ -211,6 +214,92 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
     );
   }
 
+  const updateOrderStatusManager = (
+    order_id: any,
+    transaction_id: any,
+    status: any
+  ) => {
+    updateStatusOrderApi({
+      body: {
+        order_id,
+        user_id: userDetails?.id,
+        transaction_id,
+        status,
+      },
+    })
+      ?.then((res: any) => {
+        console.log("updateOrderStatusManager res:", res);
+        cartListApiManager();
+      })
+      ?.catch((err: any) => {
+        console.log("updateOrderStatusManager err:", err);
+      });
+  };
+
+  const payWithRazorpay = (userDetails: any, coursePrice: any) => {
+    setLoading(true);
+    createOrderApi({
+      query: {
+        u_id: userDetails?.id,
+        payment_method: "razorpay",
+        amount: coursePrice,
+      },
+    })
+      ?.then((res: any) => {
+        var options: any = {
+          description: "Order Payment",
+          image:
+            "https://tradinggurukul.com/trading_backend/wp-content/uploads/2025/08/tradinggurukul-logo-e1754378245418.jpeg",
+          currency: "INR",
+          key: "rzp_live_MEv3w5udH0dgor",
+          amount: parseFloat(coursePrice || 0) * 100,
+          order_id: res?.data?.razorpay_order?.id,
+          name: "Trading Gurukul",
+          prefill: {
+            email: userDetails?.billing?.email,
+            contact: userDetails?.billing?.phone,
+            name: userDetails?.username,
+          },
+          theme: { color: theme.colors.primary },
+        };
+
+        RazorpayCheckout.open(options)
+          .then((data) => {
+            Toast.show({
+              type: "success",
+              text1: "Payment successful!",
+            });
+            setLoading(false);
+            updateOrderStatusManager(
+              res?.data?.order_id,
+              data?.razorpay_payment_id,
+              "completed"
+            );
+          })
+          .catch((error) => {
+            Toast.show({
+              type: "error",
+              text1: "Payment failed",
+              text2: error.description,
+            });
+            setLoading(false);
+            updateOrderStatusManager(
+              res?.data?.order_id,
+              error?.details?.metadata?.payment_id,
+              error?.details?.reason || "failed"
+            );
+          });
+      })
+      ?.catch((err) => {
+        console.log("createOrderApi err:", err);
+        Toast.show({
+          type: "error",
+          text1: "Could not create order. Please try again.",
+        });
+        setLoading(false);
+      });
+  };
+
   const renderNotPurchasedView = () => (
     <>
       <ScrollView
@@ -269,18 +358,29 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
       </ScrollView>
       <View style={bottomBarStyle}>
         <Text style={styles.priceText}>₹{course?.price}</Text>
-        <TouchableOpacity
-          style={styles.addToCartButton}
-          onPress={handleAddToCart}
-        >
-          {addTocartApiCall?.isLoading ? (
-            <ActivityIndicator size={"small"} color={theme.colors.white} />
-          ) : (
-            <Text style={styles.addToCartButtonText}>
-              {isInCart ? "Go To Cart" : "Add To Cart"}
-            </Text>
-          )}
-        </TouchableOpacity>
+
+        <View style={styles.buttonRapper}>
+          <TouchableOpacity
+            style={styles.addToCartButton}
+            onPress={() => payWithRazorpay(userDetails, course?.price)}
+            disabled={loading || cartItemListApi?.isLoading}
+          >
+            <Text style={styles.addToCartButtonText}>Buy Now</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.addToCartButton}
+            onPress={handleAddToCart}
+          >
+            {addTocartApiCall?.isLoading ? (
+              <ActivityIndicator size={"small"} color={theme.colors.white} />
+            ) : (
+              <Text style={styles.addToCartButtonText}>
+                {isInCart ? "Go To Cart" : "Add To Cart"}
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
     </>
   );
@@ -425,11 +525,17 @@ const styles = StyleSheet.create({
     ...theme.font.fontBold,
     color: theme.colors.black,
   },
+  buttonRapper:{
+    flexDirection:"row",
+    alignItems:"center",
+    justifyContent:"center"
+  },
   addToCartButton: {
     backgroundColor: theme.colors.primary,
-    paddingHorizontal: 25,
-    paddingVertical: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     borderRadius: 8,
+    marginLeft: 10
   },
   addToCartButtonText: {
     ...theme.font.fontSemiBold,
