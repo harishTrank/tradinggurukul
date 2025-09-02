@@ -1,4 +1,4 @@
-import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
+import { createNavigationContainerRef, DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import SplashScreen from "../Screens/SplashScreen";
 import UserScreens from "../Screens/UserScreens";
@@ -16,9 +16,20 @@ export const MyTheme = {
   },
 };
 
+export const navigationRef = createNavigationContainerRef();
+
+export function navigateAndReset(name: any) {
+  if (navigationRef.isReady()) {
+    navigationRef.reset({
+      index: 0,
+      routes: [{ name: name }],
+    });
+  }
+}
+
 export default function Navigation() {
   return (
-    <NavigationContainer theme={MyTheme}>
+    <NavigationContainer ref={navigationRef} theme={MyTheme}>
       <RootNavigator />
     </NavigationContainer>
   );

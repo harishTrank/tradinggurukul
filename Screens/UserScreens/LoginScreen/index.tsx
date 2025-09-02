@@ -79,6 +79,7 @@ const LoginScreen = ({ navigation }: any) => {
           text1: err.message,
         });
       });
+      setSubmitting(false);
   };
 
   const handleForgotPassword = () => {

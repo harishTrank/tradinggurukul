@@ -10,6 +10,7 @@ import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import { persistor, store } from "./VideoRedux";
+import useSessionManager from "./utils/extra/useSessionManager";
 
 registerTranslation("en", en);
 export const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const customTheme = {
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
+  useSessionManager();
   if (!isLoadingComplete) {
     return null;
   } else {

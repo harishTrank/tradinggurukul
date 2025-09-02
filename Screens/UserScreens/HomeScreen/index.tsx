@@ -37,7 +37,7 @@ const { width } = Dimensions.get("window");
 const Stack = createStackNavigator<any>();
 
 const HomeScreenComponent = () => {
-  const [userDetails, setUserDetails]: any = useAtom(userDetailsGlobal);
+  const [userDetails]: any = useAtom(userDetailsGlobal);
   const navigation: any = useNavigation();
   const bannersApi: any = useBannersCall();
   const categoriesApi: any = useGetCategoryCall();
@@ -48,43 +48,6 @@ const HomeScreenComponent = () => {
       sort: "popularity",
     },
   });
-
-  const checkLoginTokenHandler = async (fetchToken: any) => {
-    checkLoginTokenApi({
-      body: {
-        user_id: userDetails?.id,
-        device_token: fetchToken
-      },
-    })
-      ?.then(async (res: any) => {
-        if (res?.status == 0) {
-          Toast.show({
-            type: "error",
-            text1: "We detected a login from another device.",
-          });
-          await AsyncStorage.clear();
-          setUserDetails({});
-          navigation.closeDrawer();
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "LoginScreen" }],
-          });
-        }
-      })
-      ?.catch((err: any) => console.log("err", err));
-  };
-
-  const useEffectCallAsync = async () => {
-    const fetchToken = await AsyncStorage.getItem("device_token");
-    if (userDetails?.id && fetchToken) {
-      checkLoginTokenHandler(fetchToken);
-    } 
-  };
-
-  useEffect(() => {
-    useEffectCallAsync();
-  }, [userDetails?.id, userDetails?.device_token]);
-
   // --- Start of Added Code ---
 
   // Combine the loading states of all relevant APIs.

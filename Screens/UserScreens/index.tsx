@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import DrawerNavigation from "../../navigation/DrawerNavigation";
 import StartScreen from "./StartScreen";

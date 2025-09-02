@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Axios from "axios";
 import queryString from "querystring";
 import { Alert } from "react-native";
+import useSessionManager from "../extra/useSessionManager";
 
 export const frontend_url = "https://app.tradinggurukul.com";
 export const main_domain = "https://tradinggurukul.com/trading_backend";

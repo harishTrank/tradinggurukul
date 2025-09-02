@@ -16,6 +16,7 @@ import ReferAndEarnScreen from "../../Screens/UserScreens/ReferAndEarnScreen";
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigator() {
+  
   return (
     <Drawer.Navigator
       screenOptions={{

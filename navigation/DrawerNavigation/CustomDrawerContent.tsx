@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   // --- New Footer Styles ---
   drawerFooter: {
     backgroundColor: theme.colors.white,
-    paddingTop: 10,
+    paddingVertical: 10,
     paddingHorizontal: 16,
     alignItems: "center",
     justifyContent: "center",
