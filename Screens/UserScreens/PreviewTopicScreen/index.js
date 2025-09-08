@@ -38,8 +38,11 @@ const PreviewTopicScreen = ({ navigation }) => {
   const playerRender = () => {
     if (coursesData.activeTopic !== null) {
       if (coursesData.activeTopic.type === "video") {
-        return <HLSVideoPlayer videoUrl={coursesData.activeTopic.data} />;
-        // return <WebVideoPlayer videoUrl={coursesData.activeTopic.data} />;
+        if (coursesData.activeTopic.data.includes("youtube")) {
+          return <WebVideoPlayer videoUrl={coursesData.activeTopic.data} />;
+        } else {
+          return <HLSVideoPlayer videoUrl={coursesData.activeTopic.data} />;
+        }
       } else if (coursesData.activeTopic.type === "content") {
         return <ContentPlayer data={coursesData.activeTopic.data} />;
       } else {
