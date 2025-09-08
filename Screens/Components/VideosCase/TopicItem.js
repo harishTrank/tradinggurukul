@@ -21,6 +21,7 @@ const TopicItem = ({
   onDownloadPress,
   onCommentPress,
   onDoubtPress,
+  notPurchase
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
@@ -98,7 +99,7 @@ const TopicItem = ({
           )}
 
           {/* Three Dots Menu Icon */}
-          {isAnyActionAvailable && (
+          {isAnyActionAvailable && !notPurchase && (
             <TouchableOpacity
               ref={dotsIconRef}
               onPress={openMenu}

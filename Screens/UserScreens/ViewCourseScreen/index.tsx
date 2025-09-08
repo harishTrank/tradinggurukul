@@ -348,6 +348,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
               topicList={topicsData}
               isPreview={true}
               navigation={navigation}
+              notPurchase={true}
             />
           ) : (
             <Text style={styles.noContentTxt}>

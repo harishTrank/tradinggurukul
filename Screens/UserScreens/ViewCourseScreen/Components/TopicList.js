@@ -6,7 +6,7 @@ import { changeTopic } from "../../../../VideoRedux/topic.actions";
 import Accordian from "./Accordian";
 import TopicItem from "../../../Components/VideosCase/TopicItem";
 
-const TopicList = ({ topicList, isPreview, navigation }) => {
+const TopicList = ({ topicList, isPreview, navigation, notPurchase = false }) => {
   const dispatch = useDispatch();
 
   const handlePreview = (topicInfo) => {
@@ -43,6 +43,7 @@ const TopicList = ({ topicList, isPreview, navigation }) => {
             isPreview={isPreview && el.topicPreview !== null}
             handlePreview={handlePreview}
             sectionId={sectionId}
+            notPurchase={notPurchase}
           />
         </TouchableOpacity>
       );
