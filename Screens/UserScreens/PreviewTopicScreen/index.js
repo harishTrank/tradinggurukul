@@ -11,6 +11,7 @@ import ContentPlayer from "../../Components/VideosCase/ContentPlayer";
 import WebVideoPlayer from "../../Components/VideosCase/WebVideoPlayer";
 import theme from "../../../utils/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import HLSVideoPlayer from "../../Components/VideosCase/HLSVideoPlayer";
 
 const PreviewTopicScreen = ({ navigation }) => {
   const topic = useSelector((state) => state.topic.activeTopic);
@@ -37,7 +38,8 @@ const PreviewTopicScreen = ({ navigation }) => {
   const playerRender = () => {
     if (coursesData.activeTopic !== null) {
       if (coursesData.activeTopic.type === "video") {
-        return <WebVideoPlayer videoUrl={coursesData.activeTopic.data} />;
+        return <HLSVideoPlayer videoUrl={coursesData.activeTopic.data} />;
+        // return <WebVideoPlayer videoUrl={coursesData.activeTopic.data} />;
       } else if (coursesData.activeTopic.type === "content") {
         return <ContentPlayer data={coursesData.activeTopic.data} />;
       } else {
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
   },
   playerWrap: {
-    height: 350,
+    height: 250,
   },
   scrollWrap: {
     flex: 2,
