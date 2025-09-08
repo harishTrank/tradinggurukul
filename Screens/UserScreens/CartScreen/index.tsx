@@ -49,8 +49,7 @@ const CartScreen = ({ navigation }: any) => {
         const prices = { ...res };
         delete prices.cart_data;
         setCartBottomPrices(prices);
-        // Sync the checkbox state with the backend response
-        setIsWalletApplied(parseFloat(prices?.wallet_discount || 0) > 0);
+        // setIsWalletApplied(parseFloat(prices?.wallet_discount || 0) > 0);
         console.log("wallet balance", res?.wallet_balance);
       })
       ?.catch((err: any) => {
@@ -68,14 +67,11 @@ const CartScreen = ({ navigation }: any) => {
     return unsubscribe;
   }, [navigation, userDetails?.id]);
 
-  // --- MODIFIED FUNCTION ---
   const handleWalletCheck = (apply: boolean) => {
     if (!userDetails?.id || !cartBottomPrices?.cart_subtotal) {
       Toast.show({ type: "error", text1: "Cannot apply wallet right now." });
       return;
     }
-
-    // 1. Optimistic UI Update: Change state immediately
     walletApplyApi({
       body: {
         user_id: userDetails.id,
@@ -84,32 +80,28 @@ const CartScreen = ({ navigation }: any) => {
       },
     })
       ?.then(() => {
-        // Toast.show({
-        //   type: "success",
-        //   text1: `Wallet ${apply ? "applied" : "removed"} successfully.`,
-        // });
-        // 3. Refresh with the source of truth from the server
         return cartListApiManager();
       })
       ?.catch((err: any) => {
         console.log("Wallet apply error:", err);
-        // 2. Revert UI on failure
-        setIsWalletApplied(!apply);
         Toast.show({
           type: "error",
           text1: "Failed to update wallet status.",
         });
-      })
+      });
   };
 
   const handleWalletToggle = (apply: any) => {
-    if (Number(cartBottomPrices?.wallet_balance || 0) < Number(cartBottomPrices?.total)) {
+    if (
+      Number(cartBottomPrices?.wallet_balance || 0) <
+      Number(cartBottomPrices?.total)
+    ) {
       setIsWalletApplied(apply);
     } else {
       Toast.show({
         type: "error",
-        text1: "Cart total must be higher than wallet."
-      })
+        text1: "Cart total must be higher than wallet.",
+      });
     }
   };
 
@@ -118,7 +110,7 @@ const CartScreen = ({ navigation }: any) => {
     removeCartItemCall({
       body: {
         cart_item_key,
-        user_id: userDetails?.id
+        user_id: userDetails?.id,
       },
     })
       ?.then(() => {
@@ -189,69 +181,78 @@ const CartScreen = ({ navigation }: any) => {
       });
   };
 
-  const payWithRazorpay = (userDetails: any, cartBottomPrices: any) => {
-    setLoading(true);
-    handleWalletCheck(isWalletApplied);
-    createOrderApi({
-      query: {
-        u_id: userDetails?.id,
-        payment_method: "razorpay",
-        amount: cartBottomPrices?.total,
-      },
-    })
-      ?.then((res: any) => {
-        var options: any = {
-          description: "Order Payment",
-          image:
-            "https://tradinggurukul.com/trading_backend/wp-content/uploads/2025/08/tradinggurukul-logo-e1754378245418.jpeg",
-          currency: "INR",
-          key: "rzp_live_MEv3w5udH0dgor",
-          amount: parseFloat(cartBottomPrices?.total || 0) * 100,
-          order_id: res?.data?.razorpay_order?.id,
-          name: "Trading Gurukul",
-          prefill: {
-            email: userDetails?.billing?.email,
-            contact: userDetails?.billing?.phone,
-            name: userDetails?.username,
-          },
-          theme: { color: theme.colors.primary },
-        };
+  const payWithRazorpay = async (userDetails: any, cartBottomPrices: any) => {
+    try {
+      setLoading(true);
+      handleWalletCheck(isWalletApplied);
 
-        RazorpayCheckout.open(options)
-          .then((data) => {
-            Toast.show({
-              type: "success",
-              text1: "Payment successful!",
-            });
-            setLoading(false);
-            updateOrderStatusManager(
-              res?.data?.order_id,
-              data?.razorpay_payment_id,
-              "completed"
-            );
-          })
-          .catch((error) => {
-            Toast.show({
-              type: "error",
-              text1: "Payment failed",
-              text2: error.description,
-            });
-            setLoading(false);
-            updateOrderStatusManager(
-              res?.data?.order_id,
-              error?.details?.metadata?.payment_id,
-              error?.details?.reason || "failed"
-            );
-          });
-      })
-      ?.catch((err) => {
-        console.log("createOrderApi err:", err);
-        Toast.show({
-          type: "error",
-          text1: "Could not create order. Please try again.",
-        });
-        setLoading(false);
+      // Calculate final payable amount
+      const total = Number(cartBottomPrices?.total || 0);
+      const walletBalance = Number(cartBottomPrices?.wallet_balance || 0);
+      const finalAmount = isWalletApplied
+        ? Math.max(total - walletBalance, 0)
+        : total;
+
+      // Create order on backend
+      const res: any = await createOrderApi({
+        query: {
+          u_id: userDetails?.id,
+          payment_method: "razorpay",
+          amount: finalAmount.toFixed(2), // backend expects string with 2 decimals
+        },
       });
+
+      const options: any = {
+        description: "Order Payment",
+        image:
+          "https://tradinggurukul.com/trading_backend/wp-content/uploads/2025/08/tradinggurukul-logo-e1754378245418.jpeg",
+        currency: "INR",
+        key: "rzp_live_MEv3w5udH0dgor", // 🔴 move this to env in production
+        amount: Math.round(finalAmount * 100), // paise (must be integer)
+        order_id: res?.data?.razorpay_order?.id,
+        name: "Trading Gurukul",
+        prefill: {
+          email: userDetails?.billing?.email || "",
+          contact: userDetails?.billing?.phone || "",
+          name: userDetails?.username || "",
+        },
+        theme: { color: theme.colors.primary },
+      };
+
+      // Open Razorpay checkout
+      RazorpayCheckout.open(options)
+        .then((data: any) => {
+          Toast.show({
+            type: "success",
+            text1: "Payment successful!",
+          });
+          updateOrderStatusManager(
+            res?.data?.order_id,
+            data?.razorpay_payment_id,
+            "completed"
+          );
+        })
+        .catch((error: any) => {
+          Toast.show({
+            type: "error",
+            text1: "Payment failed",
+            text2: error?.description || "Something went wrong",
+          });
+          updateOrderStatusManager(
+            res?.data?.order_id,
+            error?.details?.metadata?.payment_id || null,
+            error?.details?.reason || "failed"
+          );
+        })
+        .finally(() => setLoading(false));
+    } catch (err) {
+      console.log("createOrderApi err:", err);
+      Toast.show({
+        type: "error",
+        text1: "Could not create order. Please try again.",
+      });
+      setLoading(false);
+    }
   };
 
   return (
@@ -359,8 +360,10 @@ const CartScreen = ({ navigation }: any) => {
                 <Text style={[styles.infoValue, styles.totalValue]}>
                   ₹{" "}
                   {isWalletApplied
-                    ? (Number(cartBottomPrices?.total) -
-                        Number(cartBottomPrices.wallet_balance) || 0)?.toFixed(2)
+                    ? (
+                        Number(cartBottomPrices?.total) -
+                          Number(cartBottomPrices.wallet_balance) || 0
+                      )?.toFixed(2)
                     : parseFloat(cartBottomPrices?.total || 0).toFixed(2)}
                 </Text>
               </View>
