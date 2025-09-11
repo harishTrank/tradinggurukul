@@ -130,7 +130,8 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
                   (route: any) => route.name === item.navigateTo
                 )?.key === focusedRouteKey;
 
-              const shouldRender = isLoginFlag || (!isLoginFlag && !item.isLogout);
+              const shouldRender =
+                isLoginFlag || (!isLoginFlag && !item.isLogout);
 
               if (!shouldRender) return null;
 
