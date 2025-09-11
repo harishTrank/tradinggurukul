@@ -24,50 +24,51 @@ import { useGetCategoryCall } from "../../../hooks/Others/query";
 type MyCoursesScreenNavigationProp = StackNavigationProp<any>;
 
 const PER_PAGE = 10;
-
 const { width } = Dimensions.get("screen");
 
 const AllCoursesScreen = ({ route }: any) => {
   const navigation = useNavigation<MyCoursesScreenNavigationProp>();
   const insets = useSafeAreaInsets();
   const categoriesApi: any = useGetCategoryCall();
+
+  // --- FIX 1: Initialize state directly from route.params ---
+  // This ensures that from the very first render, the component knows which
+  // category to fetch, preventing the initial fetch of "all" courses.
+  const [selectScript, setSelectScript] = useState<any>(
+    route?.params?.script || {}
+  );
+  const [categoryId, setCategoryId] = useState<string | undefined>(
+    route?.params?.script?.id || route?.params?.script?.banner_category
+  );
+
   const [courses, setCourses] = useState<Course[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectScript, setSelectScript]: any = useState({});
-  const [categoryId, setCategoryId]: any = useState(undefined);
 
-  useEffect(() => {
-    if (route?.params?.script) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setSelectScript(route?.params?.script);
-        setIsLoading(false);
-      }, 1000);
-    }
-  }, [route?.params?.script]);
-
-  const setCategoriesId = (select: any) => {
-    setCategoryId(select?.id || select?.banner_category);
+  // --- FIX 2: Create a single handler for category changes ---
+  // This function ensures that both the UI state (selectScript) and the
+  // data-fetching state (categoryId) are updated together consistently.
+  const handleCategoryChange = (selectedItem: any) => {
+    setSelectScript(selectedItem || {}); // Use empty object if null/undefined
+    setCategoryId(selectedItem?.id || selectedItem?.banner_category);
   };
-
-  useEffect(() => {
-    if (selectScript) {
-      setCategoriesId(selectScript);
-    }
-  }, [selectScript]);
 
   const fetchCourses = useCallback(
     async (pageToFetch: number, isRefreshing: boolean = false) => {
+      // Start loading indicators immediately
       if (pageToFetch === 1) {
         setIsLoading(true);
+        // Clear courses immediately for a new filter/refresh to prevent showing stale data
+        if (!isRefreshing) {
+          setCourses([]);
+        }
       } else {
         setIsLoadingMore(true);
       }
-      if (!isRefreshing) setError(null);
+      setError(null);
 
       try {
         const res: any = await customProductsCall({
@@ -83,15 +84,9 @@ const AllCoursesScreen = ({ route }: any) => {
 
         if (newProducts.length > 0) {
           setCourses((prevCourses) =>
-            pageToFetch === 1 || isRefreshing
-              ? newProducts
-              : [...prevCourses, ...newProducts]
+            pageToFetch === 1 ? newProducts : [...prevCourses, ...newProducts]
           );
-          if (newProducts.length < PER_PAGE) {
-            setHasMoreData(false);
-          } else {
-            setHasMoreData(true);
-          }
+          setHasMoreData(newProducts.length >= PER_PAGE);
         } else {
           setHasMoreData(false);
           if (pageToFetch === 1) {
@@ -107,12 +102,16 @@ const AllCoursesScreen = ({ route }: any) => {
         setIsLoadingMore(false);
       }
     },
-    [categoryId]
+    [categoryId] // The fetch logic now only depends on the categoryId
   );
 
+  // --- FIX 3: Simplified and corrected fetch effect ---
+  // This useEffect now correctly triggers a fetch only when the categoryId changes.
+  // Because categoryId is initialized correctly from the start, the first fetch
+  // will have the correct filter applied.
   useEffect(() => {
     fetchCourses(1);
-  }, [fetchCourses, categoryId]);
+  }, [fetchCourses]); // This depends on the memoized fetchCourses function
 
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMoreData && !isLoading) {
@@ -121,10 +120,12 @@ const AllCoursesScreen = ({ route }: any) => {
   };
 
   const handleRefresh = () => {
-    setSelectScript({});
+    // --- FIX 4: Explicitly clear the category filter on refresh ---
+    handleCategoryChange(null);
     setHasMoreData(true);
-    setError(null);
-    fetchCourses(1, true);
+    // Note: Calling handleCategoryChange will trigger the useEffect above to
+    // fetch all courses automatically. You could optionally call fetchCourses here
+    // for more immediate feedback if needed, but it's not strictly necessary.
   };
 
   const handleCoursePress = (courseId: string) => {
@@ -156,9 +157,12 @@ const AllCoursesScreen = ({ route }: any) => {
   };
 
   const ListEmptyComponent = () => {
-    if (isLoading && courses.length === 0) return null;
+    // Return null while the initial data is loading to avoid showing "No courses" prematurely
+    if (isLoading && currentPage === 1) {
+      return null;
+    }
 
-    if (error && courses.length === 0) {
+    if (error) {
       return (
         <View style={styles.emptyListContainer}>
           <Text style={styles.errorText}>{error}</Text>
@@ -170,13 +174,16 @@ const AllCoursesScreen = ({ route }: any) => {
         </View>
       );
     }
-    if (!isLoading && courses.length === 0 && !error) {
+
+    // Only show "No courses found" if not loading and the list is truly empty.
+    if (!isLoading && courses.length === 0) {
       return (
         <View style={styles.emptyListContainer}>
           <Text style={styles.emptyListText}>No courses found.</Text>
         </View>
       );
     }
+
     return null;
   };
 
@@ -196,7 +203,7 @@ const AllCoursesScreen = ({ route }: any) => {
         <DropDownComponent
           data={categoriesApi?.data || []}
           value={selectScript?.name}
-          setValue={setSelectScript}
+          setValue={handleCategoryChange} // Use the new unified handler
           placeholder={"Search..."}
           search={true}
           style={styles.dropDownStyle}
@@ -204,20 +211,17 @@ const AllCoursesScreen = ({ route }: any) => {
           objectSave={true}
         />
 
-        {isLoading && courses.length === 0 && currentPage === 1 && !error && (
+        {/* --- FIX 5: Improved Loading UI --- */}
+        {/* Show a full-screen loader only on the initial load for a better UX */}
+        {isLoading && currentPage === 1 ? (
           <View style={styles.fullScreenLoaderContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>
-        )}
-
-        {(!(isLoading && courses.length === 0 && currentPage === 1) ||
-          error) && (
+        ) : (
           <FlatList
             data={courses}
             renderItem={renderCourseItem}
-            keyExtractor={(item, index) =>
-              item.id ? item.id.toString() : `course-${index}`
-            }
+            keyExtractor={(item) => item.id.toString()}
             numColumns={2}
             style={styles.list}
             contentContainerStyle={styles.listContentContainer}
@@ -227,7 +231,7 @@ const AllCoursesScreen = ({ route }: any) => {
             ListFooterComponent={renderFooter}
             ListEmptyComponent={ListEmptyComponent}
             onRefresh={handleRefresh}
-            refreshing={isLoading && currentPage === 1 && !isLoadingMore}
+            refreshing={isLoading && currentPage === 1}
           />
         )}
       </View>
@@ -243,7 +247,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     alignItems: "center",
-    // paddingHorizontal: 15,
   },
   screenTitle: {
     fontSize: 20,
@@ -254,9 +257,11 @@ const styles = StyleSheet.create({
   },
   list: {
     flex: 1,
+    width: "100%",
   },
   listContentContainer: {
     paddingBottom: 20,
+    paddingHorizontal: 5, // Added for spacing between columns
   },
   footerLoader: {
     marginVertical: 20,
@@ -271,6 +276,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 50,
+    height: Dimensions.get("window").height * 0.5, // Give it some height
   },
   emptyListText: {
     fontSize: 16,
@@ -284,6 +290,7 @@ const styles = StyleSheet.create({
   },
   dropDownStyle: {
     width: width - 30,
+    marginBottom: 10,
   },
 });
 

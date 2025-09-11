@@ -86,7 +86,7 @@ const CourseDetailScreen = ({ route, navigation }) => {
   const playerRender = () => {
     if (coursesData.activeTopic !== null) {
       if (coursesData.activeTopic.type === "video") {
-        if (coursesData.activeTopic.data.includes("youtube")) {
+        if (coursesData.activeTopic.data.includes("youtu")) {
           return <WebVideoPlayer videoUrl={coursesData.activeTopic.data} />;
         }else {
           return <HLSVideoPlayer videoUrl={coursesData.activeTopic.data} />;

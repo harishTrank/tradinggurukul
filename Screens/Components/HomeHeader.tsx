@@ -48,7 +48,11 @@ const HomeHeader = ({
       ) : (
         <View />
       )}
-      <TouchableOpacity onPress={() => navigation.navigate("HomeBottom")}>
+      <TouchableOpacity
+        onPress={() => {
+            navigation.navigate("Home", {screen:"HomeBottom"});
+        }}
+      >
         <Image
           source={logoSource}
           style={[styles.logo, !userDetails?.id && { marginLeft: -25 }]}
