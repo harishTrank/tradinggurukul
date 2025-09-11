@@ -130,7 +130,8 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
                   (route: any) => route.name === item.navigateTo
                 )?.key === focusedRouteKey;
 
-              const shouldRender = isLoginFlag || (!isLoginFlag && !item.isLogout);
+              const shouldRender =
+                isLoginFlag || (!isLoginFlag && !item.isLogout);
 
               if (!shouldRender) return null;
 
@@ -157,6 +158,8 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
                   onPress={() => {
                     if (item.isLogout) {
                       handleLogout();
+                    } else if (item.navigateTo === "Home") {
+                      navigation.navigate("Home", { screen: "HomeBottom" });
                     } else if (item.navigateTo) {
                       navigation.navigate(item.navigateTo);
                       navigation.closeDrawer();
