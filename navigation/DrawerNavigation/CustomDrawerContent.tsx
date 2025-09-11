@@ -157,6 +157,8 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
                   onPress={() => {
                     if (item.isLogout) {
                       handleLogout();
+                    } else if (item.navigateTo === "Home") {
+                      navigation.navigate("Home", { screen: "HomeBottom" });
                     } else if (item.navigateTo) {
                       navigation.navigate(item.navigateTo);
                       navigation.closeDrawer();
