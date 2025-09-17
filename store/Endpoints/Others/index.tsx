@@ -211,4 +211,11 @@ export const othersEndpoints = {
       uri: "/walletapply",
     },
   },
+  eventsApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/all-events",
+    },
+  },
 };

@@ -178,3 +178,8 @@ export const walletApplyApi = ({ body }: any) =>
     uriEndPoint: othersEndpoints.walletApplyApi.v1,
     body,
   });
+export const eventsApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.eventsApi.v1,
+    query,
+  });
