@@ -14,9 +14,23 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.tradinggurukul"
+      "googleServicesFile": "./ios/tradinggurukul/GoogleService-Info.plist",
+      "bundleIdentifier": "com.anonymous.tradinggurukul",
+      "infoPlist": {
+        "UIBackgroundModes": ["fetch", "remote-notification"],
+        "NSCameraUsageDescription": "This app needs access to your camera",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to allow uploading images.",
+        "NSUserTrackingUsageDescription": " This app uses notifications."
+      }
     },
     "android": {
+      "googleServicesFile": "./android/app/google-services.json",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "NOTIFICATIONS"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -27,8 +41,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-secure-store"
-    ]
+    "plugins": ["expo-secure-store"]
   }
 }

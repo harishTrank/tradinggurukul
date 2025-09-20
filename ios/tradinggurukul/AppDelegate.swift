@@ -1,3 +1,4 @@
+import Firebase
 import Expo
 import React
 import ReactAppDependencyProvider
@@ -17,9 +18,11 @@ public class AppDelegate: ExpoAppDelegate {
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
 
+
     reactNativeDelegate = delegate
     reactNativeFactory = factory
     bindReactNativeFactory(factory)
+    FirebaseApp.configure()
 
 #if os(iOS) || os(tvOS)
     window = UIWindow(frame: UIScreen.main.bounds)
