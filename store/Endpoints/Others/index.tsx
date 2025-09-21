@@ -120,11 +120,25 @@ export const othersEndpoints = {
       uri: "/checkout/new-order",
     },
   },
+  createSingleOrderApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/checkout/single-order",
+    },
+  },
   updateStatusOrderApi: {
     v1: {
       ...defaults.methods.POST,
       ...defaults.versions.v1,
       uri: "/checkout/update-order",
+    },
+  },
+  updateBuyOrderApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/checkout/single-update-order",
     },
   },
   addCommentApi: {
@@ -209,6 +223,20 @@ export const othersEndpoints = {
       ...defaults.methods.POST,
       ...defaults.versions.v1,
       uri: "/walletapply",
+    },
+  },
+  eventsApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/all-events",
+    },
+  },
+  sendFCMTokenFirebase: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/save-token",
     },
   },
 };

@@ -21,8 +21,10 @@ import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import {
   createOrderApi,
+  createSingleOrderApi,
   getCourseDetailsCall,
   getCourseTopicsCall,
+  updateBuyOrderApi,
   updateStatusOrderApi,
 } from "../../../store/Services/Others";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -219,17 +221,19 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
     transaction_id: any,
     status: any
   ) => {
-    updateStatusOrderApi({
+    updateBuyOrderApi({
       body: {
         order_id,
-        user_id: userDetails?.id,
+        u_id: userDetails?.id,
         transaction_id,
         status,
+        product_id: courseId,
       },
     })
       ?.then((res: any) => {
         console.log("updateOrderStatusManager res:", res);
-        cartListApiManager();
+        // cartListApiManager();
+        viewCourseApiCallManager();
       })
       ?.catch((err: any) => {
         console.log("updateOrderStatusManager err:", err);
@@ -238,9 +242,10 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
 
   const payWithRazorpay = (userDetails: any, coursePrice: any) => {
     setLoading(true);
-    createOrderApi({
+    createSingleOrderApi({
       query: {
         u_id: userDetails?.id,
+        product_id: courseId,
         payment_method: "razorpay",
         amount: coursePrice,
       },
@@ -526,17 +531,17 @@ const styles = StyleSheet.create({
     ...theme.font.fontBold,
     color: theme.colors.black,
   },
-  buttonRapper:{
-    flexDirection:"row",
-    alignItems:"center",
-    justifyContent:"center"
+  buttonRapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   addToCartButton: {
     backgroundColor: theme.colors.primary,
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 8,
-    marginLeft: 10
+    marginLeft: 10,
   },
   addToCartButtonText: {
     ...theme.font.fontSemiBold,
