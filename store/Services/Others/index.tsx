@@ -101,10 +101,20 @@ export const createOrderApi = ({ query }: any) =>
     uriEndPoint: othersEndpoints.createOrderApi.v1,
     query,
   });
+export const createSingleOrderApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.createSingleOrderApi.v1,
+    query,
+  });
 
 export const updateStatusOrderApi = ({ body }: any) =>
   callApi({
     uriEndPoint: othersEndpoints.updateStatusOrderApi.v1,
+    body,
+  });
+export const updateBuyOrderApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.updateBuyOrderApi.v1,
     body,
   });
 
@@ -178,8 +188,15 @@ export const walletApplyApi = ({ body }: any) =>
     uriEndPoint: othersEndpoints.walletApplyApi.v1,
     body,
   });
+
 export const eventsApi = ({ query }: any) =>
   callApi({
     uriEndPoint: othersEndpoints.eventsApi.v1,
     query,
+  });
+
+export const sendFCMTokenFirebase = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.sendFCMTokenFirebase.v1,
+    body,
   });

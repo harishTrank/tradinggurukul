@@ -15,6 +15,7 @@ import { userDetailsGlobal } from "./JotaiStore";
 import { useAtom } from "jotai";
 import messaging from "@react-native-firebase/messaging";
 import { getFcmToken } from "./utils/services/firebase";
+import { sendFCMTokenFirebase } from "./store/Services/Others";
 
 registerTranslation("en", en);
 export const queryClient = new QueryClient();
@@ -43,8 +44,29 @@ export default function App() {
   useSessionManager();
 
   useEffect(() => {
-    getFcmToken();
-  }, []);
+    const sendToken = async () => {
+      try {
+        const token = await getFcmToken();
+
+        if (!token) {
+          console.log("FCM Token is null, cannot send to server");
+          return;
+        }
+
+        const payload = {
+          token: token,
+          user_id: userDetails?.id,
+          platform: Platform.OS,
+          topics: ["offers"],
+        };
+        const res = await sendFCMTokenFirebase({ body: payload });
+        console.log("FCM TOKEN SENT RES", res);
+      } catch (err) {
+        console.log("FCM TOKEN SENT ERR", err);
+      }
+    };
+    sendToken();
+  }, [userDetails]);
 
   if (!isLoadingComplete) return null;
 
