@@ -32,7 +32,6 @@ const EventScreen = ({ navigation }: any) => {
     })
       .then((res: any) => {
         setEventResponse(res);
-        console.log("event res", res);
       })
       .catch((err: any) => {
         console.log("event error", err);

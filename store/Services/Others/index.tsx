@@ -194,9 +194,19 @@ export const eventsApi = ({ query }: any) =>
     uriEndPoint: othersEndpoints.eventsApi.v1,
     query,
   });
+export const dashboardEventApi = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.dashboardEventApi.v1,
+    query,
+  });
 
 export const sendFCMTokenFirebase = ({ body }: any) =>
   callApi({
     uriEndPoint: othersEndpoints.sendFCMTokenFirebase.v1,
+    body,
+  });
+export const deleteAccountApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.deleteAccountApi.v1,
     body,
   });

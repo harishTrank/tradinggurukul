@@ -14,6 +14,7 @@ import {
   KeyboardAvoidingView,
   Animated,
   Keyboard,
+  Modal,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
@@ -32,6 +33,7 @@ import { getImage, takePicture } from "../../../utils/extra/ImagePicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 import { getfileobj } from "../../../utils/extra/UserUtils";
+import { deleteAccountApi } from "../../../store/Services/Others";
 
 const ProfileSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -83,6 +85,9 @@ const EditProfileScreen = () => {
 
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen]: any = useState(false);
+  const [modalPasswordOpen, setModalPasswordOpen]: any = useState(false);
+  const [password, setPassword]: any = useState("");
 
   useEffect(() => {
     const showEvent =
@@ -189,6 +194,29 @@ const EditProfileScreen = () => {
         style: "default",
       },
     ]);
+  };
+
+  const handleDeleteAccount = () => {
+    deleteAccountApi({
+      body: {
+        user_id: userDetailsGl.id,
+        password: password,
+      },
+    })
+      .then((res: any) => {
+        console.log("account deleted", res);
+        Toast.show({
+          type: "success",
+          text1: res?.message,
+        });
+        setDeleteModalOpen(false);
+        setModalPasswordOpen(false);
+        AsyncStorage.clear();
+        navigation.navigate("LoginScreen");
+      })
+      .catch((err: any) => {
+        console.log("error", JSON.stringify(err));
+      });
   };
 
   return (
@@ -333,8 +361,79 @@ const EditProfileScreen = () => {
                       <Text style={styles.errorText}>{errors.displayName}</Text>
                     )}
                   </View>
+                  <TouchableOpacity onPress={() => setDeleteModalOpen(true)}>
+                    <Text style={styles.deleteAccountText}>Delete Account</Text>
+                  </TouchableOpacity>
                 </View>
               </ScrollView>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={deleteModalOpen}
+                onRequestClose={() => {
+                  Alert.alert("Modal has been closed.");
+                  setDeleteModalOpen(!deleteModalOpen);
+                }}
+              >
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.confirmdeleteText}>
+                      Do you really want to delete account!
+                    </Text>
+                    {!modalPasswordOpen && (
+                      <View style={styles.modalButtonView}>
+                        <TouchableOpacity
+                          style={{
+                            ...styles.modalButton,
+                            backgroundColor: "red",
+                          }}
+                          onPress={() => setModalPasswordOpen(true)}
+                        >
+                          <Text style={styles.btnText}>Yes, Delete</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.modalButton}
+                          onPress={() => setDeleteModalOpen(false)}
+                        >
+                          <Text style={styles.btnText}>cancel</Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                    {modalPasswordOpen && (
+                      <View>
+                        <View style={styles.passwordInputView}>
+                          <TextInput
+                            placeholder="Enter your account password"
+                            secureTextEntry={true}
+                            style={styles.passwordInput}
+                            onChangeText={setPassword}
+                          />
+                        </View>
+                        <View style={styles.modalButtonView}>
+                          <TouchableOpacity
+                            style={{
+                              ...styles.modalButton,
+                              backgroundColor: "red",
+                            }}
+                            onPress={handleDeleteAccount}
+                          >
+                            <Text style={styles.btnText}>Confirm</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => {
+                              setDeleteModalOpen(false);
+                              setModalPasswordOpen(false);
+                            }}
+                          >
+                            <Text style={styles.btnText}>cancel</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </Modal>
 
               {!isKeyboardVisible && (
                 <Animated.View
@@ -467,6 +566,65 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: theme.colors.white,
     ...theme.font.fontSemiBold,
+  },
+  deleteAccountText: {
+    color: "red",
+    fontSize: 15,
+    fontWeight: "600",
+    alignSelf: "flex-end",
+  },
+  confirmdeleteText: {
+    color: "#000",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalButtonView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+    marginTop: 20,
+  },
+  modalButton: {
+    backgroundColor: "gray",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  btnText: {
+    color: "#fff",
+    fontWeight: "500",
+    fontSize: 14,
+  },
+  passwordInputView: {
+    width: "100%",
+    borderBottomWidth: 1,
+    borderColor: "#000",
+    marginTop: 20,
+    alignSelf: "flex-start",
+  },
+  passwordInput: {
+    paddingVertical: 5,
+    fontSize: 16,
   },
 });
 

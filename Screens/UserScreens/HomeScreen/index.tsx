@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"; // Added useEffect
+import React, { useEffect, useState } from "react"; // Added useEffect
 import {
   View,
   Text,
@@ -8,7 +8,8 @@ import {
   Image,
   FlatList,
   Dimensions,
-  Alert, // Added Alert
+  Alert,
+  TouchableOpacity, // Added Alert
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import HomeHeader from "../../Components/HomeHeader";
@@ -29,11 +30,14 @@ import FullScreenLoader from "../../Components/FullScreenLoader";
 import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AllCoursesScreen from "../AllCoursesScreen";
+import EventCard from "../EventScreen/Components/EventCard";
+import { dashboardEventApi } from "../../../store/Services/Others";
 
 const { width } = Dimensions.get("window");
 const Stack = createStackNavigator<any>();
 
 const HomeScreenComponent = () => {
+  const [dashboardEvent, setDashboardEvent]: any = useState({});
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const navigation: any = useNavigation();
   const bannersApi: any = useBannersCall();
@@ -97,6 +101,20 @@ const HomeScreenComponent = () => {
     }
   };
 
+  useEffect(() => {
+    dashboardEventApi({
+      query: {
+        user_id: userDetails?.id,
+      },
+    })
+      .then((res: any) => {
+        setDashboardEvent(res?.events?.[0]);
+      })
+      .catch((err: any) => {
+        console.log("dashboard err", err);
+      });
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -135,6 +153,13 @@ const HomeScreenComponent = () => {
         {/* --- Image Slider --- */}
         <ImageSlider navigation={navigation} data={bannersApi?.data?.banner} />
 
+        <View>
+          <SectionHeader
+            title="Upcoming Event"
+            onSeeMore={() => navigation.navigate("Events")}
+          />
+          <EventCard event={dashboardEvent} />
+        </View>
         {/* --- Popular Categories --- */}
         <SectionHeader
           title={`Popular category`}
@@ -240,6 +265,15 @@ const styles = StyleSheet.create({
   horizontalListPadding: {
     paddingLeft: 2,
     paddingBottom: 10,
+  },
+  eventText: {
+    color: "#000",
+    fontWeight: "500",
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  eventTouch: {
+    zIndex: 90,
   },
 });
 

@@ -232,11 +232,25 @@ export const othersEndpoints = {
       uri: "/all-events",
     },
   },
+  dashboardEventApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/today-or-coming",
+    },
+  },
   sendFCMTokenFirebase: {
     v1: {
       ...defaults.methods.POST,
       ...defaults.versions.v1,
       uri: "/save-token",
+    },
+  },
+  deleteAccountApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/deleteuser",
     },
   },
 };
