@@ -14,7 +14,10 @@ import useSessionManager from "./utils/extra/useSessionManager";
 import { userDetailsGlobal } from "./JotaiStore";
 import { useAtom } from "jotai";
 import messaging from "@react-native-firebase/messaging";
-import { getFcmToken } from "./utils/services/firebase";
+import {
+  getFcmToken,
+  handleNotificationClick,
+} from "./utils/services/firebase";
 import { sendFCMTokenFirebase } from "./store/Services/Others";
 
 registerTranslation("en", en);
@@ -61,6 +64,7 @@ export default function App() {
         };
         const res = await sendFCMTokenFirebase({ body: payload });
         console.log("FCM TOKEN SENT RES", res);
+        handleNotificationClick();
       } catch (err) {
         console.log("FCM TOKEN SENT ERR", err);
       }

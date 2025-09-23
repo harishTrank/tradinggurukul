@@ -1,5 +1,5 @@
 // src/screens/Comments/CommentsScreen.js
-
+// thius too bbebeb
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import {
   StyleSheet,
@@ -86,7 +86,7 @@ const CommentsScreen = ({ route, navigation }) => {
   // format comment
   const formatApiComment = (apiComment) => {
     const isCurrentUser = apiComment.user_id === userDetails?.id?.toString();
-    const date = new Date(apiComment.created_at.replace(" ", "T") + "Z");
+    const date = new Date(apiComment.created_at.replace(" ", "T"));
     const formattedTime = date.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -241,14 +241,14 @@ const CommentsScreen = ({ route, navigation }) => {
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
           <Icon name="arrow-back" size={26} color={theme.colors.white} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View>
-          <Text style={styles.headerTitle}>Comments</Text>
+          {/* <Text style={styles.headerTitle}>Comments</Text> */}
           <Text style={styles.headerSubtitle}>{videoTitle}</Text>
         </View>
       </View>

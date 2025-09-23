@@ -1,11 +1,12 @@
 import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { useSelector } from "react-redux";
 import theme from "../../../utils/theme";
@@ -17,6 +18,8 @@ import { userDetailsGlobal } from "../../../JotaiStore";
 import { getCourseMyDetailsCall } from "../../../store/Services/Others";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HLSVideoPlayer from "../../Components/VideosCase/HLSVideoPlayer";
+import CommentsScreen from "../CommentsScreen";
+import DoubtsScreen from "../DoubtsScreen";
 
 const ListItem = (props) => {
   return (
@@ -28,6 +31,7 @@ const ListItem = (props) => {
 
 const CourseDetailScreen = ({ route, navigation }) => {
   const [currentUser] = useAtom(userDetailsGlobal);
+  const [selectedNavigator, setSelectedNavigator] = useState("Topics");
   const topic = useSelector((state) => state.topic);
 
   const [coursesData, setCoursesData] = React.useState({
@@ -88,7 +92,7 @@ const CourseDetailScreen = ({ route, navigation }) => {
       if (coursesData.activeTopic.type === "video") {
         if (coursesData.activeTopic.data.includes("youtu")) {
           return <WebVideoPlayer videoUrl={coursesData.activeTopic.data} />;
-        }else {
+        } else {
           return <HLSVideoPlayer videoUrl={coursesData.activeTopic.data} />;
         }
       } else if (coursesData.activeTopic.type === "content") {
@@ -100,7 +104,6 @@ const CourseDetailScreen = ({ route, navigation }) => {
       }
     }
   };
-
   return (
     <View
       style={[styles.parentContainer, { paddingTop: useSafeAreaInsets().top }]}
@@ -109,21 +112,100 @@ const CourseDetailScreen = ({ route, navigation }) => {
         coursesData.data.length > 0 ? (
           <>
             <View style={styles.playerWrap}>{playerRender()}</View>
+            <View style={styles.topNavigatorView}>
+              <TouchableOpacity
+                style={[
+                  styles.navigatorButton,
+                  selectedNavigator === "Topics" &&
+                    styles.activeNavigatorButton,
+                ]}
+                onPress={() => setSelectedNavigator("Topics")}
+              >
+                <Text
+                  style={[
+                    styles.navigatorText,
+                    selectedNavigator === "Topics" &&
+                      styles.activeNavigatorText,
+                  ]}
+                >
+                  Topics
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.navigatorButton,
+                  selectedNavigator === "Comments" &&
+                    styles.activeNavigatorButton,
+                ]}
+                onPress={() => setSelectedNavigator("Comments")}
+              >
+                <Text
+                  style={[
+                    styles.navigatorText,
+                    selectedNavigator === "Comments" &&
+                      styles.activeNavigatorText,
+                  ]}
+                >
+                  Comments
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.navigatorButton,
+                  selectedNavigator === "Doubts" &&
+                    styles.activeNavigatorButton,
+                ]}
+                onPress={() => setSelectedNavigator("Doubts")}
+              >
+                <Text
+                  style={[
+                    styles.navigatorText,
+                    selectedNavigator === "Doubts" &&
+                      styles.activeNavigatorText,
+                  ]}
+                >
+                  Doubts
+                </Text>
+              </TouchableOpacity>
+            </View>
             <View style={styles.scrollWrap}>
-              <FlatList
-                ListHeaderComponent={
-                  <View style={styles.topicInfoWrap}>
-                    {coursesData.activeTopic !== null ? (
-                      <Text style={styles.topicTitleTxt}>
-                        {coursesData.activeTopic.title}
-                      </Text>
-                    ) : null}
-                  </View>
-                }
-                data={coursesData.data}
-                renderItem={({ item, index }) => {
-                  console.log("Item", item.sectionId);
-                  return (
+              {selectedNavigator === "Comments" && (
+                <CommentsScreen
+                  navigation={navigation}
+                  route={{
+                    params: {
+                      videoId: coursesData.activeTopic?.id,
+                      videoTitle: coursesData.activeTopic?.title,
+                    },
+                  }}
+                />
+              )}
+
+              {selectedNavigator === "Doubts" && (
+                <DoubtsScreen
+                  navigation={navigation}
+                  route={{
+                    params: {
+                      videoId: coursesData.activeTopic?.id,
+                      videoTitle: coursesData.activeTopic?.title,
+                    },
+                  }}
+                />
+              )}
+
+              {selectedNavigator === "Topics" && (
+                <FlatList
+                  ListHeaderComponent={
+                    <View style={styles.topicInfoWrap}>
+                      {coursesData.activeTopic !== null ? (
+                        <Text style={styles.topicTitleTxt}>
+                          {coursesData.activeTopic.title}
+                        </Text>
+                      ) : null}
+                    </View>
+                  }
+                  data={coursesData.data}
+                  renderItem={({ item, index }) => (
                     <ListItem
                       item={{ ...item, ind: index }}
                       activeTopic={
@@ -132,12 +214,13 @@ const CourseDetailScreen = ({ route, navigation }) => {
                           : null
                       }
                     />
-                  );
-                }}
-                showsHorizontalScrollIndicator={false}
-                style={styles.scrollWrap}
-                contentContainerStyle={{ flexGrow: 1 }}
-              />
+                  )}
+                  keyExtractor={(item, index) => `${item.sectionId}-${index}`}
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{ paddingBottom: 20 }} // Added padding
+                  style={{ flex: 1 }} // Important to keep it visible
+                />
+              )}
             </View>
           </>
         ) : (
@@ -165,7 +248,7 @@ const styles = StyleSheet.create({
     height: 250,
   },
   scrollWrap: {
-    flex: 2,
+    flex: 1,
     flexGrow: 1,
   },
   headerWrapper: {
@@ -179,6 +262,30 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontSize: 16,
     fontWeight: "600",
+  },
+  topNavigatorView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginVertical: 20,
+  },
+  navigatorButton: {
+    paddingVertical: 5,
+    width: "30%",
+    backgroundColor: "gray",
+    borderRadius: 20,
+    alignItems: "center",
+  },
+  navigatorText: {
+    color: "#000",
+    fontWeight: "500",
+    fontSize: 16,
+  },
+  activeNavigatorButton: {
+    backgroundColor: "#42BE5C", // Active tab background color
+  },
+  activeNavigatorText: {
+    color: "#fff", // White text for selected tab
   },
 });
 

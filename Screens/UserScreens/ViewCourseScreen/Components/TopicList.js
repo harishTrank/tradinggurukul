@@ -6,7 +6,12 @@ import { changeTopic } from "../../../../VideoRedux/topic.actions";
 import Accordian from "./Accordian";
 import TopicItem from "../../../Components/VideosCase/TopicItem";
 
-const TopicList = ({ topicList, isPreview, navigation, notPurchase = false }) => {
+const TopicList = ({
+  topicList,
+  isPreview,
+  navigation,
+  notPurchase = false,
+}) => {
   const dispatch = useDispatch();
 
   const handlePreview = (topicInfo) => {
@@ -60,7 +65,6 @@ const TopicList = ({ topicList, isPreview, navigation, notPurchase = false }) =>
 
   return (
     <View style={styles.parentContainer}>
-      {/* <Accordian title="Test Acc" data="Test data" /> */}
       <Text style={styles.topicHead}>Course Content</Text>
       {topicList?.[0]?.sectionMeta?.sectionVideos && (
         <Text style={styles.durationsText}>

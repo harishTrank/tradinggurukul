@@ -82,9 +82,7 @@ const MessageItem = ({ message, isSentByCurrentUser, onImagePress }) => {
 
       {/* Timestamp */}
       <Text style={[styles.timestamp, { color: timestampColor }]}>
-        {new Date(
-          message.created_at.replace(" ", "T") + "Z"
-        ).toLocaleTimeString([], {
+        {new Date(message.created_at.replace(" ", "T")).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         })}
@@ -297,14 +295,14 @@ const DoubtsScreen = ({ route, navigation }) => {
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top }]}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
           <Icon name="arrow-back" size={26} color={theme.colors.white} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View>
-          <Text style={styles.headerTitle}>Ask a Doubt</Text>
+          {/* <Text style={styles.headerTitle}>Ask a Doubt</Text> */}
           <Text style={styles.headerSubtitle}>{videoTitle}</Text>
         </View>
       </View>
@@ -406,7 +404,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     color: theme.colors.white,
-    fontSize: 12,
+    fontSize: 14,
     marginLeft: 10,
     width: width - 80,
   },

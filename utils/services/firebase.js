@@ -47,3 +47,27 @@ export async function getFcmToken() {
 
   return token;
 }
+
+export const handleNotificationClick = () => {
+  // App in background and notification is tapped
+  messaging().onNotificationOpenedApp((remoteMessage) => {
+    if (remoteMessage?.data?.screen) {
+      console.log("Notification opened from background:", remoteMessage.data);
+      navigationRef.navigate(remoteMessage.data.screen, {
+        id: remoteMessage.data.id,
+      });
+    }
+  });
+
+  // App completely closed and opened by tapping notification
+  messaging()
+    .getInitialNotification()
+    .then((remoteMessage) => {
+      if (remoteMessage?.data?.screen) {
+        console.log("Notification opened from quit state:", remoteMessage.data);
+        navigationRef.navigate(remoteMessage.data.screen, {
+          id: remoteMessage.data.id,
+        });
+      }
+    });
+};
