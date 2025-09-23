@@ -53,9 +53,7 @@ export const handleNotificationClick = () => {
   messaging().onNotificationOpenedApp((remoteMessage) => {
     if (remoteMessage?.data?.screen) {
       console.log("Notification opened from background:", remoteMessage.data);
-      navigationRef.navigate(remoteMessage.data.screen, {
-        id: remoteMessage.data.id,
-      });
+      navigationRef.navigate("UserScreens");
     }
   });
 
@@ -65,9 +63,7 @@ export const handleNotificationClick = () => {
     .then((remoteMessage) => {
       if (remoteMessage?.data?.screen) {
         console.log("Notification opened from quit state:", remoteMessage.data);
-        navigationRef.navigate(remoteMessage.data.screen, {
-          id: remoteMessage.data.id,
-        });
+        navigationRef.navigate("UserScreens");
       }
     });
 };

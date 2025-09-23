@@ -1,5 +1,5 @@
 // src/screens/Comments/CommentsScreen.js
-// thius too bbebeb
+
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import {
   StyleSheet,
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     color: theme.colors.white,
-    fontSize: 12,
+    fontSize: 14,
     marginLeft: 10,
     width: width - 80,
   },

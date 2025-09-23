@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useState } from "react";
 import {
   View,
@@ -6,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
-  TouchableOpacity,
 } from "react-native";
 import { useSelector } from "react-redux";
 import theme from "../../../utils/theme";
@@ -20,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HLSVideoPlayer from "../../Components/VideosCase/HLSVideoPlayer";
 import CommentsScreen from "../CommentsScreen";
 import DoubtsScreen from "../DoubtsScreen";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 const ListItem = (props) => {
   return (
@@ -29,9 +28,40 @@ const ListItem = (props) => {
   );
 };
 
+const TopicsTab = ({ coursesData }) => {
+  return (
+    <FlatList
+      ListHeaderComponent={
+        <View style={styles.topicInfoWrap}>
+          {coursesData.activeTopic !== null ? (
+            <Text style={styles.topicTitleTxt}>
+              {coursesData.activeTopic.title}
+            </Text>
+          ) : null}
+        </View>
+      }
+      data={coursesData.data}
+      renderItem={({ item, index }) => (
+        <ListItem
+          item={{ ...item, ind: index }}
+          activeTopic={
+            item.sectionId === coursesData.activeTopic.sectionId
+              ? coursesData.activeTopic.id
+              : null
+          }
+        />
+      )}
+      keyExtractor={(item, index) => `${item.sectionId}-${index}`}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 20 }}
+      style={{ flex: 1 }}
+    />
+  );
+};
+
 const CourseDetailScreen = ({ route, navigation }) => {
+  const Tab = createMaterialTopTabNavigator();
   const [currentUser] = useAtom(userDetailsGlobal);
-  const [selectedNavigator, setSelectedNavigator] = useState("Topics");
   const topic = useSelector((state) => state.topic);
 
   const [coursesData, setCoursesData] = React.useState({
@@ -112,116 +142,49 @@ const CourseDetailScreen = ({ route, navigation }) => {
         coursesData.data.length > 0 ? (
           <>
             <View style={styles.playerWrap}>{playerRender()}</View>
-            <View style={styles.topNavigatorView}>
-              <TouchableOpacity
-                style={[
-                  styles.navigatorButton,
-                  selectedNavigator === "Topics" &&
-                    styles.activeNavigatorButton,
-                ]}
-                onPress={() => setSelectedNavigator("Topics")}
-              >
-                <Text
-                  style={[
-                    styles.navigatorText,
-                    selectedNavigator === "Topics" &&
-                      styles.activeNavigatorText,
-                  ]}
-                >
-                  Topics
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.navigatorButton,
-                  selectedNavigator === "Comments" &&
-                    styles.activeNavigatorButton,
-                ]}
-                onPress={() => setSelectedNavigator("Comments")}
-              >
-                <Text
-                  style={[
-                    styles.navigatorText,
-                    selectedNavigator === "Comments" &&
-                      styles.activeNavigatorText,
-                  ]}
-                >
-                  Comments
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.navigatorButton,
-                  selectedNavigator === "Doubts" &&
-                    styles.activeNavigatorButton,
-                ]}
-                onPress={() => setSelectedNavigator("Doubts")}
-              >
-                <Text
-                  style={[
-                    styles.navigatorText,
-                    selectedNavigator === "Doubts" &&
-                      styles.activeNavigatorText,
-                  ]}
-                >
-                  Doubts
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.scrollWrap}>
-              {selectedNavigator === "Comments" && (
-                <CommentsScreen
-                  navigation={navigation}
-                  route={{
-                    params: {
-                      videoId: coursesData.activeTopic?.id,
-                      videoTitle: coursesData.activeTopic?.title,
-                    },
-                  }}
-                />
-              )}
+            <Tab.Navigator
+              screenOptions={{
+                tabBarActiveTintColor: "#fff",
+                tabBarInactiveTintColor: "#000",
+                tabBarStyle: {
+                  backgroundColor: "gray",
+                },
+                tabBarIndicatorStyle: { backgroundColor: "#42BE5C", height: 3 },
+                tabBarLabelStyle: { fontSize: 16, fontWeight: "500" },
+              }}
+            >
+              <Tab.Screen name="Topics">
+                {() => <TopicsTab coursesData={coursesData} />}
+              </Tab.Screen>
 
-              {selectedNavigator === "Doubts" && (
-                <DoubtsScreen
-                  navigation={navigation}
-                  route={{
-                    params: {
-                      videoId: coursesData.activeTopic?.id,
-                      videoTitle: coursesData.activeTopic?.title,
-                    },
-                  }}
-                />
-              )}
+              <Tab.Screen name="Comments">
+                {() => (
+                  <CommentsScreen
+                    navigation={navigation}
+                    route={{
+                      params: {
+                        videoId: coursesData.activeTopic?.id,
+                        videoTitle: coursesData.activeTopic?.title,
+                      },
+                    }}
+                  />
+                )}
+              </Tab.Screen>
 
-              {selectedNavigator === "Topics" && (
-                <FlatList
-                  ListHeaderComponent={
-                    <View style={styles.topicInfoWrap}>
-                      {coursesData.activeTopic !== null ? (
-                        <Text style={styles.topicTitleTxt}>
-                          {coursesData.activeTopic.title}
-                        </Text>
-                      ) : null}
-                    </View>
-                  }
-                  data={coursesData.data}
-                  renderItem={({ item, index }) => (
-                    <ListItem
-                      item={{ ...item, ind: index }}
-                      activeTopic={
-                        item.sectionId === coursesData.activeTopic.sectionId
-                          ? coursesData.activeTopic.id
-                          : null
-                      }
-                    />
-                  )}
-                  keyExtractor={(item, index) => `${item.sectionId}-${index}`}
-                  showsVerticalScrollIndicator={false}
-                  contentContainerStyle={{ paddingBottom: 20 }} // Added padding
-                  style={{ flex: 1 }} // Important to keep it visible
-                />
-              )}
-            </View>
+              <Tab.Screen name="Doubts">
+                {() => (
+                  <DoubtsScreen
+                    navigation={navigation}
+                    route={{
+                      params: {
+                        videoId: coursesData.activeTopic?.id,
+                        videoTitle: coursesData.activeTopic?.title,
+                      },
+                    }}
+                  />
+                )}
+              </Tab.Screen>
+            </Tab.Navigator>
           </>
         ) : (
           <View style={{ padding: 16, alignItems: "center" }}>

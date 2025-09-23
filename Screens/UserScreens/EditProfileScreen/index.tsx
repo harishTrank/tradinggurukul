@@ -216,6 +216,12 @@ const EditProfileScreen = () => {
       })
       .catch((err: any) => {
         console.log("error", JSON.stringify(err));
+        Toast.show({
+          type: "error",
+          text1: "Wrong Password entered",
+        });
+        setDeleteModalOpen(false);
+        setModalPasswordOpen(false);
       });
   };
 
