@@ -24,6 +24,7 @@ import { userDetailsGlobal } from "../../../JotaiStore";
 import {
   useBannersCall,
   useCustomProductsCall,
+  useFreeProductsCall,
   useGetCategoryCall,
 } from "../../../hooks/Others/query";
 import FullScreenLoader from "../../Components/FullScreenLoader";
@@ -49,13 +50,15 @@ const HomeScreenComponent = () => {
       sort: "popularity",
     },
   });
+  const freeCourseApi: any = useFreeProductsCall();
   // --- Start of Added Code ---
 
   // Combine the loading states of all relevant APIs.
   const isAnyApiLoading =
     bannersApi?.isLoading ||
     categoriesApi?.isLoading ||
-    topSearchApi?.isLoading;
+    topSearchApi?.isLoading ||
+    freeCourseApi;
 
   useEffect(() => {
     let timeoutId: any = null;
@@ -96,6 +99,11 @@ const HomeScreenComponent = () => {
   const handleCardPress = (val: any, type: any) => {
     if (type === "Top Search") {
       navigation.navigate("ViewCourseScreen", { courseId: val });
+    } else if (type === "Free Course") {
+      navigation.navigate("ViewCourseScreen", {
+        courseId: val,
+        freeCourse: true,
+      });
     } else {
       navigation.navigate("SearchCourseScreen", { searchText: val });
     }
@@ -153,13 +161,15 @@ const HomeScreenComponent = () => {
         {/* --- Image Slider --- */}
         <ImageSlider navigation={navigation} data={bannersApi?.data?.banner} />
 
-        <View>
-          <SectionHeader
-            title="Upcoming Event"
-            onSeeMore={() => navigation.navigate("Events")}
-          />
-          <EventCard event={dashboardEvent} />
-        </View>
+        {dashboardEvent && (
+          <View>
+            <SectionHeader
+              title="Upcoming Event"
+              onSeeMore={() => navigation.navigate("Events")}
+            />
+            <EventCard event={dashboardEvent} />
+          </View>
+        )}
         {/* --- Popular Categories --- */}
         <SectionHeader
           title={`Popular category`}
@@ -185,7 +195,7 @@ const HomeScreenComponent = () => {
 
         {/* --- Most Watching --- */}
         <SectionHeader
-          title="Top Searches"
+          title="All Courses"
           onSeeMore={() => handleSeeMore("Top Search")}
         />
         <FlatList
@@ -198,6 +208,29 @@ const HomeScreenComponent = () => {
               regular_price={item?.regular_price}
               tag={item?.categories?.[0]?.name}
               onPress={() => handleCardPress(item?.id, "Top Search")}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalListPadding}
+        />
+
+        {/* --- Free Courses --- */}
+        <SectionHeader
+          title="Free Courses"
+          onSeeMore={() => handleSeeMore("Top Search")}
+        />
+        <FlatList
+          data={freeCourseApi?.data?.products || []}
+          renderItem={({ item }) => (
+            <CourseCard
+              title={item?.name}
+              imageUrl={item?.image}
+              price={item?.price}
+              regular_price={item?.regular_price}
+              tag={item?.categories?.[0]?.name}
+              onPress={() => handleCardPress(item?.id, "Free Course")}
             />
           )}
           keyExtractor={(item) => item.id}

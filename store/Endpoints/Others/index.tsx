@@ -22,6 +22,13 @@ export const othersEndpoints = {
       uri: "/custom-products",
     },
   },
+  freeProducts: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/freezone",
+    },
+  },
   postsBlogAndCommunity: {
     v1: {
       ...defaults.methods.GET,

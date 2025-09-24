@@ -63,6 +63,7 @@ const tagsStyles: any = {
 const ViewCourseScreen = ({ navigation, route }: any) => {
   const insets = useSafeAreaInsets();
   const { courseId } = route.params;
+  const freeCourse = route?.params?.freeCourse || false;
   const [course, setCourse]: any = useState(null);
   const [isPurchased, setIsPurchased] = useState(false);
   const [userDetails]: any = useAtom(userDetailsGlobal);
@@ -112,7 +113,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
       ?.then((res: any) => {
         setIsPurchased(res?.purchased);
         setCourse(res);
-        const subId =
+        let subId =
           res?.courseData?.find((item: any) => item?.id === res?.id)
             ?.subscriptionId || undefined;
         if (res?.purchased && res?.id && subId) {
@@ -362,32 +363,34 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
           )}
         </View>
       </ScrollView>
-      <View style={bottomBarStyle}>
-        <Text style={styles.priceText}>₹{course?.price}</Text>
+      {!freeCourse && (
+        <View style={bottomBarStyle}>
+          <Text style={styles.priceText}>₹{course?.price}</Text>
 
-        <View style={styles.buttonRapper}>
-          <TouchableOpacity
-            style={styles.addToCartButton}
-            onPress={() => payWithRazorpay(userDetails, course?.price)}
-            disabled={loading || cartItemListApi?.isLoading}
-          >
-            <Text style={styles.addToCartButtonText}>Buy Now</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonRapper}>
+            <TouchableOpacity
+              style={styles.addToCartButton}
+              onPress={() => payWithRazorpay(userDetails, course?.price)}
+              disabled={loading || cartItemListApi?.isLoading}
+            >
+              <Text style={styles.addToCartButtonText}>Buy Now</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.addToCartButton}
-            onPress={handleAddToCart}
-          >
-            {addTocartApiCall?.isLoading ? (
-              <ActivityIndicator size={"small"} color={theme.colors.white} />
-            ) : (
-              <Text style={styles.addToCartButtonText}>
-                {isInCart ? "Go To Cart" : "Add To Cart"}
-              </Text>
-            )}
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.addToCartButton}
+              onPress={handleAddToCart}
+            >
+              {addTocartApiCall?.isLoading ? (
+                <ActivityIndicator size={"small"} color={theme.colors.white} />
+              ) : (
+                <Text style={styles.addToCartButtonText}>
+                  {isInCart ? "Go To Cart" : "Add To Cart"}
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
     </>
   );
 

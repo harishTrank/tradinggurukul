@@ -17,6 +17,11 @@ export const customProductsCall = ({ query }: any) =>
     query,
   });
 
+export const freeProductsCall = () =>
+  callApi({
+    uriEndPoint: othersEndpoints.freeProducts.v1,
+  });
+
 export const postsBlogAndCommunityCall = ({ query }: any) =>
   callApi({
     uriEndPoint: othersEndpoints.postsBlogAndCommunity.v1,

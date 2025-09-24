@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   bannersCall,
   customProductsCall,
+  freeProductsCall,
   getAllCommentsApi,
   getallContent,
   getAllDoubtsApi,
@@ -13,6 +14,9 @@ import {
 
 export const useCustomProductsCall = (payload: any) =>
   useQuery(["customProductsCall", payload], () => customProductsCall(payload));
+
+export const useFreeProductsCall = () =>
+  useQuery(["customProductsCall"], () => freeProductsCall());
 
 export const useBannersCall = () =>
   useQuery(["useBannersCall"], () => bannersCall());
@@ -43,5 +47,3 @@ export const useGetNotificationListApi = (payload: any) =>
   useQuery(["getNotificationListApi", payload], () =>
     getNotificationListApi(payload)
   );
-
-  

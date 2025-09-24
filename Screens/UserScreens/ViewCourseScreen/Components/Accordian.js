@@ -14,7 +14,7 @@ import theme from "../../../../utils/theme";
 const Accordian = (props) => {
   const [accStatus, setAccStatus] = React.useState({
     //data: props.data,
-    expanded: false,
+    expanded: true,
   });
 
   React.useEffect(() => {

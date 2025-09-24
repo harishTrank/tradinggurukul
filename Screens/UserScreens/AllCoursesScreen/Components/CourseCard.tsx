@@ -46,8 +46,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ item, onPress }: any) => {
           <Text style={styles.tag}>{item?.categories?.[0]?.name}</Text>
         </View>
         <View style={styles.priceBox}>
-          <Text style={styles.price}>₹{item?.price}</Text>
-          <Text style={styles.regularPrice}>₹{item?.regular_price}</Text>
+          {item?.price && <Text style={styles.price}>₹{item?.price}</Text>}
+          {item?.regular_price && (
+            <Text style={styles.regularPrice}>₹{item?.regular_price}</Text>
+          )}
         </View>
       </View>
     </TouchableOpacity>

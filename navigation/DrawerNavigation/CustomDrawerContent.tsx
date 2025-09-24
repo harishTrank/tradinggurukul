@@ -28,6 +28,7 @@ import { supportDetailsApi } from "../../store/Services/Others"; // Adjust path 
 
 const drawerItems = [
   { label: "Home", iconName: "home", navigateTo: "Home" },
+  { label: "My Courses", iconName: "book-open", navigateTo: "MyCourses" },
   { label: "All Courses", iconName: "book-open", navigateTo: "AllCourses" },
   { label: "Blog", iconName: "edit-3", navigateTo: "Blog" },
   { label: "Events", iconName: "calendar", navigateTo: "Events" },
@@ -224,6 +225,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 40,
   },
   footerTitle: {
     fontSize: 16,

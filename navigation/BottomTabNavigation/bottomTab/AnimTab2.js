@@ -28,7 +28,7 @@ const TabArr = [
   },
   {
     route: "Courses",
-    label: "Courses",
+    label: "My Courses",
     type: Icons.Feather,
     icon: "book-open",
     component: MyCoursesScreen,

@@ -29,6 +29,7 @@ const ListItem = (props) => {
 };
 
 const TopicsTab = ({ coursesData }) => {
+  console.log("gggggggg", coursesData);
   return (
     <FlatList
       ListHeaderComponent={

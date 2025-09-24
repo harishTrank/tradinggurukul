@@ -28,11 +28,13 @@ const CourseCard = ({
         {title}
       </Text>
       <View style={styles.priceBox}>
-        <Text style={styles.price}>₹{price}</Text>
-        <Text style={styles.regularPrice}>₹{regular_price}</Text>
+        {price && <Text style={styles.price}>₹{price}</Text>}
+        {regular_price && (
+          <Text style={styles.regularPrice}>₹{regular_price}</Text>
+        )}
       </View>
       <View style={styles.ratingContainer}>
-        <Text style={styles.tag}>{tag}</Text>
+        {tag && <Text style={styles.tag}>{tag}</Text>}
       </View>
     </TouchableOpacity>
   );

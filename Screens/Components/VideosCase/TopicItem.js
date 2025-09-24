@@ -21,7 +21,7 @@ const TopicItem = ({
   onDownloadPress,
   onCommentPress,
   onDoubtPress,
-  notPurchase
+  notPurchase,
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
