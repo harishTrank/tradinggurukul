@@ -9,7 +9,6 @@ import {
   FlatList,
   Dimensions,
   Alert,
-  TouchableOpacity, // Added Alert
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import HomeHeader from "../../Components/HomeHeader";
@@ -122,7 +121,6 @@ const HomeScreenComponent = () => {
         console.log("dashboard err", err);
       });
   }, []);
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -217,10 +215,7 @@ const HomeScreenComponent = () => {
         />
 
         {/* --- Free Courses --- */}
-        <SectionHeader
-          title="Free Courses"
-          onSeeMore={() => handleSeeMore("Top Search")}
-        />
+        <SectionHeader title="Free Courses" onSeeMore={false} />
         <FlatList
           data={freeCourseApi?.data?.products || []}
           renderItem={({ item }) => (

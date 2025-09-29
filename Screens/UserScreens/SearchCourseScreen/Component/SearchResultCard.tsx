@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import theme from "../../../../utils/theme";
 import dayjs from "dayjs";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { Platform } from "react-native";
 
 const SearchResultCard = ({ item, onPress }: any) => {
   return (
@@ -23,12 +24,14 @@ const SearchResultCard = ({ item, onPress }: any) => {
           {item.name}
         </Text>
 
-        <View style={styles.infoRow}>
-          <Text style={styles.currentPrice}>₹{item?.price}</Text>
-          {item?.regular_price && item?.regular_price !== item?.price && (
-            <Text style={styles.regularPrice}>₹{item?.regular_price}</Text>
-          )}
-        </View>
+        {Platform.OS === "android" && (
+          <View style={styles.infoRow}>
+            <Text style={styles.currentPrice}>₹{item?.price}</Text>
+            {item?.regular_price && item?.regular_price !== item?.price && (
+              <Text style={styles.regularPrice}>₹{item?.regular_price}</Text>
+            )}
+          </View>
+        )}
 
         <View style={styles.infoRow}>
           <AntDesign

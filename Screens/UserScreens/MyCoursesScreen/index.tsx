@@ -50,9 +50,17 @@ const MyCoursesScreen = ({ navigation }: any) => {
   );
 
   const renderSeparator = () => <View style={styles.separator} />;
+  const parent = navigation.getParent();
+
+  const isFromDrawer =
+    parent?.getState?.()?.type === "drawer" ||
+    parent?.getState?.()?.routeNames?.includes("DrawerHome");
+  console.log("isFromDrawer", isFromDrawer);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[styles.safeArea, { paddingTop: isFromDrawer ? 0 : 60 }]}
+    >
       <StatusBar style="dark" />
       <HomeHeader
         onMenuPress={navigation.toggleDrawer}

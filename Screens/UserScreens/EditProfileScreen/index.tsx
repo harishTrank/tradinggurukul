@@ -410,6 +410,7 @@ const EditProfileScreen = () => {
                         <View style={styles.passwordInputView}>
                           <TextInput
                             placeholder="Enter your account password"
+                            placeholderTextColor="#000"
                             secureTextEntry={true}
                             style={styles.passwordInput}
                             onChangeText={setPassword}
@@ -622,6 +623,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   passwordInputView: {
+    color: "#000",
+    fontSize: 14,
     width: "100%",
     borderBottomWidth: 1,
     borderColor: "#000",

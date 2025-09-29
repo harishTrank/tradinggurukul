@@ -345,6 +345,7 @@ const DoubtsScreen = ({ route, navigation }) => {
           <TextInput
             style={styles.textInput}
             placeholder="Type your doubt..."
+            placeholderTextColor="#000"
             value={newMessage}
             onChangeText={setNewMessage}
             multiline
@@ -455,6 +456,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === "ios" ? 10 : 8,
     fontSize: 16,
     maxHeight: 120,
+    color: "#000",
   },
   sendButton: {
     marginLeft: 10,

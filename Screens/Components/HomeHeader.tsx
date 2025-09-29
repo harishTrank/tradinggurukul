@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Image, TouchableOpacity, StyleSheet, Text } from "react-native"; // <-- Import Text
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  Platform,
+} from "react-native"; // <-- Import Text
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import theme from "../../utils/theme";
@@ -50,7 +57,7 @@ const HomeHeader = ({
       )}
       <TouchableOpacity
         onPress={() => {
-            navigation.navigate("Home", {screen:"HomeBottom"});
+          navigation.navigate("Home", { screen: "HomeBottom" });
         }}
       >
         <Image
@@ -81,13 +88,15 @@ const HomeHeader = ({
               {renderNotificationBadge()}
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
-              <Ionicons
-                name="cart-outline"
-                size={26}
-                color={theme.colors.black}
-              />
-            </TouchableOpacity>
+            {Platform.OS === "android" && (
+              <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
+                <Ionicons
+                  name="cart-outline"
+                  size={26}
+                  color={theme.colors.black}
+                />
+              </TouchableOpacity>
+            )}
           </>
         )}
       </View>

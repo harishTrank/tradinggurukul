@@ -6,9 +6,11 @@ const SectionHeader = ({ title, onSeeMore }: any) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      <TouchableOpacity onPress={onSeeMore}>
-        <Text style={styles.seeMore}>see All</Text>
-      </TouchableOpacity>
+      {onSeeMore && (
+        <TouchableOpacity onPress={onSeeMore}>
+          <Text style={styles.seeMore}>see All</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

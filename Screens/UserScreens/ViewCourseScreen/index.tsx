@@ -12,6 +12,7 @@ import {
   Alert,
   Dimensions,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import FeatherIcon from "react-native-vector-icons/Feather";
@@ -196,7 +197,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
   const bottomBarStyle = useMemo(
     () => ({
       ...styles.bottomBarBase,
-      paddingBottom: Platform.OS === "ios" ? insets.bottom || 15 : 15,
+      paddingBottom: Platform.OS === "ios" ? insets.bottom || 50 : 50,
     }),
     [insets.bottom]
   );
@@ -306,6 +307,17 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
       });
   };
 
+  const openWhatsApp = () => {
+    const phoneNumber = "+918168223751";
+    const message = "Hello, I am interested in your course.";
+    const url = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
+      message
+    )}`;
+    Linking.openURL(url).catch(() => {
+      alert("Make sure WhatsApp is installed on your device");
+    });
+  };
+
   const renderNotPurchasedView = () => (
     <>
       <ScrollView
@@ -330,16 +342,12 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
 
         <View style={styles.contentPadding}>
           <Text style={styles.courseTitleMain}>{course?.name}</Text>
-          <View style={styles.priceTagBox}>
-            <Text style={styles.priceTag}>₹{course?.price}</Text>
-            <Text style={styles.regularPrice}>₹{course?.regular_price}</Text>
-          </View>
-          {/* <View style={styles.priceTagBox}>
-            <AntDesign name="earth" size={20} color={theme.colors.black} />
-            <Text style={styles.updatedDateText}>{`Updated on ${dayjs(
-              course?.date_modified
-            ).format("DD-MM-YYYY")}`}</Text>
-          </View> */}
+          {Platform.OS === "android" && (
+            <View style={styles.priceTagBox}>
+              <Text style={styles.priceTag}>₹{course?.price}</Text>
+              <Text style={styles.regularPrice}>₹{course?.regular_price}</Text>
+            </View>
+          )}
           <RenderHTML
             contentWidth={width}
             source={{
@@ -363,33 +371,51 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
           )}
         </View>
       </ScrollView>
-      {!freeCourse && (
-        <View style={bottomBarStyle}>
-          <Text style={styles.priceText}>₹{course?.price}</Text>
-
-          <View style={styles.buttonRapper}>
-            <TouchableOpacity
-              style={styles.addToCartButton}
-              onPress={() => payWithRazorpay(userDetails, course?.price)}
-              disabled={loading || cartItemListApi?.isLoading}
-            >
-              <Text style={styles.addToCartButtonText}>Buy Now</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.addToCartButton}
-              onPress={handleAddToCart}
-            >
-              {addTocartApiCall?.isLoading ? (
-                <ActivityIndicator size={"small"} color={theme.colors.white} />
-              ) : (
-                <Text style={styles.addToCartButtonText}>
-                  {isInCart ? "Go To Cart" : "Add To Cart"}
-                </Text>
-              )}
-            </TouchableOpacity>
-          </View>
+      {Platform.OS === "ios" ? (
+        <View style={[bottomBarStyle, styles.whatsappChatBox]}>
+          <Text style={styles.lockText}>
+            Want to unlock this course? Tap below to chat with us and get
+            exclusive access!
+          </Text>
+          <TouchableOpacity
+            style={styles.whatsappButton}
+            onPress={openWhatsApp}
+          >
+            <Text style={styles.whatsappButtonText}>
+              Chat with us on WhatsApp
+            </Text>
+          </TouchableOpacity>
         </View>
+      ) : (
+        // Android view (only if course is NOT free)
+        !freeCourse && (
+          <View style={bottomBarStyle}>
+            <Text style={styles.priceText}>₹{course?.price}</Text>
+
+            <View style={styles.buttonRapper}>
+              <TouchableOpacity
+                style={styles.addToCartButton}
+                onPress={() => payWithRazorpay(userDetails, course?.price)}
+                disabled={loading || cartItemListApi?.isLoading}
+              >
+                <Text style={styles.addToCartButtonText}>Buy Now</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.addToCartButton}
+                onPress={handleAddToCart}
+              >
+                {addTocartApiCall?.isLoading ? (
+                  <ActivityIndicator size="small" color={theme.colors.white} />
+                ) : (
+                  <Text style={styles.addToCartButtonText}>
+                    {isInCart ? "Go To Cart" : "Add To Cart"}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
       )}
     </>
   );
@@ -522,7 +548,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 10,
     // paddingBottom is now dynamic via bottomBarStyle
     backgroundColor: theme.colors.white,
     borderTopWidth: 1,
@@ -563,6 +589,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 24,
     paddingTop: 8,
+  },
+  whatsappChatBox: {
+    flexDirection: "column",
+    gap: 20,
+  },
+  lockText: {
+    color: "#000",
+    fontWeight: "600",
+    textAlign: "center",
+    fontSize: 16,
+  },
+  whatsappButton: {
+    backgroundColor: "#25D366",
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  whatsappButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

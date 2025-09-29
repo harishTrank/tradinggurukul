@@ -5,6 +5,8 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useSelector } from "react-redux";
 import theme from "../../../utils/theme";
@@ -29,7 +31,6 @@ const ListItem = (props) => {
 };
 
 const TopicsTab = ({ coursesData }) => {
-  console.log("gggggggg", coursesData);
   return (
     <FlatList
       ListHeaderComponent={
@@ -56,6 +57,7 @@ const TopicsTab = ({ coursesData }) => {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 20 }}
       style={{ flex: 1 }}
+      keyboardShouldPersistTaps="handled"
     />
   );
 };
@@ -143,49 +145,58 @@ const CourseDetailScreen = ({ route, navigation }) => {
         coursesData.data.length > 0 ? (
           <>
             <View style={styles.playerWrap}>{playerRender()}</View>
-            <Tab.Navigator
-              screenOptions={{
-                tabBarActiveTintColor: "#fff",
-                tabBarInactiveTintColor: "#000",
-                tabBarStyle: {
-                  backgroundColor: "gray",
-                },
-                tabBarIndicatorStyle: { backgroundColor: "#42BE5C", height: 3 },
-                tabBarLabelStyle: { fontSize: 16, fontWeight: "500" },
-              }}
+
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
-              <Tab.Screen name="Topics">
-                {() => <TopicsTab coursesData={coursesData} />}
-              </Tab.Screen>
+              <Tab.Navigator
+                screenOptions={{
+                  tabBarActiveTintColor: "#fff",
+                  tabBarInactiveTintColor: "#000",
+                  tabBarStyle: {
+                    backgroundColor: "gray",
+                  },
+                  tabBarIndicatorStyle: {
+                    backgroundColor: "#42BE5C",
+                    height: 3,
+                  },
+                  tabBarLabelStyle: { fontSize: 16, fontWeight: "500" },
+                }}
+              >
+                <Tab.Screen name="Topics">
+                  {() => <TopicsTab coursesData={coursesData} />}
+                </Tab.Screen>
 
-              <Tab.Screen name="Comments">
-                {() => (
-                  <CommentsScreen
-                    navigation={navigation}
-                    route={{
-                      params: {
-                        videoId: coursesData.activeTopic?.id,
-                        videoTitle: coursesData.activeTopic?.title,
-                      },
-                    }}
-                  />
-                )}
-              </Tab.Screen>
+                <Tab.Screen name="Comments">
+                  {() => (
+                    <CommentsScreen
+                      navigation={navigation}
+                      route={{
+                        params: {
+                          videoId: coursesData.activeTopic?.id,
+                          videoTitle: coursesData.activeTopic?.title,
+                        },
+                      }}
+                    />
+                  )}
+                </Tab.Screen>
 
-              <Tab.Screen name="Doubts">
-                {() => (
-                  <DoubtsScreen
-                    navigation={navigation}
-                    route={{
-                      params: {
-                        videoId: coursesData.activeTopic?.id,
-                        videoTitle: coursesData.activeTopic?.title,
-                      },
-                    }}
-                  />
-                )}
-              </Tab.Screen>
-            </Tab.Navigator>
+                <Tab.Screen name="Doubts">
+                  {() => (
+                    <DoubtsScreen
+                      navigation={navigation}
+                      route={{
+                        params: {
+                          videoId: coursesData.activeTopic?.id,
+                          videoTitle: coursesData.activeTopic?.title,
+                        },
+                      }}
+                    />
+                  )}
+                </Tab.Screen>
+              </Tab.Navigator>
+            </KeyboardAvoidingView>
           </>
         ) : (
           <View style={{ padding: 16, alignItems: "center" }}>

@@ -229,37 +229,43 @@ const CommentsScreen = ({ route, navigation }) => {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
+        keyboardShouldPersistTaps="handled"
       />
     );
   };
 
   return (
-    <View style={styles.container}>
-      {(addCommentApiCall.isLoading || addCommentReplyApiCall.isLoading) && (
-        <FullScreenLoader />
-      )}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? insets.top + 60 : 0} // offset to push content above keyboard
+    >
+      <View style={styles.container}>
+        {(addCommentApiCall.isLoading || addCommentReplyApiCall.isLoading) && (
+          <FullScreenLoader />
+        )}
 
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top }]}>
-        {/* <TouchableOpacity
+        {/* Header */}
+        <View style={[styles.header, { paddingTop: insets.top }]}>
+          {/* <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
           <Icon name="arrow-back" size={26} color={theme.colors.white} />
         </TouchableOpacity> */}
-        <View>
-          {/* <Text style={styles.headerTitle}>Comments</Text> */}
-          <Text style={styles.headerSubtitle}>{videoTitle}</Text>
+          <View>
+            {/* <Text style={styles.headerTitle}>Comments</Text> */}
+            <Text style={styles.headerSubtitle}>{videoTitle}</Text>
+          </View>
         </View>
-      </View>
 
-      {/* Content */}
-      {renderContent()}
+        {/* Content */}
+        {renderContent()}
 
-      {/* Input */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+        {/* Input */}
+        {/* <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        > */}
         <View
           style={[
             styles.inputContainer,
@@ -281,6 +287,7 @@ const CommentsScreen = ({ route, navigation }) => {
               ref={textInputRef}
               style={styles.textInput}
               placeholder="Add a public comment..."
+              placeholderTextColor="#000"
               value={newComment}
               onChangeText={setNewComment}
               multiline
@@ -301,8 +308,9 @@ const CommentsScreen = ({ route, navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
-    </View>
+        {/* </KeyboardAvoidingView> */}
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -397,6 +405,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 16,
     maxHeight: 120,
+    color: "#000",
   },
   sendButton: {
     marginLeft: 10,
