@@ -7,12 +7,15 @@ import MyCourseListItem from "./Components/MyCourseListItem";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import { getMyCoursesCall } from "../../../store/Services/Others";
+import FullScreenLoader from "../../Components/FullScreenLoader";
 
 const MyCoursesScreen = ({ navigation }: any) => {
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const [myCoursesData, setMyCoursesData]: any = useState([]);
+  const [loading, setLoading]: any = useState(false);
 
   const getAllCoursesManager = () => {
+    setLoading(true);
     getMyCoursesCall({
       query: {
         user_id: userDetails?.id,
@@ -23,7 +26,8 @@ const MyCoursesScreen = ({ navigation }: any) => {
           setMyCoursesData(res?.demoData);
         }
       })
-      ?.catch((err: any) => console.log("err", err));
+      ?.catch((err: any) => console.log("err", err))
+      .finally(() => setLoading(false));
   };
   useEffect(() => {
     return navigation.addListener("focus", () => {
@@ -55,13 +59,13 @@ const MyCoursesScreen = ({ navigation }: any) => {
   const isFromDrawer =
     parent?.getState?.()?.type === "drawer" ||
     parent?.getState?.()?.routeNames?.includes("DrawerHome");
-  console.log("isFromDrawer", isFromDrawer);
 
   return (
     <SafeAreaView
       style={[styles.safeArea, { paddingTop: isFromDrawer ? 0 : 60 }]}
     >
       <StatusBar style="dark" />
+      {loading && <FullScreenLoader />}
       <HomeHeader
         onMenuPress={navigation.toggleDrawer}
         onSearchPress={() => navigation.navigate("SearchCourseScreen")}

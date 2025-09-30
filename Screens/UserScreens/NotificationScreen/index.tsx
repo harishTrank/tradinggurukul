@@ -8,6 +8,7 @@ import {
   Platform,
   ActivityIndicator,
   Button,
+  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import theme from "../../../utils/theme";
@@ -21,6 +22,7 @@ import {
 } from "../../../JotaiStore";
 import NotificationItem, { Notification } from "./Component/NotificationItem";
 import { readAllNotificationApi } from "../../../store/Services/Others";
+import FeatherIcon from "react-native-vector-icons/Feather";
 
 const PER_PAGE = 15;
 
@@ -158,11 +160,18 @@ const NotificationScreen = () => {
         Platform.OS === "android" && { paddingTop: insets.top },
       ]}
     >
-      <HomeHeader
+      {/* <HomeHeader
         menu={false}
         onCartPress={() => navigation.navigate("CartScreen")}
-      />
-      <Text style={styles.screenTitle}>Notifications</Text>
+      /> */}
+      <View style={styles.flexView}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <FeatherIcon name="arrow-left" size={24} color={theme.colors.black} />
+        </TouchableOpacity>
+
+        <Text style={styles.screenTitle}>Notifications</Text>
+        <View style={{ width: 30 }}></View>
+      </View>
 
       {notificationListApi.isLoading && page === 1 && (
         <View style={styles.fullScreenLoaderContainer}>
@@ -234,6 +243,12 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
     marginBottom: 20,
+  },
+  flexView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
 });
 

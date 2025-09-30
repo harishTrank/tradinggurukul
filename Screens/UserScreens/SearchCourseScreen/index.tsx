@@ -24,7 +24,7 @@ import { useCustomSearchCourseCall } from "../../../hooks/Others/mutation";
 
 const topSearchesData = [
   "Stock Market",
-  "Crypto Currency",
+  "Crypto Trading",
   "Digital Marketing",
   "Graphic Designing",
 ];
@@ -131,13 +131,13 @@ const SearchCourseScreen = ({ navigation, route }: any) => {
       ]}
     >
       <StatusBar style="dark" />
-      <HomeHeader
+      {/* <HomeHeader
         onMenuPress={() => navigation.toggleDrawer()}
         onSearchPress={() => console.log("Notifications pressed")}
         onCartPress={() => navigation.navigate("CartScreen")}
         navigation={navigation}
         menu={false}
-      />
+      /> */}
 
       <View style={styles.searchSection}>
         <TouchableOpacity
@@ -178,13 +178,13 @@ const SearchCourseScreen = ({ navigation, route }: any) => {
         >
           <Text style={styles.sectionTitle}>Top searches</Text>
           <View style={styles.topSearchesContainer}>
-            {topSearchesData.map((item, index) => (
+            {categoriesApi?.data.slice(0, 5).map((item: any, index: any) => (
               <TouchableOpacity
                 key={index}
                 style={styles.chip}
-                onPress={() => handleTopSearchPress(item)}
+                onPress={() => handleTopSearchPress(item.name)}
               >
-                <Text style={styles.chipText}>{item}</Text>
+                <Text style={styles.chipText}>{item.name}</Text>
               </TouchableOpacity>
             ))}
           </View>

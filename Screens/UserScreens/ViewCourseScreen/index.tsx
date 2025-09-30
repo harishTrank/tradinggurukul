@@ -371,52 +371,54 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
           )}
         </View>
       </ScrollView>
-      {Platform.OS === "ios" ? (
-        <View style={[bottomBarStyle, styles.whatsappChatBox]}>
-          <Text style={styles.lockText}>
-            Want to unlock this course? Tap below to chat with us and get
-            exclusive access!
-          </Text>
-          <TouchableOpacity
-            style={styles.whatsappButton}
-            onPress={openWhatsApp}
-          >
-            <Text style={styles.whatsappButtonText}>
-              Chat with us on WhatsApp
-            </Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        // Android view (only if course is NOT free)
-        !freeCourse && (
-          <View style={bottomBarStyle}>
-            <Text style={styles.priceText}>₹{course?.price}</Text>
-
-            <View style={styles.buttonRapper}>
+      {Platform.OS === "ios"
+        ? !freeCourse && (
+            <View style={[bottomBarStyle, styles.whatsappChatBox]}>
+              <Text style={styles.lockText}>
+                Want to unlock this course? Tap below to chat with us and get
+                exclusive access!
+              </Text>
               <TouchableOpacity
-                style={styles.addToCartButton}
-                onPress={() => payWithRazorpay(userDetails, course?.price)}
-                disabled={loading || cartItemListApi?.isLoading}
+                style={styles.whatsappButton}
+                onPress={openWhatsApp}
               >
-                <Text style={styles.addToCartButtonText}>Buy Now</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.addToCartButton}
-                onPress={handleAddToCart}
-              >
-                {addTocartApiCall?.isLoading ? (
-                  <ActivityIndicator size="small" color={theme.colors.white} />
-                ) : (
-                  <Text style={styles.addToCartButtonText}>
-                    {isInCart ? "Go To Cart" : "Add To Cart"}
-                  </Text>
-                )}
+                <Text style={styles.whatsappButtonText}>
+                  Chat with us on WhatsApp
+                </Text>
               </TouchableOpacity>
             </View>
-          </View>
-        )
-      )}
+          )
+        : !freeCourse && (
+            <View style={bottomBarStyle}>
+              <Text style={styles.priceText}>₹{course?.price}</Text>
+
+              <View style={styles.buttonRapper}>
+                <TouchableOpacity
+                  style={styles.addToCartButton}
+                  onPress={() => payWithRazorpay(userDetails, course?.price)}
+                  disabled={loading || cartItemListApi?.isLoading}
+                >
+                  <Text style={styles.addToCartButtonText}>Buy Now</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.addToCartButton}
+                  onPress={handleAddToCart}
+                >
+                  {addTocartApiCall?.isLoading ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={theme.colors.white}
+                    />
+                  ) : (
+                    <Text style={styles.addToCartButtonText}>
+                      {isInCart ? "Go To Cart" : "Add To Cart"}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
     </>
   );
 
