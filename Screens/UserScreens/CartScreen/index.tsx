@@ -27,7 +27,12 @@ import {
   walletApplyApi,
 } from "../../../store/Services/Others";
 import Toast from "react-native-toast-message";
-import RazorpayCheckout from "react-native-razorpay";
+// import RazorpayCheckout from "react-native-razorpay";
+
+let RazorpayCheckout: any = null;
+if (Platform.OS === "android") {
+  RazorpayCheckout = require("react-native-razorpay").default;
+}
 
 const CartScreen = ({ navigation }: any) => {
   const [cartApiResponse, setcartApiResponse]: any = useState([]);
@@ -182,6 +187,10 @@ const CartScreen = ({ navigation }: any) => {
   };
 
   const payWithRazorpay = async (userDetails: any, cartBottomPrices: any) => {
+    if (Platform.OS !== "android") {
+      Alert.alert("Payments are not available on iOS");
+      return;
+    }
     try {
       setLoading(true);
       handleWalletCheck(isWalletApplied);

@@ -39,7 +39,12 @@ import {
 } from "../../../hooks/Others/mutation";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "../../Components/FullScreenLoader";
-import RazorpayCheckout from "react-native-razorpay";
+// import RazorpayCheckout from "react-native-razorpay";
+
+let RazorpayCheckout: any = null;
+if (Platform.OS === "android") {
+  RazorpayCheckout = require("react-native-razorpay").default;
+}
 
 const { width } = Dimensions.get("window");
 
@@ -243,6 +248,11 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
   };
 
   const payWithRazorpay = (userDetails: any, coursePrice: any) => {
+    if (Platform.OS !== "android") {
+      // iOS → show a message or navigate to support
+      Alert.alert("Payments are not available on iOS");
+      return;
+    }
     setLoading(true);
     createSingleOrderApi({
       query: {
@@ -271,7 +281,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
         };
 
         RazorpayCheckout.open(options)
-          .then((data) => {
+          .then((data: any) => {
             Toast.show({
               type: "success",
               text1: "Payment successful!",
@@ -283,7 +293,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
               "completed"
             );
           })
-          .catch((error) => {
+          .catch((error: any) => {
             Toast.show({
               type: "error",
               text1: "Payment failed",

@@ -11,6 +11,7 @@ import {
   Linking,
   Image,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import {
   DrawerContentComponentProps,
@@ -32,10 +33,19 @@ const drawerItems = [
   { label: "All Courses", iconName: "book-open", navigateTo: "AllCourses" },
   { label: "Blog", iconName: "edit-3", navigateTo: "Blog" },
   { label: "Events", iconName: "calendar", navigateTo: "Events" },
+  { label: "IPOs", iconName: "trending-up", navigateTo: "IPOScreen" },
   { label: "Refer & Earn", iconName: "gift", navigateTo: "ReferAndEarnScreen" },
   { label: "About Us", iconName: "info", navigateTo: "AboutUs" },
   { label: "Privacy Policy", iconName: "shield", navigateTo: "PrivacyPolicy" },
-  { label: "Refund Policy", iconName: "shield", navigateTo: "RefundScreen" },
+  ...(Platform.OS === "android"
+    ? [
+        {
+          label: "Refund Policy",
+          iconName: "shield",
+          navigateTo: "RefundScreen",
+        },
+      ]
+    : []),
   { label: "Terms & Condition", iconName: "file-text", navigateTo: "Terms" },
   { label: "Support", iconName: "headphones", navigateTo: "SupportScreen" },
   { label: "Logout", iconName: "log-out", isLogout: true },

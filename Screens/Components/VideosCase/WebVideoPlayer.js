@@ -68,7 +68,7 @@ const WebVideoPlayer = ({ videoUrl }) => {
             if (message === "fs-active") {
               await ScreenOrientation.unlockAsync();
               await ScreenOrientation.lockAsync(
-                ScreenOrientation.OrientationLock.LANDSCAPE_LEFT
+                ScreenOrientation.OrientationLock.LANDSCAPE
               );
             } else if (message === "fs-inactive") {
               await ScreenOrientation.unlockAsync();

@@ -215,3 +215,7 @@ export const deleteAccountApi = ({ body }: any) =>
     uriEndPoint: othersEndpoints.deleteAccountApi.v1,
     body,
   });
+export const getIPODetails = () =>
+  callApi({
+    uriEndPoint: othersEndpoints.getIPODetails.v1,
+  });
