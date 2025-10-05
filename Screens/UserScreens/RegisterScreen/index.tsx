@@ -35,9 +35,7 @@ const phoneRegExp = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
 const registerValidationSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
-  phoneNumber: Yup.string()
-    .matches(phoneRegExp, "Phone number is not valid")
-    .required("Phone number is required"),
+  phoneNumber: Yup.string().matches(phoneRegExp, "Phone number is not valid"),
   email: Yup.string()
     .email("Please enter a valid email")
     .required("Email is required"),

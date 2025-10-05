@@ -384,10 +384,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
       {Platform.OS === "ios"
         ? !freeCourse && (
             <View style={[bottomBarStyle, styles.whatsappChatBox]}>
-              <Text style={styles.lockText}>
-                Want to unlock this course? Tap below to chat with us and get
-                exclusive access!
-              </Text>
+              <Text style={styles.lockText}>Chat with us for guidance</Text>
               <TouchableOpacity
                 style={styles.whatsappButton}
                 onPress={openWhatsApp}
