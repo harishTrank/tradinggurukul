@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   Share,
   Alert,
   Platform,
+  Modal,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Clipboard from "@react-native-clipboard/clipboard";
@@ -19,8 +20,13 @@ import HomeHeader from "../../Components/HomeHeader";
 import ImageModule from "../../../ImageModule";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
-import { getRefralCodeApi } from "../../../store/Services/Others";
+import {
+  getRefralCodeApi,
+  withdrawRequestApi,
+} from "../../../store/Services/Others";
 import FullScreenLoader from "../../Components/FullScreenLoader";
+import { TextInput } from "react-native-gesture-handler";
+import { useFocusEffect } from "@react-navigation/native";
 
 // --- Mock Data (Replace with your API data) --
 
@@ -28,6 +34,8 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [upiId, setUpiId] = useState("");
   const [referralData, setReferralData]: any = useState({
     referralCode: "FRIEND25",
     referralLink:
@@ -40,7 +48,7 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
   });
   const [userDetails]: any = useAtom(userDetailsGlobal);
 
-  const getRefrenceHandler = (user_id: any) => {
+  const getRefrenceHandler = useCallback((user_id: any) => {
     setLoading(true);
     getRefralCodeApi({
       body: {
@@ -61,13 +69,21 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
         });
       })
       ?.catch((err: any) => setLoading(false));
-  };
+  }, []);
 
   useEffect(() => {
     if (userDetails?.id) {
       getRefrenceHandler(userDetails?.id);
     }
   }, [userDetails?.id]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (userDetails?.id) {
+        getRefrenceHandler(userDetails?.id);
+      }
+    }, [userDetails?.id, getRefrenceHandler])
+  );
 
   const onCopyToClipboard = () => {
     Clipboard.setString(referralData.referralCode);
@@ -100,6 +116,35 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
     }
   };
 
+  const onSubmitWithdraw = async () => {
+    if (upiId.trim() === "") {
+      Alert.alert("Error", "Please enter your UPI ID.");
+      return;
+    }
+
+    setLoading(true);
+    withdrawRequestApi({
+      body: {
+        user_id: userDetails?.id,
+        upi_id: upiId,
+      },
+    })
+      ?.then(() => {
+        setLoading(false);
+        setIsModalVisible(false);
+        setUpiId("");
+        Alert.alert(
+          "Success",
+          "Your withdrawal request has been submitted! If your request is accepted, you will receive your funds within 5–7 working days."
+        );
+      })
+      ?.catch((err: any) => {
+        setLoading(false);
+        setIsModalVisible(false);
+        Alert.alert("Error", err?.data?.message);
+      });
+  };
+
   return (
     <View style={[styles.parentContainer, { paddingTop: insets.top }]}>
       {loading && <FullScreenLoader />}
@@ -127,9 +172,19 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
             <View style={styles.walletTextContainer}>
               <Text style={styles.walletLabel}>Your Wallet Balance</Text>
               <Text style={styles.walletAmount}>
-                ₹{referralData?.total_earnings}
+                ₹{referralData?.total_earnings || 0}
               </Text>
             </View>
+            {referralData?.total_earnings > 0 && (
+              <TouchableOpacity
+                style={styles.withdrawButton}
+                onPress={() => {
+                  setIsModalVisible(true);
+                }}
+              >
+                <Text style={styles.withdrawText}>Withdraw</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           <Text style={styles.title}>{referralData.rewardTitle}</Text>
@@ -165,6 +220,37 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(!isModalVisible)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Withdraw Request</Text>
+            <Text style={styles.modalText}>
+              Enter your UPI ID to receive payment
+            </Text>
+            <TextInput
+              placeholder="example@upi"
+              value={upiId}
+              onChangeText={setUpiId}
+              style={styles.input}
+              placeholderTextColor="#777"
+            />
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={onSubmitWithdraw}
+            >
+              <Text style={styles.submitText}>Submit Request</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -210,7 +296,7 @@ const styles = StyleSheet.create({
   },
   walletLabel: {
     fontSize: 14,
-    color: theme.colors.textGray,
+    color: theme.colors.greyText,
     fontFamily: "Arial",
   },
   walletAmount: {
@@ -289,6 +375,71 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "Arial-BoldMT",
     fontWeight: "bold",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "85%",
+    backgroundColor: theme.colors.white,
+    borderRadius: 15,
+    padding: 20,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: theme.colors.primary,
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 14,
+    color: "#555",
+    textAlign: "center",
+    marginBottom: 15,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginBottom: 15,
+    fontSize: 16,
+    color: "#000",
+  },
+  submitButton: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  submitText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  cancelText: {
+    color: theme.colors.primary,
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 12,
+  },
+  withdrawButton: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    marginLeft: "auto",
+  },
+  withdrawText: {
+    color: theme.colors.white,
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
 

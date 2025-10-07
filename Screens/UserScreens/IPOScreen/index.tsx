@@ -66,7 +66,6 @@ const IPOScreen = ({ navigation }: any) => {
     setLoading(true);
     getIPODetails()
       .then((res: any) => {
-        console.log("kkkkkkk", res);
         setIPOs(res);
       })
       .catch((err: any) => {

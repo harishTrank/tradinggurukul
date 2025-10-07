@@ -267,4 +267,32 @@ export const othersEndpoints = {
       uri: "/ipo-list",
     },
   },
+  getNewsDetails: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/ipo-news",
+    },
+  },
+  feedbackFormAPI: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/feedback-form",
+    },
+  },
+  withdrawRequestApi: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/withdrawals",
+    },
+  },
+  importantLinksAPI: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/important-links",
+    },
+  },
 };

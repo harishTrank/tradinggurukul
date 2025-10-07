@@ -20,6 +20,7 @@ import CommentsScreen from "./CommentsScreen";
 import DoubtsScreen from "./DoubtsScreen";
 import NotificationScreen from "./NotificationScreen";
 import EventCardDetail from "./EventScreen/Components/EventCardDetail";
+import FeedbackFormScreen from "./FeedbackFormScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -47,6 +48,7 @@ const UserScreens = () => {
       <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} />
       <Stack.Screen name="MyCoursesScreen" component={MyCoursesScreen} />
       <Stack.Screen name="SearchCourseScreen" component={SearchCourseScreen} />
+      <Stack.Screen name="FeedbackFormScreen" component={FeedbackFormScreen} />
       <Stack.Screen name="CartScreen" component={CartScreen} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="ViewCourseScreen" component={ViewCourseScreen} />

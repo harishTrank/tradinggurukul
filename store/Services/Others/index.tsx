@@ -219,3 +219,22 @@ export const getIPODetails = () =>
   callApi({
     uriEndPoint: othersEndpoints.getIPODetails.v1,
   });
+export const getNewsDetails = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.getNewsDetails.v1,
+    query,
+  });
+export const feedbackFormAPI = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.feedbackFormAPI.v1,
+    body,
+  });
+export const withdrawRequestApi = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.withdrawRequestApi.v1,
+    body,
+  });
+export const importantLinksAPI = () =>
+  callApi({
+    uriEndPoint: othersEndpoints.importantLinksAPI.v1,
+  });

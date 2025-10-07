@@ -17,6 +17,7 @@ import HomeScreen from "../../../Screens/UserScreens/HomeScreen";
 import MyCoursesScreen from "../../../Screens/UserScreens/MyCoursesScreen";
 import CommunityScreen from "../../../Screens/UserScreens/CommunityScreen";
 import theme from "../../../utils/theme";
+import NewsScreen from "../../../Screens/UserScreens/NewsScreen";
 
 const TabArr = [
   {
@@ -39,6 +40,13 @@ const TabArr = [
     type: Icons.Feather,
     icon: "users",
     component: CommunityScreen,
+  },
+  {
+    route: "News",
+    label: "News",
+    type: Icons.Feather,
+    icon: "file-text",
+    component: NewsScreen,
   },
 ];
 

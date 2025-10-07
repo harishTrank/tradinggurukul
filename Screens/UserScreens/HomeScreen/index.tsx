@@ -9,6 +9,7 @@ import {
   FlatList,
   Dimensions,
   Alert,
+  Linking,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import HomeHeader from "../../Components/HomeHeader";
@@ -31,12 +32,16 @@ import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AllCoursesScreen from "../AllCoursesScreen";
 import EventCard from "../EventScreen/Components/EventCard";
-import { dashboardEventApi } from "../../../store/Services/Others";
+import {
+  dashboardEventApi,
+  importantLinksAPI,
+} from "../../../store/Services/Others";
 
 const { width } = Dimensions.get("window");
 const Stack = createStackNavigator<any>();
 
 const HomeScreenComponent = () => {
+  const [importantLinks, setImportantLinks]: any = useState([]);
   const [dashboardEvent, setDashboardEvent]: any = useState({});
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const navigation: any = useNavigation();
@@ -66,17 +71,15 @@ const HomeScreenComponent = () => {
     if (isAnyApiLoading) {
       timeoutId = setTimeout(() => {
         // If the timer finishes, it means an API is still loading. Show the alert.
-        Alert.alert(
-          "Loading...",
-          "The app is taking a while to load. Please restart the app or clear the app cache if this issue persists.",
-          [{ text: "OK" }]
-        );
-      }, 30000);
+        // Alert.alert(
+        //   "Loading...",
+        //   "The app is taking a while to load. Please restart the app or clear the app cache if this issue persists.",
+        //   [{ text: "OK" }]
+        // );
+        console.log("app is taking a while");
+      }, 60000);
     }
 
-    // Cleanup function: This will run when the component unmounts or when
-    // `isAnyApiLoading` changes. If the data loads successfully before 1 minute,
-    // this will clear the timer and prevent the alert from showing.
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
@@ -118,7 +121,15 @@ const HomeScreenComponent = () => {
         setDashboardEvent(res?.events?.[0]);
       })
       .catch((err: any) => {
-        console.log("dashboard err", err);
+        console.log("dashboard err", JSON.stringify(err));
+      });
+
+    importantLinksAPI()
+      .then((res: any) => {
+        setImportantLinks(res?.links);
+      })
+      .catch((err: any) => {
+        console.log("Links err", JSON.stringify(err));
       });
   }, []);
   return (
@@ -233,6 +244,36 @@ const HomeScreenComponent = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.horizontalListPadding}
         />
+
+        {/* --- Footer Section --- */}
+        <View style={styles.footerContainer}>
+          <Text style={styles.footerTitle}>Quick Links</Text>
+
+          <View style={styles.footerOptions}>
+            <Text
+              style={styles.footerLink}
+              onPress={() => navigation.navigate("FeedbackFormScreen")}
+            >
+              Feedback Form
+            </Text>
+            {Array.isArray(importantLinks) &&
+              importantLinks.map((ele: any, idx: number) => (
+                <Text
+                  key={idx}
+                  style={styles.footerLink}
+                  onPress={() =>
+                    Linking.openURL(ele?.url || "https://google.com")
+                  }
+                >
+                  {ele?.name}
+                </Text>
+              ))}
+          </View>
+
+          <Text style={styles.footerNote}>
+            © {new Date().getFullYear()} Trading Gurukul — Learn, Trade & Grow
+          </Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -302,6 +343,36 @@ const styles = StyleSheet.create({
   },
   eventTouch: {
     zIndex: 90,
+  },
+  footerContainer: {
+    marginTop: 30,
+    paddingVertical: 20,
+    borderTopWidth: 1,
+    borderColor: "#eee",
+    alignItems: "center",
+  },
+  footerTitle: {
+    fontSize: 18,
+    color: theme.colors.black,
+    ...theme.font.fontSemiBold,
+    marginBottom: 10,
+  },
+  footerOptions: {
+    width: "100%",
+    alignItems: "flex-start",
+    marginBottom: 10,
+  },
+  footerLink: {
+    fontSize: 14,
+    color: theme.colors.primary,
+    ...theme.font.fontMedium,
+    marginVertical: 6,
+    textDecorationLine: "underline",
+  },
+  footerNote: {
+    fontSize: 12,
+    color: theme.colors.greyText,
+    marginTop: 10,
   },
 });
 
