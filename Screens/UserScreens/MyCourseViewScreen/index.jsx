@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useSelector } from "react-redux";
 import theme from "../../../utils/theme";
@@ -15,12 +17,17 @@ import { isEmptyObj } from "../../../utils/extra/UserUtils";
 import WebVideoPlayer from "../../Components/VideosCase/WebVideoPlayer";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
-import { getCourseMyDetailsCall } from "../../../store/Services/Others";
+import {
+  donwloadCertificate,
+  getCourseMyDetailsCall,
+} from "../../../store/Services/Others";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import HLSVideoPlayer from "../../Components/VideosCase/HLSVideoPlayer";
 import CommentsScreen from "../CommentsScreen";
 import DoubtsScreen from "../DoubtsScreen";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import * as FileSystem from "expo-file-system";
+import * as Print from "expo-print";
 
 const ListItem = (props) => {
   return (
@@ -30,7 +37,26 @@ const ListItem = (props) => {
   );
 };
 
-const TopicsTab = ({ coursesData }) => {
+const TopicsTab = ({ coursesData, pdfLink }) => {
+  const downloadCertificate = async () => {
+    try {
+      if (!pdfLink) {
+        Alert.alert(
+          "No certificate available",
+          "Please complete the course to unlock the certificate."
+        );
+        return;
+      }
+
+      const fileUri = FileSystem.documentDirectory + "certificate.pdf";
+      const { uri } = await FileSystem.downloadAsync(pdfLink, fileUri);
+
+      await Print.printAsync({ uri, orientation: Print.Orientation.landscape });
+    } catch (error) {
+      console.log("Error downloading certificate:", error);
+      Alert.alert("Error", "Could not open the certificate for printing.");
+    }
+  };
   return (
     <FlatList
       ListHeaderComponent={
@@ -58,6 +84,16 @@ const TopicsTab = ({ coursesData }) => {
       contentContainerStyle={{ paddingBottom: 20 }}
       style={{ flex: 1 }}
       keyboardShouldPersistTaps="handled"
+      ListFooterComponent={
+        <View style={styles.footerContainer}>
+          <TouchableOpacity
+            style={styles.downloadButton}
+            onPress={downloadCertificate}
+          >
+            <Text style={styles.downloadText}>Print Certificate</Text>
+          </TouchableOpacity>
+        </View>
+      }
     />
   );
 };
@@ -66,6 +102,7 @@ const CourseDetailScreen = ({ route, navigation }) => {
   const Tab = createMaterialTopTabNavigator();
   const [currentUser] = useAtom(userDetailsGlobal);
   const topic = useSelector((state) => state.topic);
+  const [pdfLink, setPdfLink] = React.useState(null);
 
   const [coursesData, setCoursesData] = React.useState({
     data: null,
@@ -137,6 +174,21 @@ const CourseDetailScreen = ({ route, navigation }) => {
       }
     }
   };
+
+  React.useEffect(() => {
+    donwloadCertificate({
+      body: {
+        user_id: currentUser.id,
+        course_id: prodId,
+      },
+    })
+      .then((res) => {
+        setPdfLink(res.url);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  }, []);
   return (
     <View
       style={[styles.parentContainer, { paddingTop: useSafeAreaInsets().top }]}
@@ -165,7 +217,9 @@ const CourseDetailScreen = ({ route, navigation }) => {
                 }}
               >
                 <Tab.Screen name="Topics">
-                  {() => <TopicsTab coursesData={coursesData} />}
+                  {() => (
+                    <TopicsTab coursesData={coursesData} pdfLink={pdfLink} />
+                  )}
                 </Tab.Screen>
 
                 <Tab.Screen name="Comments">
@@ -261,6 +315,22 @@ const styles = StyleSheet.create({
   },
   activeNavigatorText: {
     color: "#fff", // White text for selected tab
+  },
+  footerContainer: {
+    marginHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  downloadButton: {
+    backgroundColor: "#42BE5C",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 25,
+  },
+  downloadText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 

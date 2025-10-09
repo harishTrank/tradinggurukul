@@ -238,3 +238,8 @@ export const importantLinksAPI = () =>
   callApi({
     uriEndPoint: othersEndpoints.importantLinksAPI.v1,
   });
+export const donwloadCertificate = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.donwloadCertificate.v1,
+    body,
+  });
