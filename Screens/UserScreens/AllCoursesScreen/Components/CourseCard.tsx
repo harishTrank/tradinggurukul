@@ -46,14 +46,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ item, onPress }: any) => {
         <View style={styles.ratingContainer}>
           <Text style={styles.tag}>{item?.categories?.[0]?.name}</Text>
         </View>
-        {Platform.OS === "android" && (
-          <View style={styles.priceBox}>
-            {item?.price && <Text style={styles.price}>₹{item?.price}</Text>}
-            {item?.regular_price && (
-              <Text style={styles.regularPrice}>₹{item?.regular_price}</Text>
-            )}
-          </View>
-        )}
+        <View style={styles.priceBox}>
+          {item?.price && <Text style={styles.price}>₹{item?.price}</Text>}
+          {item?.regular_price && (
+            <Text style={styles.regularPrice}>₹{item?.regular_price}</Text>
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );

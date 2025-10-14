@@ -33,7 +33,7 @@ const SearchResultCard = ({ item, onPress }: any) => {
           </View>
         )}
 
-        <View style={styles.infoRow}>
+        {/* <View style={styles.infoRow}>
           <AntDesign
             name="earth"
             size={18}
@@ -43,7 +43,7 @@ const SearchResultCard = ({ item, onPress }: any) => {
           <Text style={styles.updatedDateText}>
             {`Updated on ${dayjs(item?.date_modified).format("DD-MM-YYYY")}`}
           </Text>
-        </View>
+        </View> */}
       </View>
     </TouchableOpacity>
   );

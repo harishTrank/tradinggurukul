@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Axios from "axios";
 import queryString from "querystring";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import useSessionManager from "../extra/useSessionManager";
 
 export const frontend_url = "https://app.tradinggurukul.com";
@@ -30,19 +30,16 @@ export const getDefaultHeaders = async (multipart: boolean) => {
   const contentType =
     multipart === true ? "multipart/form-data" : "application/json";
 
+  const baseHeaders: any = {
+    "Content-Type": contentType,
+    platform: Platform.OS,
+  };
+
   if (accessToken) {
-    const authorization = `Bearer ${accessToken}`;
-
-    return {
-      authorization,
-
-      "Content-Type": contentType,
-    };
-  } else {
-    return {
-      "Content-Type": contentType,
-    };
+    baseHeaders["authorization"] = `Bearer ${accessToken}`;
   }
+
+  return baseHeaders;
 };
 
 /**

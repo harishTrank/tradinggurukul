@@ -88,15 +88,13 @@ const HomeHeader = ({
               {renderNotificationBadge()}
             </TouchableOpacity>
 
-            {Platform.OS === "android" && (
-              <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
-                <Ionicons
-                  name="cart-outline"
-                  size={26}
-                  color={theme.colors.black}
-                />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
+              <Ionicons
+                name="cart-outline"
+                size={26}
+                color={theme.colors.black}
+              />
+            </TouchableOpacity>
           </>
         )}
       </View>

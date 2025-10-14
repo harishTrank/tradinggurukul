@@ -28,14 +28,12 @@ const CourseCard = ({
       <Text style={styles.title} numberOfLines={2}>
         {title}
       </Text>
-      {Platform.OS === "android" && (
-        <View style={styles.priceBox}>
-          {price && <Text style={styles.price}>₹{price}</Text>}
-          {regular_price && (
-            <Text style={styles.regularPrice}>₹{regular_price}</Text>
-          )}
-        </View>
-      )}
+      <View style={styles.priceBox}>
+        {price && <Text style={styles.price}>₹{price}</Text>}
+        {regular_price && (
+          <Text style={styles.regularPrice}>₹{regular_price}</Text>
+        )}
+      </View>
       <View style={styles.ratingContainer}>
         {tag && <Text style={styles.tag}>{tag}</Text>}
       </View>

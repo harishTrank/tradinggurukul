@@ -37,15 +37,7 @@ const drawerItems = [
   { label: "Refer & Earn", iconName: "gift", navigateTo: "ReferAndEarnScreen" },
   { label: "About Us", iconName: "info", navigateTo: "AboutUs" },
   { label: "Privacy Policy", iconName: "shield", navigateTo: "PrivacyPolicy" },
-  ...(Platform.OS === "android"
-    ? [
-        {
-          label: "Refund Policy",
-          iconName: "shield",
-          navigateTo: "RefundScreen",
-        },
-      ]
-    : []),
+  { label: "Refund Policy", iconName: "shield", navigateTo: "RefundScreen" },
   { label: "Terms & Condition", iconName: "file-text", navigateTo: "Terms" },
   { label: "Support", iconName: "headphones", navigateTo: "SupportScreen" },
   { label: "Logout", iconName: "log-out", isLogout: true },
