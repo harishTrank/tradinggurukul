@@ -33,12 +33,13 @@ const AboutUsScreen = ({ navigation }: any) => {
     : [];
 
   return (
-    <View style={[styles.parentContainer, { paddingTop: insets.top }]}>
-      <HomeHeader
+    // <View style={[styles.parentContainer, { paddingTop: insets.top }]}>
+    <View style={[styles.parentContainer]}>
+      {/* <HomeHeader
         onMenuPress={navigation.toggleDrawer}
         onCartPress={() => navigation.navigate("CartScreen")}
         navigation={navigation}
-      />
+      /> */}
 
       {getAllContent.isLoading ? (
         <View style={styles.centered}>

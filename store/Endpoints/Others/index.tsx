@@ -302,4 +302,11 @@ export const othersEndpoints = {
       uri: "/generate-certificate",
     },
   },
+  communityLink: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/community",
+    },
+  },
 };

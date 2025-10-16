@@ -64,7 +64,8 @@ const ReferAndEarnScreen = ({ navigation }: any) => {
             amount_referrer: res?.data?.amount_referrer,
             amount_earner: res?.data?.amount_earner,
             total_earnings: res?.data?.total_earnings,
-            rewardTitle: `Give ₹${res?.data?.amount_referrer}, Get ₹${res?.data?.amount_referrer}!`,
+            rewardTitle: `Give ₹${res?.data?.amount_earner}, Get ₹${res?.data?.amount_referrer}!`,
+            rewardDescription: res?.data?.message,
           };
         });
       })

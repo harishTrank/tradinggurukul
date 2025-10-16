@@ -243,3 +243,8 @@ export const donwloadCertificate = ({ body }: any) =>
     uriEndPoint: othersEndpoints.donwloadCertificate.v1,
     body,
   });
+export const communityLink = ({ query }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.communityLink.v1,
+    query,
+  });

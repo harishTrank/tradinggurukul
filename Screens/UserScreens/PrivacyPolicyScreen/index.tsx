@@ -15,23 +15,45 @@ const PrivacyPolicyScreen = ({ navigation }: any) => {
     if (!privacyData) {
       return <Text>Loading Privacy Policy...</Text>;
     }
-    const {
-      bannerHeading,
-      privacyEditorField,
-    } = privacyData;
+    const { bannerHeading, privacyEditorField } = privacyData;
 
     return (
       <>
-        {bannerHeading && <Text style={styles.bannerHeading}>{bannerHeading}</Text>}
+        {bannerHeading && (
+          <Text style={styles.bannerHeading}>{bannerHeading}</Text>
+        )}
 
-        <HTML source={{ html: privacyEditorField || "<p>No content available.</p>" }}
+        <HTML
+          source={{
+            html: privacyEditorField || "<p>No content available.</p>",
+          }}
           contentWidth={360}
           tagsStyles={{
-            p: { fontFamily: 'Arial', fontSize: 16, lineHeight: 24, color: theme.colors.black, marginBottom: 10 },
-            h3: { fontFamily: 'Arial-BoldMT', fontSize: 20, color: theme.colors.primary, marginTop: 20, marginBottom: 10 },
+            p: {
+              fontFamily: "Arial",
+              fontSize: 16,
+              lineHeight: 24,
+              color: theme.colors.black,
+              marginBottom: 10,
+            },
+            h3: {
+              fontFamily: "Arial-BoldMT",
+              fontSize: 20,
+              color: theme.colors.primary,
+              marginTop: 20,
+              marginBottom: 10,
+            },
             ul: { marginBottom: 10, marginLeft: 20 },
-            li: { fontFamily: 'Arial', fontSize: 16, lineHeight: 24, color: theme.colors.black },
-            a: { color: theme.colors.secondary, textDecorationLine: 'underline' }
+            li: {
+              fontFamily: "Arial",
+              fontSize: 16,
+              lineHeight: 24,
+              color: theme.colors.black,
+            },
+            a: {
+              color: theme.colors.secondary,
+              textDecorationLine: "underline",
+            },
           }}
         />
       </>
@@ -39,17 +61,20 @@ const PrivacyPolicyScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View
-      style={[styles.parentContainer, { paddingTop: insets.top }]}
-    >
+    // <View style={[styles.parentContainer, { paddingTop: insets.top }]}>
+    <View style={[styles.parentContainer]}>
       <View style={styles.headerWrapper}>
-        <HomeHeader
+        {/* <HomeHeader
           onMenuPress={navigation.toggleDrawer}
           onCartPress={() => navigation.navigate("CartScreen")}
           navigation={navigation}
-        />
+        /> */}
       </View>
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {renderContent()}
       </ScrollView>
     </View>

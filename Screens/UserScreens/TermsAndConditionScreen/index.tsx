@@ -70,13 +70,14 @@ const TermsAndConditionScreen = ({ navigation }: any) => {
   };
 
   return (
-    <View style={[styles.parentContainer, { paddingTop: insets.top }]}>
+    // <View style={[styles.parentContainer, { paddingTop: insets.top }]}>
+    <View style={[styles.parentContainer]}>
       <View style={styles.headerWrapper}>
-        <HomeHeader
+        {/* <HomeHeader
           onMenuPress={navigation.toggleDrawer}
           onCartPress={() => navigation.navigate("CartScreen")}
           navigation={navigation}
-        />
+        /> */}
       </View>
       <ScrollView
         style={styles.scrollContainer}
