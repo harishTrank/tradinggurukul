@@ -248,3 +248,8 @@ export const communityLink = ({ query }: any) =>
     uriEndPoint: othersEndpoints.communityLink.v1,
     query,
   });
+export const payWithIapAPI = ({ body }: any) =>
+  callApi({
+    uriEndPoint: othersEndpoints.payWithIapAPI.v1,
+    body,
+  });

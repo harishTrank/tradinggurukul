@@ -21,15 +21,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAtom } from "jotai";
 import { userDetailsGlobal } from "../../../JotaiStore";
 import {
-  createOrderApi,
   createSingleOrderApi,
   getCourseDetailsCall,
   getCourseTopicsCall,
+  payWithIapAPI,
   updateBuyOrderApi,
-  updateStatusOrderApi,
 } from "../../../store/Services/Others";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import dayjs from "dayjs";
 import RenderHTML from "react-native-render-html";
 import { getProcessedHtml } from "../../../utils/extra/UserUtils";
 import TopicList from "./Components/TopicList.js";
@@ -39,6 +36,9 @@ import {
 } from "../../../hooks/Others/mutation";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "../../Components/FullScreenLoader";
+import { useIAP, ErrorCode } from "expo-iap";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // import RazorpayCheckout from "react-native-razorpay";
 
 let RazorpayCheckout: any = null;
@@ -78,6 +78,199 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
   const [loading, setLoading]: any = useState(false);
   const addTocartApiCall: any = useAddToCartCall();
   const cartItemListApi: any = useCartItemListCall();
+  console.log("courseId", courseId);
+  const productIds = [
+    "com.tradinggurukul.course1058",
+    "com.tradinggurukul.course1100",
+    "com.tradinggurukul.course505",
+  ];
+  const {
+    connected,
+    products,
+    fetchProducts,
+    requestPurchase,
+    validateReceipt,
+  } = useIAP();
+  //  {
+  //     onPurchaseSuccess: (purchase) => {
+  //       console.log("Purchase successful:", purchase);
+  //       validatePurchase(purchase);
+  //     },
+  //     onPurchaseError: (error) => {
+  //       console.error("Purchase failed:", error);
+  //     },
+  //   }
+
+  const validatePurchase = async (purchase: any) => {
+    try {
+      const result: any = await validateReceipt({
+        sku: purchase.productId,
+      });
+      if (result.isValid) {
+        console.log("Receipt is valid");
+        payWithIapAPI({
+          body: {
+            user_id: userDetails?.id,
+            course_id: courseId,
+            transaction_id: purchase.transactionId,
+            receipt: purchase.transactionReceipt,
+            purchase_data: purchase,
+          },
+        })
+          .then((res: any) => {
+            console.log("IAP Payment recorded successfully:", res);
+            Toast.show({
+              type: "success",
+              text1: "Payment successful!",
+            });
+            viewCourseApiCallManager();
+          })
+          .catch((err: any) => {
+            console.error("Error recording IAP payment:", err);
+            Alert.alert(
+              "Error",
+              "Could not record payment. Please contact support."
+            );
+          });
+      }
+    } catch (error: any) {
+      console.error("Validation failed:", error);
+      Alert.alert(error?.message || "Receipt validation failed.");
+    }
+  };
+
+  useEffect(() => {
+    if (connected) {
+      fetchProducts({ skus: productIds, type: "in-app" });
+    }
+  }, [connected]);
+
+  // const handlePayWithIAP = async () => {
+  //   if (Platform.OS !== "ios") {
+  //     Alert.alert("This payment option is only available on iOS.");
+  //     return;
+  //   }
+  //   if (!connected) {
+  //     Alert.alert("IAP not connected. Please try again.");
+  //     return;
+  //   }
+  //   console.log("IAP INit");
+  //   const product = products.find(
+  //     (p) => p.id === `com.tradinggurukul.course${courseId}`
+  //   );
+  //   if (!product) {
+  //     Alert.alert("Product not found for this course.");
+  //     return;
+  //   }
+  //   try {
+  //     console.log("🛒 Purchasing:", product.id);
+  //     await requestPurchase({
+  //       request: { ios: { sku: product.id } },
+  //       type: "in-app",
+  //     });
+  //   } catch (err) {
+  //     console.error("❌ Error requesting purchase:", err);
+  //     Alert.alert("Purchase error", "Something went wrong. Please try again.");
+  //   }
+  // };
+
+  const payWithIAP = async (userDetails: any, coursePrice: any) => {
+    const device_token = await AsyncStorage.getItem("device_token");
+
+    if (!device_token) {
+      Alert.alert("Please login to continue.");
+      navigation.navigate("LoginScreen");
+      return;
+    }
+    if (Platform.OS !== "ios") {
+      Alert.alert("This payment option is only available on iOS.");
+      return;
+    }
+
+    if (!connected) {
+      Alert.alert("IAP not connected. Please try again.");
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const product = products.find(
+        (p) => p.id === `com.tradinggurukul.course${courseId}`
+      );
+
+      if (!product) {
+        Alert.alert("Product not found for this course.");
+        setLoading(false);
+        return;
+      }
+
+      const res: any = await createSingleOrderApi({
+        query: {
+          u_id: userDetails?.id,
+          product_id: courseId,
+          payment_method: "iap_ios",
+          amount: coursePrice,
+        },
+      });
+      console.log("res", res);
+      const order_id = res?.data?.order_id;
+      if (!order_id) {
+        throw new Error("Failed to create order.");
+      }
+
+      const purchase: any = await requestPurchase({
+        type: "in-app",
+        request: {
+          ios: { sku: product.id },
+        },
+      });
+
+      console.log("Purchase completed:", purchase);
+
+      // Validate receipt before updating order
+      const result: any = await validateReceipt({
+        receipt: purchase.transactionReceipt,
+        sku: purchase.productId,
+      });
+
+      if (result?.isValid) {
+        console.log("Receipt validated successfully ✅");
+
+        await updateBuyOrderApi({
+          body: {
+            order_id,
+            payment_method: "iap_ios",
+            u_id: userDetails?.id,
+            transaction_id: purchase.transactionId,
+            status: "completed",
+            product_id: courseId,
+          },
+        });
+
+        await Toast.show({
+          type: "success",
+          text1: "Payment successful!",
+        });
+
+        await viewCourseApiCallManager();
+      } else {
+        console.log("Invalid receipt:", result);
+        Toast.show({
+          type: "error",
+          text1: "Receipt validation failed",
+        });
+      }
+    } catch (error: any) {
+      console.error("IAP Payment Error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Payment failed",
+        text2: error?.message || "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const cartListApiManager = () => {
     if (userDetails?.id) {
@@ -226,11 +419,16 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
   const updateOrderStatusManager = (
     order_id: any,
     transaction_id: any,
-    status: any
+    status: any,
+    payment_method: any = "razorpay"
   ) => {
+    console.log("order_id", order_id);
+    console.log("userDetails?.id", userDetails?.id);
+    console.log("transaction_id", transaction_id);
     updateBuyOrderApi({
       body: {
         order_id,
+        payment_method,
         u_id: userDetails?.id,
         transaction_id,
         status,
@@ -247,9 +445,15 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
       });
   };
 
-  const payWithRazorpay = (userDetails: any, coursePrice: any) => {
+  const payWithRazorpay = async (userDetails: any, coursePrice: any) => {
+    const device_token = await AsyncStorage.getItem("device_token");
+
+    if (!device_token) {
+      Alert.alert("Please login to continue.");
+      navigation.navigate("LoginScreen");
+      return;
+    }
     if (Platform.OS !== "android") {
-      // iOS → show a message or navigate to support
       Alert.alert("Payments are not available on iOS");
       return;
     }
@@ -388,24 +592,31 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
           <View style={styles.buttonRapper}>
             <TouchableOpacity
               style={styles.addToCartButton}
-              onPress={() => payWithRazorpay(userDetails, course?.price)}
+              onPress={() => {
+                if (Platform.OS === "android") {
+                  payWithRazorpay(userDetails, course?.price);
+                } else if (Platform.OS === "ios") {
+                  payWithIAP(userDetails, course?.price);
+                }
+              }}
               disabled={loading || cartItemListApi?.isLoading}
             >
               <Text style={styles.addToCartButtonText}>Buy Now</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.addToCartButton}
-              onPress={handleAddToCart}
-            >
-              {addTocartApiCall?.isLoading ? (
-                <ActivityIndicator size="small" color={theme.colors.white} />
-              ) : (
-                <Text style={styles.addToCartButtonText}>
-                  {isInCart ? "Go To Cart" : "Add To Cart"}
-                </Text>
-              )}
-            </TouchableOpacity>
+            {Platform.OS === "android" && (
+              <TouchableOpacity
+                style={styles.addToCartButton}
+                onPress={handleAddToCart}
+              >
+                {addTocartApiCall?.isLoading ? (
+                  <ActivityIndicator size="small" color={theme.colors.white} />
+                ) : (
+                  <Text style={styles.addToCartButtonText}>
+                    {isInCart ? "Go To Cart" : "Add To Cart"}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       )}

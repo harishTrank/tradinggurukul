@@ -309,4 +309,11 @@ export const othersEndpoints = {
       uri: "/community",
     },
   },
+  payWithIapAPI: {
+    v1: {
+      ...defaults.methods.POST,
+      ...defaults.versions.v1,
+      uri: "/ios-iap-order",
+    },
+  },
 };

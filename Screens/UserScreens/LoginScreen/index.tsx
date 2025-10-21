@@ -65,7 +65,10 @@ const LoginScreen = ({ navigation }: any) => {
           );
           setUserDetails(res?.details);
           await AsyncStorage.setItem("loginFlag", "true");
-          await AsyncStorage.setItem("device_token", res?.details?.device_token);
+          await AsyncStorage.setItem(
+            "device_token",
+            res?.details?.device_token
+          );
           navigation.reset({
             index: 0,
             routes: [{ name: "DrawerNavigation" }],
@@ -79,7 +82,7 @@ const LoginScreen = ({ navigation }: any) => {
           text1: err.message,
         });
       });
-      setSubmitting(false);
+    setSubmitting(false);
   };
 
   const handleForgotPassword = () => {
@@ -177,9 +180,7 @@ const LoginScreen = ({ navigation }: any) => {
                 </View>
 
                 <TouchableOpacity
-                  style={[
-                    styles.loginButton,
-                  ]}
+                  style={[styles.loginButton]}
                   onPress={() => handleSubmit()}
                 >
                   <Text style={styles.loginButtonText}>Log in</Text>
@@ -193,13 +194,13 @@ const LoginScreen = ({ navigation }: any) => {
                   <Text style={styles.forgotPasswordText}>Forgot password</Text>
                 </TouchableOpacity>
 
-                {/* <TouchableOpacity
+                <TouchableOpacity
                   style={styles.skipButton}
                   onPress={() => navigation.replace("DrawerNavigation")}
                   disabled={isSubmitting}
                 >
                   <Text style={styles.skipButtonText}>{"Skip >"}</Text>
-                </TouchableOpacity> */}
+                </TouchableOpacity>
 
                 <View style={styles.footer}>
                   <TouchableOpacity

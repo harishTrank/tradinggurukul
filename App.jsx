@@ -19,6 +19,7 @@ import {
   handleNotificationClick,
 } from "./utils/services/firebase";
 import { sendFCMTokenFirebase } from "./store/Services/Others";
+import { useIAP } from "expo-iap";
 
 registerTranslation("en", en);
 export const queryClient = new QueryClient();
@@ -43,8 +44,13 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 export default function App() {
   const [userDetails] = useAtom(userDetailsGlobal);
   const isLoadingComplete = useCachedResources();
+  const { connected } = useIAP();
 
   useSessionManager();
+
+  useEffect(() => {
+    console.log("IAP Connection status:", connected);
+  }, [connected]);
 
   useEffect(() => {
     const sendToken = async () => {
