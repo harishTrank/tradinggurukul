@@ -8,8 +8,6 @@ import {
   Image,
   FlatList,
   Dimensions,
-  Alert,
-  Linking,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import HomeHeader from "../../Components/HomeHeader";
@@ -41,7 +39,6 @@ const { width } = Dimensions.get("window");
 const Stack = createStackNavigator<any>();
 
 const HomeScreenComponent = () => {
-  const [importantLinks, setImportantLinks]: any = useState([]);
   const [dashboardEvent, setDashboardEvent]: any = useState({});
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const navigation: any = useNavigation();
@@ -123,19 +120,10 @@ const HomeScreenComponent = () => {
       .catch((err: any) => {
         console.log("dashboard err", JSON.stringify(err));
       });
-
-    importantLinksAPI()
-      .then((res: any) => {
-        setImportantLinks(res?.links);
-      })
-      .catch((err: any) => {
-        console.log("Links err", JSON.stringify(err));
-      });
   }, []);
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
-      {/* This loader will only show for the bannersApi, as per your original code. */}
       {bannersApi?.isLoading && <FullScreenLoader />}
       <HomeHeader
         onMenuPress={navigation.toggleDrawer}
@@ -246,7 +234,7 @@ const HomeScreenComponent = () => {
         />
 
         {/* --- Footer Section --- */}
-        <View style={styles.footerContainer}>
+        {/* <View style={styles.footerContainer}>
           <Text style={styles.footerTitle}>Quick Links</Text>
 
           <View style={styles.footerOptions}>
@@ -273,7 +261,7 @@ const HomeScreenComponent = () => {
           <Text style={styles.footerNote}>
             © {new Date().getFullYear()} Trading Gurukul — Learn, Trade & Grow
           </Text>
-        </View>
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );

@@ -15,48 +15,6 @@ import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getIPODetails } from "../../../store/Services/Others";
 
-const dummyIPOs = [
-  {
-    id: "1",
-    company: "ABC Technologies Ltd",
-    openDate: "2025-10-05",
-    closeDate: "2025-10-07",
-    priceRange: "₹100 - ₹120",
-    lotSize: "50 Shares",
-    ipoType: "Mainboard",
-    minInvestment: "₹15,000",
-    recommendationPerc: "85%",
-    gmp: "₹40",
-    status: "Open",
-  },
-  {
-    id: "2",
-    company: "XYZ Fintech Pvt Ltd",
-    openDate: "2025-10-10",
-    closeDate: "2025-10-12",
-    priceRange: "₹250 - ₹280",
-    lotSize: "30 Shares",
-    ipoType: "SME",
-    minInvestment: "₹10,000",
-    recommendationPerc: "72%",
-    gmp: "₹15",
-    status: "Upcoming",
-  },
-  {
-    id: "3",
-    company: "DEF Pharma Ltd",
-    openDate: "2025-09-20",
-    closeDate: "2025-09-22",
-    priceRange: "₹500 - ₹550",
-    lotSize: "20 Shares",
-    ipoType: "Mainboard",
-    minInvestment: "₹20,000",
-    recommendationPerc: "90%",
-    gmp: "₹60",
-    status: "Closed",
-  },
-];
-
 const IPOScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);

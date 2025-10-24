@@ -92,7 +92,7 @@ const CommunityMainScreen = ({ navigation }: any) => {
   //     onPress={handlePostPress}
   //   />
   // );
-
+  console.log("userDetails?.id", userDetails?.id);
   useEffect(() => {
     setLoading(true);
     communityLink({

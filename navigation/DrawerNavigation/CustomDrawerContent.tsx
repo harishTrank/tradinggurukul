@@ -34,6 +34,7 @@ const drawerItems = [
   { label: "Blog", iconName: "edit-3", navigateTo: "Blog" },
   { label: "Events", iconName: "calendar", navigateTo: "Events" },
   { label: "IPOs", iconName: "trending-up", navigateTo: "IPOScreen" },
+  { label: "Important Links", iconName: "link", navigateTo: "LinkScreen" },
   { label: "Refer & Earn", iconName: "gift", navigateTo: "ReferAndEarnScreen" },
   {
     label: "Legal & Policies",

@@ -83,6 +83,7 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
     "com.tradinggurukul.course1058",
     "com.tradinggurukul.course1100",
     "com.tradinggurukul.course505",
+    "com.tradinggurukul.course897",
   ];
   const {
     connected,

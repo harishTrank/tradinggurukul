@@ -16,6 +16,7 @@ import EventScreen from "../../Screens/UserScreens/EventScreen";
 import MyCoursesScreen from "../../Screens/UserScreens/MyCoursesScreen";
 import IPOScreen from "../../Screens/UserScreens/IPOScreen";
 import AllPoliciesScreen from "../../Screens/UserScreens/AllPoliciesScreen";
+import LinkScreen from "../../Screens/UserScreens/LinkScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -43,6 +44,7 @@ export default function DrawerNavigator() {
       <Drawer.Screen name="Blog" component={BlogScreen} />
       <Drawer.Screen name="Events" component={EventScreen} />
       <Drawer.Screen name="IPOScreen" component={IPOScreen} />
+      <Drawer.Screen name="LinkScreen" component={LinkScreen} />
       <Drawer.Screen name="ReferAndEarnScreen" component={ReferAndEarnScreen} />
       <Drawer.Screen name="AllPoliciesScreen" component={AllPoliciesScreen} />
       <Drawer.Screen name="AboutUs" component={AboutUsScreen} />
