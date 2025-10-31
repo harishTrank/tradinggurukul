@@ -1,5 +1,5 @@
 const ImageModule = {
-  animatedLogo: require("../assets/animated/animatedlogo.gif"),
+  animatedLogo: require("../assets/animated/animatedlogo2.gif"),
   appIcon: require("../assets/Icons/appIcon.png"),
   appIconCrop: require("../assets/Icons/appIconCrop.png"),
   start1: require("../assets/Images/start1.png"),
@@ -9,7 +9,7 @@ const ImageModule = {
   logoWhite: require("../assets/Images/logowhite.png"),
   defaultUser: require("../assets/Images/default-user.png"),
   aboutUs: require("../assets/Images/aboutus.png"),
-  referFriend: require("../assets/refer-friend.png")
+  referFriend: require("../assets/refer-friend.png"),
 };
 
 export default ImageModule;

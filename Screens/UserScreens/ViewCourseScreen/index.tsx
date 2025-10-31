@@ -213,7 +213,6 @@ const ViewCourseScreen = ({ navigation, route }: any) => {
           amount: coursePrice,
         },
       });
-      console.log("res", res);
       const order_id = res?.data?.order_id;
       if (!order_id) {
         throw new Error("Failed to create order.");

@@ -8,19 +8,20 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import HomeHeader from "../../Components/HomeHeader";
 import theme from "../../../utils/theme";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getIPODetails } from "../../../store/Services/Others";
+import { useFocusEffect } from "@react-navigation/native";
 
 const IPOScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
   const [ipos, setIPOs]: any = useState([]);
 
-  useEffect(() => {
+  const ipoDetails = () => {
     setLoading(true);
     getIPODetails()
       .then((res: any) => {
@@ -30,8 +31,16 @@ const IPOScreen = ({ navigation }: any) => {
         console.log("IPO Errr", JSON.stringify(err));
       })
       .finally(() => setLoading(false));
-  }, []);
+  };
 
+  useEffect(() => {
+    ipoDetails();
+  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      ipoDetails();
+    }, [])
+  );
   const renderIPOCard = ({ item }: any) => (
     <View style={styles.card}>
       {/* Company + Status Row */}
@@ -40,7 +49,7 @@ const IPOScreen = ({ navigation }: any) => {
         <Text
           style={[
             styles.status,
-            item.status === "Open"
+            item.status === "Ongoing"
               ? { color: "green" }
               : item.status === "Upcoming"
               ? { color: "#E6B800" }
@@ -51,43 +60,19 @@ const IPOScreen = ({ navigation }: any) => {
         </Text>
       </View>
 
-      {/* Details */}
-      <View style={styles.detailRow}>
-        <Text style={styles.detail}>IPO Type</Text>
-        <Text style={styles.value}>{item.ipoType}</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detail}>Open</Text>
-        <Text style={styles.value}>{item.openDate}</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detail}>Close</Text>
-        <Text style={styles.value}>{item.closeDate}</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detail}>Listing</Text>
-        <Text style={styles.value}>{item.listingDate}</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detail}>Price Range</Text>
-        <Text style={styles.value}>{item.priceRange}</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detail}>Lot Size</Text>
-        <Text style={styles.value}>{item.lotSize}</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detail}>Min Investment</Text>
-        <Text style={styles.value}>{item.minInvestment}</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detail}>GMP</Text>
-        <Text style={styles.value}>{item.gmp}</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detail}>Recommendation</Text>
-        <Text style={styles.value}>{item.recommendationPerc}</Text>
-      </View>
+      {Object.entries(item).map(([key, value]: any) => {
+        if (key === "company" || key === "status" || key === "id") return null; // skip these
+        return (
+          <View style={styles.detailRow} key={key}>
+            <Text style={styles.detail}>
+              {key
+                .replace(/([A-Z])/g, " $1") // convert camelCase to spaced words
+                .replace(/^./, (str: any) => str.toUpperCase())}
+            </Text>
+            <Text style={styles.value}>{value || "--"}</Text>
+          </View>
+        );
+      })}
     </View>
   );
 

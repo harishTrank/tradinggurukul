@@ -49,6 +49,7 @@ const HomeScreenComponent = () => {
       page: 1,
       per_page: 10,
       sort: "popularity",
+      user_id: userDetails?.id,
     },
   });
   const freeCourseApi: any = useFreeProductsCall();
@@ -121,6 +122,7 @@ const HomeScreenComponent = () => {
         console.log("dashboard err", JSON.stringify(err));
       });
   }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -186,11 +188,6 @@ const HomeScreenComponent = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.horizontalListPadding}
         />
-
-        {/* --- Trial Banner --- */}
-        {/* <TrialBanner onPress={() => console.log("Get free trial pressed")} /> */}
-
-        {/* --- Most Watching --- */}
         <SectionHeader
           title="All Courses"
           onSeeMore={() => handleSeeMore("Top Search")}
@@ -204,6 +201,7 @@ const HomeScreenComponent = () => {
               price={item?.price}
               regular_price={item?.regular_price}
               tag={item?.categories?.[0]?.name}
+              has_purchased={item?.has_purchased || false}
               onPress={() => handleCardPress(item?.id, "Top Search")}
             />
           )}
@@ -224,6 +222,7 @@ const HomeScreenComponent = () => {
               price={item?.price}
               regular_price={item?.regular_price}
               tag={item?.categories?.[0]?.name}
+              has_purchased={true}
               onPress={() => handleCardPress(item?.id, "Free Course")}
             />
           )}

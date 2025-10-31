@@ -6,12 +6,19 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath('com.android.tools.build:gradle')
+    classpath('com.android.tools.build:gradle:8.8.2')
     classpath('com.facebook.react:react-native-gradle-plugin')
     classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
     classpath('com.google.gms:google-services:4.3.15')
   }
 }
+ext {
+    compileSdkVersion = 35
+    targetSdkVersion = 35
+    minSdkVersion = 24
+    ndkVersion = "26.2.11394342"
+}
+
 
 def reactNativeAndroidDir = new File(
   providers.exec {

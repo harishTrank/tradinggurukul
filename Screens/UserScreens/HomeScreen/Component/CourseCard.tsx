@@ -21,6 +21,7 @@ const CourseCard = ({
   price,
   regular_price,
   onPress,
+  has_purchased,
 }: any) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.card}>
@@ -28,12 +29,19 @@ const CourseCard = ({
       <Text style={styles.title} numberOfLines={2}>
         {title}
       </Text>
-      <View style={styles.priceBox}>
-        {price && <Text style={styles.price}>₹{price}</Text>}
-        {regular_price && (
-          <Text style={styles.regularPrice}>₹{regular_price}</Text>
-        )}
-      </View>
+      {has_purchased ? (
+        <View style={styles.playCourseView}>
+          <Text style={styles.playCourseText}>Play Course</Text>
+        </View>
+      ) : (
+        <View style={styles.priceBox}>
+          {price && <Text style={styles.price}>₹{price}</Text>}
+          {regular_price && (
+            <Text style={styles.regularPrice}>₹{regular_price}</Text>
+          )}
+        </View>
+      )}
+
       <View style={styles.ratingContainer}>
         {tag && <Text style={styles.tag}>{tag}</Text>}
       </View>
@@ -48,6 +56,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginRight: 15,
     backgroundColor: theme.colors.white,
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   image: {
     width: "100%",
@@ -87,6 +97,21 @@ const styles = StyleSheet.create({
     ...theme.font.fontRegular,
     paddingLeft: 5,
     textDecorationLine: "line-through",
+  },
+  playCourseView: {
+    paddingHorizontal: 5,
+    paddingVertical: 5,
+    backgroundColor: theme.colors.primary,
+    marginBottom: 10,
+    borderRadius: 10,
+    width: "60%",
+    alignSelf: "flex-start",
+  },
+  playCourseText: {
+    fontSize: 13,
+    color: "#000",
+    fontWeight: "700",
+    textAlign: "center",
   },
 });
 
