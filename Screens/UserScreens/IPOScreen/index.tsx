@@ -134,6 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
+    flexWrap: "wrap",
   },
   screenTitle: {
     fontSize: 22,
@@ -179,16 +180,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 2,
+    flexWrap: "wrap",
   },
   detail: {
     fontSize: 14,
     color: "#000",
     fontWeight: "800",
+    flex: 1,
+    flexWrap: "wrap",
   },
   value: {
     fontSize: 14,
-    color: "#444 ",
+    color: "#555",
     fontWeight: "600",
+    flexShrink: 1,
+    textAlign: "right",
   },
   disclaimer: {
     fontSize: 12,
