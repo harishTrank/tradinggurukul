@@ -46,7 +46,7 @@ const LoginScreen = ({ navigation }: any) => {
 
   const handleLoginSubmit = (
     values: any,
-    { setSubmitting, setErrors }: any
+    { setSubmitting, setErrors }: any,
   ) => {
     loginApiCaller
       ?.mutateAsync({
@@ -61,13 +61,13 @@ const LoginScreen = ({ navigation }: any) => {
         } else {
           await AsyncStorage.setItem(
             "userDetail",
-            JSON.stringify(res?.details)
+            JSON.stringify(res?.details),
           );
           setUserDetails(res?.details);
           await AsyncStorage.setItem("loginFlag", "true");
           await AsyncStorage.setItem(
             "device_token",
-            res?.details?.device_token
+            res?.details?.device_token,
           );
           navigation.reset({
             index: 0,

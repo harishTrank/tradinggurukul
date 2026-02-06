@@ -17,15 +17,20 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import theme from "../../../utils/theme";
-import { useSendOTPCall, useVerifyOTPCall } from "../../../hooks/Auth/mutation";
+import {
+  useRegisterUser,
+  useSendOTPCall,
+  useVerifyOTPCall,
+} from "../../../hooks/Auth/mutation";
 import Toast from "react-native-toast-message";
+import { EOL } from "os";
 
 const { height, width } = Dimensions.get("window");
 const OTP_LENGTH = 6;
 
 const OTPScreen = ({ navigation, route }: any) => {
   const emailFromPreviousScreen = route?.params?.email || "your email";
-
+  const registrationData = route?.params?.registrationData || null;
   const [otpCode, setOtpCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(false);
@@ -33,6 +38,7 @@ const OTPScreen = ({ navigation, route }: any) => {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const otpVerifyApiCaller: any = useVerifyOTPCall();
   const resendPasswordApiCall: any = useSendOTPCall();
+  const registerUserApiCall: any = useRegisterUser();
 
   const handleResendCode = () => {
     setResendDisabled(true);
@@ -82,6 +88,65 @@ const OTPScreen = ({ navigation, route }: any) => {
 
   const focusInput = () => {
     inputRef.current?.focus();
+  };
+
+  const handleRegisterContinue = (resend: any = false) => {
+    if (registrationData) {
+      setIsSubmitting(true);
+      if (otpCode) {
+        if (otpCode.length !== OTP_LENGTH) {
+          Alert.alert(
+            "Incomplete OTP",
+            `Please enter all ${OTP_LENGTH} digits.`,
+          );
+          setIsSubmitting(false);
+          return;
+        }
+        registrationData.append("otp", otpCode);
+      }
+      if (resend) {
+        registrationData.append("send_otp", 1);
+      } else {
+        registrationData.delete("send_otp");
+      }
+      registerUserApiCall
+        ?.mutateAsync({
+          body: registrationData,
+        })
+        ?.then((res: any) => {
+          setIsSubmitting(false);
+          if (res?.code == "0" || res?.status == "0") {
+            return Toast.show({
+              type: "error",
+              text1: res.message,
+            });
+          } else if (resend) {
+            return Toast.show({
+              type: "success",
+              text1: res.message,
+            });
+          } else {
+            navigation.replace("LoginScreen");
+            return Toast.show({
+              type: "success",
+              text1: res.message,
+            });
+          }
+        })
+        ?.catch((err: any) => {
+          setIsSubmitting(false);
+          Toast.show({
+            type: "error",
+            text1: "something went wrong.",
+          });
+        });
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "No registration data found. Please try registering again.",
+      });
+      navigation.goBack();
+    }
   };
 
   const handleContinue = () => {
@@ -140,7 +205,7 @@ const OTPScreen = ({ navigation, route }: any) => {
           ]}
         >
           <Text style={styles.otpDigit}>{digit}</Text>
-        </View>
+        </View>,
       );
     }
     return boxes;
@@ -189,7 +254,11 @@ const OTPScreen = ({ navigation, route }: any) => {
             <View style={styles.resendContainer}>
               <Text style={styles.resendText}>Didn't get the OTP? </Text>
               <TouchableOpacity
-                onPress={handleResendCode}
+                onPress={
+                  registrationData
+                    ? () => handleRegisterContinue(true)
+                    : handleResendCode
+                }
                 disabled={resendDisabled}
               >
                 <Text
@@ -211,7 +280,11 @@ const OTPScreen = ({ navigation, route }: any) => {
                 (isSubmitting || otpCode.length !== OTP_LENGTH) &&
                   styles.buttonDisabled,
               ]}
-              onPress={handleContinue}
+              onPress={
+                registrationData
+                  ? () => handleRegisterContinue(false)
+                  : handleContinue
+              }
               disabled={isSubmitting || otpCode.length !== OTP_LENGTH}
             >
               {isSubmitting ? (

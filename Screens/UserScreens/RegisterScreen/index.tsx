@@ -83,7 +83,7 @@ const RegisterScreen = ({ navigation }: any) => {
 
   const handleRegisterSubmit = (
     values: any,
-    { setSubmitting, setErrors }: any
+    { setSubmitting, setErrors }: any,
   ) => {
     const { firstName, lastName, phoneNumber, email, password, referralCode } =
       values;
@@ -95,6 +95,7 @@ const RegisterScreen = ({ navigation }: any) => {
     body.append("mobile", phoneNumber);
     body.append("confirmpass", password);
     body.append("enableOffer", false);
+    body.append("send_otp", 1);
 
     // Append referral code if user entered one
     if (referralCode) {
@@ -112,17 +113,18 @@ const RegisterScreen = ({ navigation }: any) => {
       })
       .then((res: any) => {
         setSubmitting(false);
-        if (res?.status === "0") {
+        if (res?.status === "0" || res?.code === "0") {
           return Toast.show({
             type: "error",
             text1: res?.message,
           });
         } else {
-          navigation.replace("LoginScreen");
-          return Toast.show({
-            type: "success",
-            text1: "Register user successfully.",
-          });
+          navigation.navigate("OTPScreen", { registrationData: body });
+          // navigation.replace("LoginScreen");
+          // return Toast.show({
+          //   type: "success",
+          //   text1: "Register user successfully.",
+          // });
         }
       })
       .catch((err: any) => {
