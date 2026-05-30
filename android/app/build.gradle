@@ -93,8 +93,8 @@ android {
         applicationId 'com.anonymous.tradinggurukul'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 31
-        versionName "1.2.7"
+        versionCode 32
+        versionName "1.2.8"
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"
         }
