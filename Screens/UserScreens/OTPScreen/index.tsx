@@ -219,86 +219,87 @@ const OTPScreen = ({ navigation, route }: any) => {
         style={styles.keyboardAvoidingContainer}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
+        <TextInput
+          ref={inputRef}
+          value={otpCode}
+          onChangeText={handleOtpChange}
+          maxLength={OTP_LENGTH}
+          keyboardType="number-pad"
+          textContentType="oneTimeCode"
+          autoComplete="sms-otp"
+          style={styles.hiddenInput}
+          onFocus={() => setIsInputFocused(true)}
+          onBlur={() => setIsInputFocused(false)}
+          caretHidden
+          autoFocus={true}
+        />
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           alwaysBounceVertical={false}
         >
-          <TextInput
-            ref={inputRef}
-            value={otpCode}
-            onChangeText={handleOtpChange}
-            maxLength={OTP_LENGTH}
-            keyboardType="number-pad"
-            textContentType="oneTimeCode"
-            autoComplete="sms-otp"
-            style={styles.hiddenInput}
-            onFocus={() => setIsInputFocused(true)}
-            onBlur={() => setIsInputFocused(false)}
-            caretHidden
-            autoFocus={true}
-          />
+          <Pressable onPress={focusInput} style={styles.fullScreenPressable}>
+            <View style={styles.contentContainer}>
+              <Text style={styles.screenTitle}>Enter the OTP</Text>
+              <Text style={styles.subtitle}>
+                We've sent a password recover OTP{"\n"}to{" "}
+                {emailFromPreviousScreen}
+              </Text>
 
-          <View style={styles.contentContainer}>
-            <Text style={styles.screenTitle}>Enter the OTP</Text>
-            <Text style={styles.subtitle}>
-              We've sent a password recover OTP{"\n"}to{" "}
-              {emailFromPreviousScreen}
-            </Text>
+              <Pressable onPress={focusInput} style={styles.otpBoxContainer}>
+                {renderOtpBoxes()}
+              </Pressable>
 
-            <Pressable onPress={focusInput} style={styles.otpBoxContainer}>
-              {renderOtpBoxes()}
-            </Pressable>
+              <View style={styles.resendContainer}>
+                <Text style={styles.resendText}>Didn't get the OTP? </Text>
+                <TouchableOpacity
+                  onPress={
+                    registrationData
+                      ? () => handleRegisterContinue(true)
+                      : handleResendCode
+                  }
+                  disabled={resendDisabled}
+                >
+                  <Text
+                    style={[
+                      styles.resendLink,
+                      resendDisabled && styles.resendLinkDisabled,
+                    ]}
+                  >
+                    {resendDisabled
+                      ? `Resend Code in ${countdown}s`
+                      : "Resend Code"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-            <View style={styles.resendContainer}>
-              <Text style={styles.resendText}>Didn't get the OTP? </Text>
               <TouchableOpacity
+                style={[
+                  styles.continueButton,
+                  (isSubmitting || otpCode.length !== OTP_LENGTH) &&
+                    styles.buttonDisabled,
+                ]}
                 onPress={
                   registrationData
-                    ? () => handleRegisterContinue(true)
-                    : handleResendCode
+                    ? () => handleRegisterContinue(false)
+                    : handleContinue
                 }
-                disabled={resendDisabled}
+                disabled={isSubmitting || otpCode.length !== OTP_LENGTH}
               >
-                <Text
-                  style={[
-                    styles.resendLink,
-                    resendDisabled && styles.resendLinkDisabled,
-                  ]}
-                >
-                  {resendDisabled
-                    ? `Resend Code in ${countdown}s`
-                    : "Resend Code"}
-                </Text>
+                {isSubmitting ? (
+                  <ActivityIndicator color={theme.colors.white} />
+                ) : (
+                  <Text style={styles.continueButtonText}>Continue</Text>
+                )}
               </TouchableOpacity>
+
+              <Text style={styles.footerText}>
+                Didn't get any email? Check your spam{"\n"}folder or try again
+                with a valid email.
+              </Text>
             </View>
-
-            <TouchableOpacity
-              style={[
-                styles.continueButton,
-                (isSubmitting || otpCode.length !== OTP_LENGTH) &&
-                  styles.buttonDisabled,
-              ]}
-              onPress={
-                registrationData
-                  ? () => handleRegisterContinue(false)
-                  : handleContinue
-              }
-              disabled={isSubmitting || otpCode.length !== OTP_LENGTH}
-            >
-              {isSubmitting ? (
-                <ActivityIndicator color={theme.colors.white} />
-              ) : (
-                <Text style={styles.continueButtonText}>Continue</Text>
-              )}
-            </TouchableOpacity>
-
-            <Text style={styles.footerText}>
-              Didn't get any email? Check your spam{"\n"}folder or try again
-              with a valid email.
-            </Text>
-          </View>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -339,9 +340,12 @@ const styles = StyleSheet.create({
   },
   hiddenInput: {
     position: "absolute",
-    width: 1,
-    height: 1,
+    width: 0,
+    height: 0,
     opacity: 0,
+  },
+  fullScreenPressable: {
+    flexGrow: 1,
   },
   otpBoxContainer: {
     flexDirection: "row",
