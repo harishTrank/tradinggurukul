@@ -316,4 +316,11 @@ export const othersEndpoints = {
       uri: "/ios-iap-order",
     },
   },
+  liveSessionsApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/get-live-model/",
+    },
+  },
 };

@@ -17,6 +17,7 @@ import MyCoursesScreen from "../../Screens/UserScreens/MyCoursesScreen";
 import IPOScreen from "../../Screens/UserScreens/IPOScreen";
 import AllPoliciesScreen from "../../Screens/UserScreens/AllPoliciesScreen";
 import LinkScreen from "../../Screens/UserScreens/LinkScreen";
+import LiveSessionScreen from "../../Screens/UserScreens/LiveSessionScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -52,6 +53,7 @@ export default function DrawerNavigator() {
       <Drawer.Screen name="RefundScreen" component={RefundScreen} />
       <Drawer.Screen name="Terms" component={TermsAndConditionScreen} />
       <Drawer.Screen name="SupportScreen" component={SupportScreen} />
+      <Drawer.Screen name="LiveSessionScreen" component={LiveSessionScreen} />
     </Drawer.Navigator>
   );
 }

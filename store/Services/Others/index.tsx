@@ -253,3 +253,8 @@ export const payWithIapAPI = ({ body }: any) =>
     uriEndPoint: othersEndpoints.payWithIapAPI.v1,
     body,
   });
+
+export const getLiveSessionsApi = () =>
+  callApi({
+    uriEndPoint: othersEndpoints.liveSessionsApi.v1,
+  });

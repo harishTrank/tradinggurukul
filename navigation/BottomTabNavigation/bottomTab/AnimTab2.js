@@ -1,6 +1,7 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs"; // Changed import
 import React, { useEffect, useRef } from "react";
 import {
+  Animated,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
@@ -18,6 +19,7 @@ import MyCoursesScreen from "../../../Screens/UserScreens/MyCoursesScreen";
 import CommunityScreen from "../../../Screens/UserScreens/CommunityScreen";
 import theme from "../../../utils/theme";
 import NewsScreen from "../../../Screens/UserScreens/NewsScreen";
+import LiveSessionScreen from "../../../Screens/UserScreens/LiveSessionScreen";
 
 const TabArr = [
   {
@@ -33,6 +35,14 @@ const TabArr = [
     type: Icons.Feather,
     icon: "book-open",
     component: MyCoursesScreen,
+  },
+  {
+    route: "LiveSessions",
+    label: "Live",
+    type: Icons.Feather,
+    icon: "video",
+    component: LiveSessionScreen,
+    isLive: true,
   },
   {
     route: "Community",
@@ -70,6 +80,27 @@ const circle1 = {
   1: { scale: 1 },
 };
 const circle2 = { 0: { scale: 1 }, 1: { scale: 0 } };
+
+const LiveDotPulse = () => {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(scale, { toValue: 1.5, duration: 500, useNativeDriver: true }),
+        Animated.timing(scale, { toValue: 1, duration: 500, useNativeDriver: true }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [scale]);
+
+  return (
+    <Animated.View
+      style={[styles.liveDot, { transform: [{ scale }] }]}
+    />
+  );
+};
 
 const TabButton = (props) => {
   const { item, onPress, accessibilityState } = props;
@@ -114,6 +145,7 @@ const TabButton = (props) => {
             name={item.icon}
             color={focused ? Colors.white : Colors.primary}
           />
+          {item.isLive && !focused && <LiveDotPulse />}
         </View>
         <Animatable.Text
           ref={textRef}
@@ -236,5 +268,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+  },
+  liveDot: {
+    position: "absolute",
+    top: 2,
+    right: 2,
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
+    backgroundColor: "#E53E3E",
+    borderWidth: 1.5,
+    borderColor: "#fff",
   },
 });

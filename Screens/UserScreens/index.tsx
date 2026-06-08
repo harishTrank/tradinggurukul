@@ -21,6 +21,8 @@ import DoubtsScreen from "./DoubtsScreen";
 import NotificationScreen from "./NotificationScreen";
 import EventCardDetail from "./EventScreen/Components/EventCardDetail";
 import FeedbackFormScreen from "./FeedbackFormScreen";
+import LiveSessionScreen from "./LiveSessionScreen";
+import LiveSessionPlayerScreen from "./LiveSessionPlayerScreen";
 
 const Stack = createStackNavigator<any>();
 
@@ -65,6 +67,16 @@ const UserScreens = () => {
       <Stack.Screen
         name="DoubtsScreen"
         component={DoubtsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="LiveSessionScreen"
+        component={LiveSessionScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="LiveSessionPlayerScreen"
+        component={LiveSessionPlayerScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

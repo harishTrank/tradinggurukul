@@ -31,6 +31,7 @@ const drawerItems = [
   { label: "Home", iconName: "home", navigateTo: "Home" },
   { label: "My Courses", iconName: "book-open", navigateTo: "MyCourses" },
   { label: "All Courses", iconName: "book-open", navigateTo: "AllCourses" },
+  { label: "Live Sessions", iconName: "video", navigateTo: "LiveSessionScreen" },
   { label: "Blog", iconName: "edit-3", navigateTo: "Blog" },
   { label: "Events", iconName: "calendar", navigateTo: "Events" },
   { label: "IPOs", iconName: "trending-up", navigateTo: "IPOScreen" },
