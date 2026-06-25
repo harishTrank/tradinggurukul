@@ -44,7 +44,7 @@ const TradeResultSection = ({ result }: { result: any }) => {
         <View
           style={[
             styles.statusPill,
-            { backgroundColor: isProfit ? "#1FA855" : theme.colors.red },
+            { backgroundColor: isProfit ? "#1FA855" : theme.colors.blue },
           ]}
         >
           <Text style={styles.statusPillText}>
@@ -59,7 +59,11 @@ const TradeResultSection = ({ result }: { result: any }) => {
           <View
             style={[
               styles.tradeTakenPill,
-              { backgroundColor: isBuy ? theme.colors.primary : theme.colors.red },
+              {
+                backgroundColor: isBuy
+                  ? theme.colors.primary
+                  : theme.colors.red,
+              },
             ]}
           >
             <Text style={styles.tradeTakenText}>{result?.trade_taken}</Text>
@@ -111,7 +115,11 @@ const TradeResultSection = ({ result }: { result: any }) => {
               activeOpacity={0.85}
               onPress={() => setPreviewUri(uri)}
             >
-              <Image source={{ uri }} style={styles.resultImage} resizeMode="cover" />
+              <Image
+                source={{ uri }}
+                style={styles.resultImage}
+                resizeMode="cover"
+              />
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -237,7 +245,11 @@ const LiveSessionPlayerScreen = ({ navigation, route }: any) => {
           />
         ) : (
           <View style={styles.errorContainer}>
-            <Feather name="alert-circle" size={40} color={theme.colors.greyText} />
+            <Feather
+              name="alert-circle"
+              size={40}
+              color={theme.colors.greyText}
+            />
             <Text style={styles.errorText}>Unable to load video</Text>
           </View>
         )}
