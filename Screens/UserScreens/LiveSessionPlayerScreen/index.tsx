@@ -2,6 +2,8 @@ import React, { useCallback, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  Image,
+  Modal,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -20,6 +22,143 @@ const { width } = Dimensions.get("window");
 const getYouTubeId = (url: string): string | null => {
   const match = url?.match(/[?&]v=([^&]+)/);
   return match ? match[1] : null;
+};
+
+const formatPrice = (value: any): string => {
+  if (value === undefined || value === null || value === "") return "";
+  const str = String(value).trim();
+  if (str.includes("₹")) return str;
+  return str.startsWith("-") ? `-₹${str.slice(1)}` : `₹${str}`;
+};
+
+const TradeResultSection = ({ result }: { result: any }) => {
+  const isProfit = String(result?.result_status).toLowerCase() === "profit";
+  const isBuy = String(result?.trade_taken).toUpperCase() === "BUY";
+  const images: string[] = Array.isArray(result?.images) ? result.images : [];
+  const [previewUri, setPreviewUri] = useState<string | null>(null);
+
+  return (
+    <View style={styles.resultCard}>
+      <View style={styles.resultHeader}>
+        <Text style={styles.resultTitle}>Trade Result</Text>
+        <View
+          style={[
+            styles.statusPill,
+            { backgroundColor: isProfit ? "#1FA855" : theme.colors.red },
+          ]}
+        >
+          <Text style={styles.statusPillText}>
+            {String(result?.result_status || "").toUpperCase()}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.resultStatsRow}>
+        <View style={styles.resultStatBox}>
+          <Text style={styles.resultStatLabel}>Trade Taken</Text>
+          <View
+            style={[
+              styles.tradeTakenPill,
+              { backgroundColor: isBuy ? theme.colors.primary : theme.colors.red },
+            ]}
+          >
+            <Text style={styles.tradeTakenText}>{result?.trade_taken}</Text>
+          </View>
+        </View>
+        <View style={styles.resultStatBox}>
+          <Text style={styles.resultStatLabel}>Entry Price</Text>
+          <Text style={styles.resultStatValue}>
+            {formatPrice(result?.entry_price)}
+          </Text>
+        </View>
+        <View style={styles.resultStatBox}>
+          <Text style={styles.resultStatLabel}>Exit Price</Text>
+          <Text style={styles.resultStatValue}>
+            {formatPrice(result?.exit_price)}
+          </Text>
+        </View>
+        <View style={styles.resultStatBox}>
+          <Text style={styles.resultStatLabel}>P&L</Text>
+          <Text
+            style={[
+              styles.resultStatValue,
+              { color: isProfit ? "#1FA855" : theme.colors.red },
+            ]}
+          >
+            {formatPrice(result?.profit_loss)}
+          </Text>
+        </View>
+      </View>
+
+      {result?.analysis_description ? (
+        <View style={styles.resultDescriptionBox}>
+          <Text style={styles.resultDescriptionLabel}>Analysis</Text>
+          <Text style={styles.resultDescriptionText}>
+            {result.analysis_description}
+          </Text>
+        </View>
+      ) : null}
+
+      {images.length > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.resultImagesRow}
+        >
+          {images.map((uri, index) => (
+            <TouchableOpacity
+              key={`${uri}-${index}`}
+              activeOpacity={0.85}
+              onPress={() => setPreviewUri(uri)}
+            >
+              <Image source={{ uri }} style={styles.resultImage} resizeMode="cover" />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+
+      {result?.analysis_date ? (
+        <Text style={styles.resultAnalysisDate}>
+          Analyzed on{" "}
+          {new Date(result.analysis_date).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })}
+        </Text>
+      ) : null}
+
+      <Modal
+        visible={!!previewUri}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPreviewUri(null)}
+      >
+        <View style={styles.previewOverlay}>
+          <TouchableOpacity
+            style={styles.previewCloseButton}
+            onPress={() => setPreviewUri(null)}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <Feather name="x" size={26} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.previewImageWrap}
+            activeOpacity={1}
+            onPress={() => setPreviewUri(null)}
+          >
+            {previewUri && (
+              <Image
+                source={{ uri: previewUri }}
+                style={styles.previewImage}
+                resizeMode="contain"
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </View>
+  );
 };
 
 const LiveSessionPlayerScreen = ({ navigation, route }: any) => {
@@ -114,6 +253,10 @@ const LiveSessionPlayerScreen = ({ navigation, route }: any) => {
             year: "numeric",
           })}
         </Text>
+
+        {session?.result ? (
+          <TradeResultSection result={session.result} />
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -208,5 +351,121 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: theme.colors.greyText,
     ...theme.font.fontRegular,
+  },
+  resultCard: {
+    marginTop: 20,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: theme.colors.lightGrey,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  resultHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 14,
+  },
+  resultTitle: {
+    fontSize: 16,
+    color: theme.colors.text,
+    ...theme.font.fontSemiBold,
+  },
+  statusPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  statusPillText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  resultStatsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginBottom: 14,
+  },
+  resultStatBox: {
+    minWidth: "21%",
+    flexGrow: 1,
+  },
+  resultStatLabel: {
+    fontSize: 11,
+    color: theme.colors.greyText,
+    ...theme.font.fontRegular,
+    marginBottom: 4,
+  },
+  resultStatValue: {
+    fontSize: 14,
+    color: theme.colors.text,
+    ...theme.font.fontSemiBold,
+  },
+  tradeTakenPill: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  tradeTakenText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  resultDescriptionBox: {
+    marginBottom: 14,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
+  resultDescriptionLabel: {
+    fontSize: 11,
+    color: theme.colors.greyText,
+    ...theme.font.fontRegular,
+    marginBottom: 4,
+  },
+  resultDescriptionText: {
+    fontSize: 13,
+    color: theme.colors.text,
+    ...theme.font.fontRegular,
+    lineHeight: 19,
+  },
+  resultImagesRow: {
+    gap: 10,
+    marginBottom: 12,
+  },
+  resultImage: {
+    width: 160,
+    height: 110,
+    borderRadius: 8,
+    backgroundColor: theme.colors.grey,
+  },
+  resultAnalysisDate: {
+    fontSize: 11,
+    color: theme.colors.greyText,
+    ...theme.font.fontRegular,
+  },
+  previewOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.92)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewCloseButton: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    zIndex: 10,
+  },
+  previewImageWrap: {
+    width: "100%",
+    height: "80%",
+  },
+  previewImage: {
+    width: "100%",
+    height: "100%",
   },
 });
