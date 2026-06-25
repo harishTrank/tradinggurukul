@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"; // Added useEffect
+import React, { useEffect, useMemo, useState } from "react"; // Added useEffect
 import {
   View,
   Text,
@@ -24,6 +24,7 @@ import {
   useCustomProductsCall,
   useFreeProductsCall,
   useGetCategoryCall,
+  useLiveBannerCall,
 } from "../../../hooks/Others/query";
 import FullScreenLoader from "../../Components/FullScreenLoader";
 import { useNavigation } from "@react-navigation/native";
@@ -43,6 +44,7 @@ const HomeScreenComponent = () => {
   const [userDetails]: any = useAtom(userDetailsGlobal);
   const navigation: any = useNavigation();
   const bannersApi: any = useBannersCall();
+  const liveBannerApi: any = useLiveBannerCall();
   const categoriesApi: any = useGetCategoryCall();
   const topSearchApi: any = useCustomProductsCall({
     query: {
@@ -53,6 +55,27 @@ const HomeScreenComponent = () => {
     },
   });
   const freeCourseApi: any = useFreeProductsCall();
+
+  const liveBanner = liveBannerApi?.data?.data;
+  const bannerSlides = useMemo(() => {
+    const banners = bannersApi?.data?.banner || [];
+    if (liveBanner?.show_banner === "yes") {
+      return [
+        {
+          id: `live-session-${liveBanner.id}`,
+          banner_url: liveBanner.thumbnail,
+          title: liveBanner.title,
+          link: liveBanner.link,
+          status: String(liveBanner.status),
+          created_at: liveBanner.created_at,
+          result: liveBanner.result,
+          isLiveSession: true,
+        },
+        ...banners,
+      ];
+    }
+    return banners;
+  }, [bannersApi?.data?.banner, liveBanner]);
   // --- Start of Added Code ---
 
   // Combine the loading states of all relevant APIs.
@@ -158,7 +181,7 @@ const HomeScreenComponent = () => {
         />
 
         {/* --- Image Slider --- */}
-        <ImageSlider navigation={navigation} data={bannersApi?.data?.banner} />
+        <ImageSlider navigation={navigation} data={bannerSlides} />
 
         {dashboardEvent && (
           <View>

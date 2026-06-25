@@ -8,6 +8,7 @@ import {
   getAllDoubtsApi,
   getCategoryCall,
   getCourseDetailsCall,
+  getLiveBannerApi,
   getNotificationListApi,
   postsBlogAndCommunityCall,
 } from "../../store/Services/Others";
@@ -20,6 +21,9 @@ export const useFreeProductsCall = () =>
 
 export const useBannersCall = () =>
   useQuery(["useBannersCall"], () => bannersCall());
+
+export const useLiveBannerCall = () =>
+  useQuery(["useLiveBannerCall"], () => getLiveBannerApi());
 
 export const useGetCategoryCall = () =>
   useQuery(["getCategoryCall"], () => getCategoryCall());

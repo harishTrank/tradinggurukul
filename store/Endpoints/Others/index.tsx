@@ -323,4 +323,11 @@ export const othersEndpoints = {
       uri: "/get-live-model/",
     },
   },
+  liveBannerApi: {
+    v1: {
+      ...defaults.methods.GET,
+      ...defaults.versions.v1,
+      uri: "/get-live-banner",
+    },
+  },
 };

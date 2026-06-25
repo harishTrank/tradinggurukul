@@ -106,8 +106,12 @@ const SessionCard = ({ item, onPress }: { item: any; onPress: () => void }) => {
   );
 };
 
-const LiveSessionScreen = ({ navigation }: any) => {
+const LiveSessionScreen = ({ navigation, route }: any) => {
   const insets = useSafeAreaInsets();
+  // Reached via the bottom tab ("LiveSessions" route) is already wrapped in a
+  // SafeAreaView that accounts for the top inset on Android. Reached via the
+  // drawer ("LiveSessionScreen" route) is not, so it needs its own padding.
+  const needsTopInset = route?.name !== "LiveSessions";
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -135,7 +139,7 @@ const LiveSessionScreen = ({ navigation }: any) => {
     <SafeAreaView
       style={[
         styles.safeArea,
-        Platform.OS === "android" && { paddingTop: insets.top },
+        Platform.OS === "android" && needsTopInset && { paddingTop: insets.top },
       ]}
     >
       <StatusBar style="dark" />

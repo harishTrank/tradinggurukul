@@ -258,3 +258,8 @@ export const getLiveSessionsApi = () =>
   callApi({
     uriEndPoint: othersEndpoints.liveSessionsApi.v1,
   });
+
+export const getLiveBannerApi = () =>
+  callApi({
+    uriEndPoint: othersEndpoints.liveBannerApi.v1,
+  });
