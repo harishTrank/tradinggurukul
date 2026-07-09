@@ -174,8 +174,8 @@ const LiveSessionPlayerScreen = ({ navigation, route }: any) => {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [playing, setPlaying] = useState(true);
+  const videoId = (session?.link).split("/").reverse()[0];
 
-  const videoId = getYouTubeId(session?.link);
   const isLive = session?.status === "1";
 
   const onReady = useCallback(() => {

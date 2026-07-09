@@ -42,7 +42,7 @@ const LiveBadge = () => {
           duration: 600,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     blink.start();
     return () => blink.stop();
@@ -59,8 +59,9 @@ const LiveBadge = () => {
 const SessionCard = ({ item, onPress }: { item: any; onPress: () => void }) => {
   const isLive = item.status === "1";
   const videoId = getYouTubeId(item.link);
+  console.log("videoIdvideoId", videoId);
   const thumbUri =
-    item.thumbnail ||
+    (item.thumbnail && item.thumbnail !== "") ||
     (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null);
 
   return (
@@ -139,7 +140,8 @@ const LiveSessionScreen = ({ navigation, route }: any) => {
     <SafeAreaView
       style={[
         styles.safeArea,
-        Platform.OS === "android" && needsTopInset && { paddingTop: insets.top },
+        Platform.OS === "android" &&
+          needsTopInset && { paddingTop: insets.top },
       ]}
     >
       <StatusBar style="dark" />
