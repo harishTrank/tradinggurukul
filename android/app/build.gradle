@@ -93,8 +93,8 @@ android {
         applicationId 'com.anonymous.tradinggurukul'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 35
-        versionName "1.3.0"
+        versionCode 37
+        versionName "1.3.1"
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"
         }
@@ -156,6 +156,16 @@ android {
         options.each {
             android.packagingOptions[prop] += it
         }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        // react-native-pdf@6.7.7 pulls in io.legere:pdfiumandroid:1.0.24, whose native
+        // libraries are not 16 KB page-size aligned and are rejected by Google Play.
+        // Force the fixed version until react-native-pdf ships this bump itself:
+        // https://github.com/wonday/react-native-pdf/pull/950
+        force 'io.legere:pdfiumandroid:1.0.32'
     }
 }
 
